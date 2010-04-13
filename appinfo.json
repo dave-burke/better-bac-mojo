@@ -1,0 +1,9 @@
+{
+	"id": "net.snew.betterbac-hb",
+	"version": "0.8.2",
+	"vendor": "dave",
+	"type": "web",
+	"main": "index.html",
+	"title": "Better BAC",
+	"icon": "icon.png"
+}

@@ -1,0 +1,118 @@
+Version 0.8.2
+-------------
+Changed interval to 30 seconds
+Event listeners are now correctly cleared
+
+Version 0.8.1 (unreleased)
+-------------
+Fixed a bug that prevented the app from auto refreshing when first opened
+Auto refresh is now set to 25 seconds
+Validation errors are now pop-up dialogs instead of banner notifications.
+Removed "Graph Drinks" from the app menu
+
+Version 0.8.0 (unreleased)
+-------------
+Rearranged menu items
+Preferences "Save" button now reads "Done"
+Changed default height to 68
+Moved "Add drink" to footer and added "Graph" button in footer
+Banner Notification are displayed for database errors and invalid inputs
+Added 12 hour graph period, which is now the default
+
+Version 0.7.3
+-------------
+Each scene has it's own help page.
+Fixed a bug that prevented history from being cleared.
+
+Version 0.7.2 (unreleased)
+-------------
+Removed "Add a drink" from list widget
+Added "Add a drink" button between the status box and the drink list
+"Graph drinks" menu item renamed to "Graph BAC"
+
+Version 0.7.1 (unreleased)
+-------------
+All drinks are in a single list
+	List is divided into current/history by a divider function
+	Drinks at the top are the newest drinks
+Drinks may be graphed (all or 24h)
+Time to zero/limit is displayed as #h #m instead of just total minutes
+Added history preferences (max days / max drinks)
+
+Version 0.7.0 (unreleased)
+-------------
+New app ID in anticipation of eventual app catalog release
+App no longer continues to refresh while minimized
+Added ability to add drinks from the past
+Using Depot DB
+
+Version 0.6.0 (released 01/24/2010 in PreCentral feed)
+-------------
+Added "Watson" method of calculation
+
+Version 0.5.1 (unreleased)
+--------------------------
+Updated about/help to use proper css
+
+Version 0.5.0 (unreleased)
+--------------------------
+Added a proper icon
+Removed "Preferences" button and added "Preferences" to app menu
+Added an "About" page available via the app menu.
+Added a "Help" page available via the app menu.
+
+Version 0.4.2 (unreleased)
+--------------------------
+Fixed a bug that prevented obsolete drinks from being removed from the list
+Fixed a bug that prevented the bacDelta from being applied past the first drink
+
+Version 0.4.1 (unreleased)
+--------------------------
+Fixed a bug that would drop the remainder of a bacDelta after removing a drink
+Refactored lots of disorganized code
+Individual drink BAC is now shown as "bac/originalBac"
+
+Version 0.4.0 (unreleased)
+--------------------------
+Status automatically updates every minute
+"Update Status" button has been removed
+Drink list entry format has been rearranged and now includes the drink's individual BAC
+Whenever BAC is decreased, the BAC of the oldest drink in the list is decreased
+When the oldest drink's BAC reaches zero, it is removed from the list
+
+Version 0.3.0 (unreleased)
+--------------------------
+Tapping a drink loads it as a new drink template
+New drink scene includes BAC/time previews
+
+Version 0.2.0 (unreleased)
+--------------------------
+Drink times are displayed in drink list
+State is now stored via cookie
+Drinks can no longer be re-ordered
+Drink list is cleared when BAC is zero
+
+Version 0.1.0 (unreleased)
+--------------------------
+Initial build
+Preferences including gender, weight, legal limit
+BAC calculation that can be manually updated via button press
+Calculated time (in minutes) until BAC will equal the legal limit
+Calculated time (in minutes) until BAC will equal zero
+List of drinks displayed
+Drinks can be re-ordered/deleted
+Deleted drinks are removed from the current BAC calculation
+
+Known Issues
+------------
+Due to rounding, the total of the individual drink BACs do not always equal the total BAC.
+	This is only a display issue. The internal numbers are correct as far as I know.
+
+TODO
+----
+Update existing about/help
+Include in the about page a list of reasons the calculations are not (and cannot) be completely accurate.
+Put "Add drink" in floating footer
+Add popups for feedback (on invalid drinks etc)
+Add alarms on reaching limit/zero (can be turned off in prefs)
+Allow manual setting of Widmark constant

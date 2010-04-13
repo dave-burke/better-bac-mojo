@@ -1,0 +1,42 @@
+<br>
+<b>The main screen</b>
+<p>The main screen will show you four things: Your current estimated BAC, the estimated time (in minutes) until
+your bac would be at zero, and the estimated time (in minutes) until your BAC would be at the legal limit that
+you set in the preferences screen (default = 0.08, which is the limit in all US states), and a list of the drinks
+you have entered that are still estimated to be "in your system".</p>
+<p>When open, the app will automatically update your status every minute. You may close the app, and it will
+catch up the next time you open it.</p>
+<p>As time passes, and your BAC decreases, the app will decrease the BAC of the first drink in your list until
+it reaches zero. When the first drink in your list is zero, it is considered "out of your system" and will be
+automatically removed from the list.</p>
+<p>You can delete a drink by swiping it. When you delete a drink, it will remove the original BAC added by that
+drink. In other words, it will be as if you had never entered that drink.</p>
+<b>The drink list</b>
+<p>Each drink in the list shows the following:</p>
+<ul>
+	<li>Drink name (top left)</li>
+	<li>Drink vol. and abv (bottom left)</li>
+	<li>The time the drink was entered (top right)</li>
+	<li>The current BAC as a fraction of the total BAC contributed by that drink (bottom right)</li>
+</ul>
+<b>Adding a drink</b>
+<p>When you have a drink, register it by clicking the "Add a drink" button at the bottom of the section
+labeled "Drinks you've had".  You may then enter a drink name, the percentage alcohol by volume
+(1/2 the "proof") and the volume (in ounces) of the drink you had. When you have finished, tap the "Add Drink"
+button to save the drink and return to the home screen. Using the back gesture will allow you to return to the
+home screen without adding the drink.</p>
+<p>If you tap anywhere other than "Add Drink" on the add drink page, then the bottom section will update to show
+you the predicted results of the drink you have entered. This is useful if you want to enter something as a
+"test" to see how it would effect you (remember, you can cancel if you choose not to have the drink).</p>
+<b>Have another</b>
+<p>If you tap a drink in your drinks list, you will be taken to the add drink page with all the fields pre-filled
+based on the drink you tapped.</p>
+<b>Frequently asked questions</b>
+<p>
+	<i>When should I add a drink?</i><br>
+	I usually add drinks when I finish them. At that point, the drink will be mostly absorbed into your system.
+	If you drank the drink very quickly, then it would be more accurate to wait a bit. Then again, this app does
+	not claim to be perfectly accurate in any case. Of course, if your BAC never reaches zero before you finish
+	the drink, then it really doesn't matter when you add it; it'll just get piled on the end of the list in
+	either case.
+</p>

@@ -1,0 +1,48 @@
+<div class="palm-body-text" id="about">
+<b>Better BAC</b>
+<p>This is a program for estimating your blood alcohol level. It should never be considered proof
+that you are able to safely operate a motor vehicle. When in doubt, always use a designated driver.</p>
+<p>This program was written by Dave. I made it because I wanted an app like this one.
+</p>
+<p>Special thanks to Chelsea Riedy for making the app icon! The icon is licensed under the
+<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/">Creative Commons Attribution-Noncommercial-Share
+Alike 3.0 United States License</a></p>
+<p>This program is licensed under the <a href="http://www.gnu.org/licenses/gpl-3.0.html">GPL version 3</a>.</p>
+<p>That means, among other things, that you are free to look at the source code, learn from it, and use it
+in your own app. You may also change this app to create your own version of it. If you do change this app, and
+you think your version is better, I'd be interested to hear about it.</p>
+<p>This program will always be free of charge. I made this app for fun, not for profit. If you appreciate this
+app, then give your cab driver or designated driver a few extra bucks.</p>
+<b>Frequently asked questions</b>
+<p><i>How is my BAC calculated?</i><br>
+It depends on the calc method you choose in the preferences screen.<br>
+Widmark: This is the older and more widely recognized method.<br>
+Basically, this is the amount of pure alcohol in your drink
+divided across the percentage of your body that will contain alcohol when you
+are intoxicated.<br>
+Each drink increases your bac by (vol*abv)/(weight*w) where "w" is the
+"Widmark constant". The "Widmark constant" is the (estimated) fraction of the body mass in which
+alcohol would be present if it were distributed at concentrations equal to that
+in blood. Based on empirical studies, it averages 0.68 for men and 0.55 for women.<br>
+Watson: This is a newer, more precise method.<br>
+Each drink increases your bac by (vol*abv)(0.80 / TBW) where 0.80 is the percentage
+water in blood and TBW is your "Total Body Water".<br>
+For men, TBW = 2.447-(0.09516*age)+(0.1074*height)+(0.3362*weight)<br>
+For women, TBW = -2.097+(0.1069*height)+(0.2466*weight)<br>
+Basically, this is the same as the Widmark method, but with a more complicated
+estimation of the equivalent of the "Widmark constant".<br>
+No matter which calc method you choose, your BAC decreases by 0.015 per hour.<br>
+The above explanations omit the unit conversions that need to be done.<br>
+You might notice that age/height only matter for the Watson method, and even then
+age only matters for men.<br>
+If you want more information, look for an article called "Prediction of Blood
+Alcohol Concentration in Human Subjects" by Watson et. al. As of 01/26/2010
+<a href="http://dionysus.psych.wisc.edu/lit/Articles/WatsonP1981a.pdf">the pdf</a>
+can be found on <a href="http://scholar.google.com/scholar?q=Watson+Prediction+of+Blood+Alcohol+Concentrations+in+Human+Subjects">Google Scholar</a></p>
+<p><i>When should I add a drink?</i><br>
+I usually add drinks when I finish them. At that point, the drink will have started being processed by your
+system. If you drank the drink very quickly, then it would be more accurate to wait a bit. Then again,
+this app does not claim to be perfectly accurate in any case. Of course, if your BAC never reaches zero
+before you finish the drink, then it really doesn't matter when you add it; it'll just get piled on the end
+of the list in either case.</p>
+</div>

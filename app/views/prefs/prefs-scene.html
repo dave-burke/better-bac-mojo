@@ -1,0 +1,62 @@
+<div id="main">
+	<div class="palm-group">
+		<div class="palm-group-title">About you</div>
+		<div class="palm-list">
+			<div class="palm-row first">
+				<div class="palm-row-wrapper" x-mojo-focus-highlight="true">
+					<div x-mojo-element="ListSelector" id="genderSelector"></div>
+				</div>
+			</div>
+			<div class="palm-row">
+				<div class="palm-row-wrapper textfield-group" x-mojo-focus-highlight="true">
+					<div class="title">
+						<div class="label right">Height (in inches)</div>
+						<div x-mojo-element="TextField" id="heightField"></div>
+					</div>
+				</div>
+			</div>
+			<div class="palm-row">
+				<div class="palm-row-wrapper textfield-group" x-mojo-focus-highlight="true">
+					<div class="title">
+						<div class="label right">Weight (in lbs.)</div>
+						<div x-mojo-element="TextField" id="weightField"></div>
+					</div>
+				</div>
+			</div>
+			<div class="palm-row last">
+				<div class="palm-row-wrapper" x-mojo-focus-highlight="true">
+					<div x-mojo-element="IntegerPicker" id="agePicker"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="palm-group">
+		<div class="palm-group-title">Advanced</div>
+		<div class="palm-list">
+			<div class="palm-row first">
+				<div class="palm-row-wrapper textfield-group" x-mojo-focus-highlight="true">
+					<div class="title">
+						<div class="label right">Limit</div>
+						<div x-mojo-element="TextField" id="limitField"></div>
+					</div>
+				</div>
+			</div>
+			<div class="palm-row">
+				<div class="palm-row-wrapper" x-mojo-focus-highlight="true">
+					<div x-mojo-element="ListSelector" id="calcSelector"></div>
+				</div>
+			</div>
+			<div class="palm-row">
+				<div class="palm-row-wrapper" x-mojo-focus-highlight="true">
+					<div x-mojo-element="IntegerPicker" id="historyMaxDaysPicker"></div>
+				</div>
+			</div>
+			<div class="palm-row last">
+				<div class="palm-row-wrapper" x-mojo-focus-highlight="true">
+					<div x-mojo-element="IntegerPicker" id="historyMaxLengthPicker"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div x-mojo-element="Button" id="doneButton"></div>
+</div>
