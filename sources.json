@@ -1,7 +1,5 @@
 [
-    {"source": "javascript/bac-utils.js"},
-    {"source": "javascript/flot/jquery.js"},
-    {"source": "javascript/flot/jquery.flot.js"},
+    {"source": "app/assistants/app-assistant.js"},
     {"source": "app/assistants/stage-assistant.js"},
     {
         "scenes": "main",
@@ -38,5 +36,8 @@
     {
         "scenes": "help-new-drink",
         "source": "app/assistants/help-new-drink-assistant.js"
-    }
+    },
+    {"source": "javascript/bac-utils.js"},
+    {"source": "javascript/flot/jquery.js"},
+    {"source": "javascript/flot/jquery.flot.js"},
 ]
