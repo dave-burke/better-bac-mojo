@@ -96,15 +96,15 @@ MainAssistant.prototype.setup = function() {
 				time:this.formatDateTime.bind(this),
 				abv:this.formatAbv.bind(this),
 				vol:this.formatVol.bind(this),
-				bac: this.formatBac.bind(this),
+				bac: this.formatBac.bind(this)
 			},
             //addItemLabel: $L("Add a drink"),
             swipeToDelete: true,
-            reorderable: false,
+            reorderable: false
         },
         this.model = {
 			listTitle: $L("Drinks you've had"),
-			items: this.state.drinks,
+			items: this.state.drinks
 		}
 	);
 	
@@ -112,7 +112,7 @@ MainAssistant.prototype.setup = function() {
 		items: [
 		    {label: "Add", command: "add-cmd"},
 		    //{label: "Preferences", command: "do-myPrefs"},
-		    {label: "Graph", command: "do-graph"},
+		    {label: "Graph", command: "do-graph"}
 		]
 	};
 	this.controller.setupWidget(Mojo.Menu.commandMenu, this.handleCommand, this.cmdMenuModel);
@@ -127,7 +127,7 @@ MainAssistant.prototype.setup = function() {
 		    //{ label: "Graph BAC", command: "do-graph"},
 		    { label: "Clear all drinks", command: "do-clearState"},
 		    { label: "Preferences", command: "do-myPrefs"},
-		    { label: "Help", command: "do-help"},
+		    { label: "Help", command: "do-help"}
 	    ]
 	};
     this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
