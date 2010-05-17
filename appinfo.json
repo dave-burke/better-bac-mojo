@@ -1,9 +1,12 @@
 {
 	"id": "net.snew.betterbac-hb",
 	"version": "0.8.2",
-	"vendor": "dave",
+	"vendor": "Snew Software",
 	"type": "web",
 	"main": "index.html",
 	"title": "Better BAC",
-	"icon": "icon.png"
+	"icon": "images/icon.png",
+	"miniicon": "images/icon32.png",
+	"noDeprecatedStyles": true,
+	"theme": "light"
 }
