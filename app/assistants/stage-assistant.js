@@ -19,94 +19,22 @@ function StageAssistant(){
 }
 
 StageAssistant.prototype.setup = function(){
-	Mojo.Log.info("Loading database (asynchronous)...");
-	this.db = new Mojo.Depot(
-			{name: "net.snew.betterbac.db"}, this.onLoadDbSuccess.bind(this), this.onLoadDbFailure.bind(this));
-}
-
-/*
- * Load DB callbacks
- */
-StageAssistant.prototype.onLoadDbSuccess = function(){
-	Mojo.Log.info("Successfully loaded Depot database. Getting state...");
-	this.db.get("state", this.onLoadStateSuccess.bind(this), this.onLoadStateFailure.bind(this));
-}
-StageAssistant.prototype.onLoadDbFailure = function(code){
-	Mojo.Log.info("Depot database load failed with code ",code);
-	Mojo.Controller.getAppController().showBanner("Depot database load failed with code " + code,
-		     {source: 'notification'});
-}
-
-/*
- * Load state callbacks
- */
-StageAssistant.prototype.onLoadStateSuccess = function(value){
-	this.state = value;
-	if(!this.state){
-		Mojo.Log.info("No state found in db, creating new state.");
-		this.state = {
-			bac: 0.0,
-			lastUpdate: new Date().getTime(),
-			drinks: [],
-		};
-	}else{
-		Mojo.Log.info("Successfully loaded State: %j",this.state);
-	}
-	Mojo.Log.info("Getting prefs...");
-	this.db.get("prefs", this.onLoadPrefsSuccess.bind(this), this.onLoadPrefsFailure.bind(this));
-}
-StageAssistant.prototype.onLoadStateFailure = function(code){
-	Mojo.Log.info("Loading state failed with code ",code);
-	Mojo.Controller.getAppController().showBanner("Loading state failed with code " + code,
-		     {source: 'notification'});
-}
-
-/*
- * Load prefs callbacks
- */
-StageAssistant.prototype.onLoadPrefsSuccess = function(value){
-	this.prefs = value;
+	this.dbUtils = new DbUtils();
+	this.state = this.dbUtils.getValue("state");
+	this.prefs = this.dbUtils.getValue("prefs");
 	
-	//If no prefs, also push prefs screen
-	if(!this.prefs){
-		this.prefs = {
-				"gender": "m",
-				"height": 68,
-				"weight": 180,
-				"age": 25,
-				"limit": 0.08,
-				"calc": "widmark",
-				"historyMaxDays": 7,
-				"historyMaxLength": 30,
-			};
+	if(this.state){
+		Mojo.Log.info("Got state");
 		this.cleanHistory();
-		this.controller.pushScene("main", this.db, this.state, this.prefs);
-		this.controller.pushScene("prefs", this.db, this.prefs);
-	}else{
-		Mojo.Log.info("Successfully loaded prefs: %j",this.prefs);
-		this.cleanHistory();
-		this.controller.pushScene("main", this.db, this.state, this.prefs);
+		if(this.prefs){
+			Mojo.Log.info("Got prefs");
+			//this.controller.pushScene("main", this.dbUtils);
+		}else{
+			//this.controller.pushScene("main", this.dbUtils);
+			//this.controller.pushScene("prefs", this.dbUtils);
+		}
 	}
-
-}
-StageAssistant.prototype.onLoadPrefsFailure = function(code){
-	Mojo.Log.info("Loading prefs failed with code ",code);
-	Mojo.Controller.getAppController().showBanner("Loading prefs failed with code " + code,
-		     {source: 'notification'});
-}
-
-/*
- * Clear State callbacks
- */
-StageAssistant.prototype.onClearSuccess = function(){
-	Mojo.Log.info("Successfully cleared state");
-	Mojo.Controller.stageController.popScenesTo();
-    this.controller.pushScene("main", this.db, this.state, this.prefs);
-}
-StageAssistant.prototype.onClearFailure = function(){
-	Mojo.Log.info("Failed to cleared state");
-	Mojo.Controller.getAppController().showBanner("Failed to cleared state",
-		     {source: 'notification'});
+	Mojo.Log.info("Done!");
 }
 
 StageAssistant.prototype.cleanHistory = function(){
@@ -182,4 +110,18 @@ StageAssistant.prototype.handleCommand = function(event){
         }
         
     }
+}
+
+/*
+ * Clear State callbacks
+ */
+StageAssistant.prototype.onClearSuccess = function(){
+	Mojo.Log.info("Successfully cleared state");
+	Mojo.Controller.stageController.popScenesTo();
+    this.controller.pushScene("main", this.db, this.state, this.prefs);
+}
+StageAssistant.prototype.onClearFailure = function(){
+	Mojo.Log.info("Failed to cleared state");
+	Mojo.Controller.getAppController().showBanner("Failed to cleared state",
+		     {source: 'notification'});
 }

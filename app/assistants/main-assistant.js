@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function MainAssistant(db, state, prefs) {
-	this.db = db;
-	this.state = state;
-	this.prefs = prefs;
+function MainAssistant(dbUtils, state, prefs) {
+	this.dbUtils = dbUtils;
+	this.state = this.dbUtils.get("state");
+	this.prefs = this.dbUtils.get("prefs");
+	
 	this.bacUtils = new BacUtils();
 }
 

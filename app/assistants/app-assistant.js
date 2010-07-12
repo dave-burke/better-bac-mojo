@@ -23,6 +23,7 @@ function AppAssistant(appController){
 }
 
 AppAssistant.prototype.handleLaunch = function (launchParams) {
+	
     // Look for an existing main stage by name.
     var stageProxy = this.controller.getStageProxy(MainStageName);
     var stageController = this.controller.getStageController(MainStageName);
