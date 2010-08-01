@@ -15,61 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function PrefsAssistant(db, prefs) {
-	this.db = db;
+function PrefsAssistant(dbUtils, prefs) {
+	this.dbUtils = dbUtils;
 	this.prefs = prefs;
 }
 
 PrefsAssistant.prototype.savePrefs = function(){
-	if(isNaN(this.prefs.height)){
-		Mojo.Controller.errorDialog("Height must be a number");
-		this.prefs.height = 68;
-	}
-	if(this.prefs.height < 1.0){
-		this.prefs.height = 1.0;
-	}
-	if(this.prefs.height > 120){
-		this.prefs.height = 120;
-	}
-	
-	if(isNaN(this.prefs.weight)){
-		Mojo.Controller.errorDialog("Weight must be a number");
-		this.prefs.weight = 180;
-	}
-	if(this.prefs.weight < 1.0){
-		this.prefs.weight = 1.0;
-	}
-	if(this.prefs.weight > 1000){
-		this.prefs.weight = 1000;
-	}
-	
-	if(this.prefs.age < 0){
-		this.prefs.age = 0;
-	}
-	if(this.prefs.age > 120){
-		this.prefs.age = 120;
-	}
-	
-	if(isNaN(this.prefs.limit)){
-		Mojo.Controller.errorDialog("Limit must be a number");
-		this.prefs.limit = 0.08;
-	}
-	if(this.prefs.limit < 0){
-		this.prefs.limit = 0;
-	}
-	if(this.prefs.limit > 1){
-		this.prefs.limit = 1;
-	}
-	this.db.add("prefs", this.prefs, this.onSavePrefsSuccess.bind(this), this.onSavePrefsFailure.bind(this));
+	this.dbUtils.savePrefs(this.prefs);
 	this.controller.modelChanged(this.prefs);
-}
-
-PrefsAssistant.prototype.onSavePrefsSuccess = function(){
-	Mojo.Log.info("Successfully saved prefs");
-}
-
-PrefsAssistant.prototype.onSavePrefsFailure = function(){
-	Mojo.Log.info("FAILED TO SAVE PREFS");
 }
 
 PrefsAssistant.prototype.setup = function() {

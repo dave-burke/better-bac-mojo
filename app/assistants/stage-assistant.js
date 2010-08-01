@@ -30,15 +30,12 @@ StageAssistant.prototype.setup = function(){
 					lastUpdate: new Date().getTime(),
 					drinks: []
 				};
-				this.dbUtils.setState(this.state);
+				this.dbUtils.saveState(this.state);
 			}else{
-				Mojo.Log.info("Successfully loaded State: %j",this.values["state"]);
-				this.cleanHistory();
+				Mojo.Log.info("Successfully loaded State: %j",this.state);
 			}
-			this.controller.pushScene("main", this.db, this.state, this.prefs);
 			this.dbUtils.getPrefs(function(value){
 				this.prefs = value;
-					
 				//If no prefs, also push prefs screen
 				if(!this.prefs){
 					Mojo.Log.info("No prefs found in db, creating new prefs and pushing prefs scene.");
@@ -52,16 +49,17 @@ StageAssistant.prototype.setup = function(){
 							"historyMaxDays": 7,
 							"historyMaxLength": 30
 						};
-					this.setPrefs(this.prefs);
-					this.controller.pushScene("prefs", this.dbUtils);
+					this.dbUtils.savePrefs(this.prefs);
+					this.controller.pushScene("main", this.dbUtils, this.state, this.prefs);
+					this.controller.pushScene("prefs", this.dbUtils, this.prefs);
 				}else{
 					Mojo.Log.info("Successfully loaded prefs: %j",this.prefs);
+					this.cleanHistory();
+					this.controller.pushScene("main", this.dbUtils, this.state, this.prefs);
 				}
 			}.bind(this));
 		}.bind(this));
 	}.bind(this));
-	
-	Mojo.Log.info("Done!");
 }
 
 StageAssistant.prototype.cleanHistory = function(){
@@ -97,7 +95,7 @@ StageAssistant.prototype.handleCommand = function(event){
 	if (event.type == Mojo.Event.command) {
 		switch (event.command) {
 			case 'do-myPrefs':
-				Mojo.Controller.stageController.pushScene("prefs", this.db, this.prefs);
+				Mojo.Controller.stageController.pushScene("prefs", this.dbUtils, this.prefs);
 				Mojo.Log.info("Prefs menu item");
 				break;
 			case 'do-help':
@@ -121,34 +119,23 @@ StageAssistant.prototype.handleCommand = function(event){
 				Mojo.Log.info("About menu item");
 				break;
 			case 'do-graph':
-				Mojo.Controller.stageController.pushScene("graph",this.db,this.state);
+				Mojo.Controller.stageController.pushScene("graph",this.dbUtils,this.state);
 				Mojo.Log.info("Graph menu item");
 				break;
 			case 'do-clearState':
+				Mojo.Log.info("Clearing state!");
 				this.state = {
 						bac: 0.0,
 						lastUpdate: new Date().getTime(),
 						drinks: [],
 					};
-				this.db.add("state", this.state, this.onClearSuccess.bind(this), this.onClearFailure.bind(this));
+				this.dbUtils.saveState(this.state);
+				Mojo.Controller.stageController.popScenesTo();
+				this.controller.pushScene("main", this.dbUtils, this.state, this.prefs);
 				break;
 			default:
 				break;
 		}
 		
 	}
-}
-
-/*
- * Clear State callbacks
- */
-StageAssistant.prototype.onClearSuccess = function(){
-	Mojo.Log.info("Successfully cleared state");
-	Mojo.Controller.stageController.popScenesTo();
-	this.controller.pushScene("main", this.db, this.state, this.prefs);
-}
-StageAssistant.prototype.onClearFailure = function(){
-	Mojo.Log.info("Failed to cleared state");
-	Mojo.Controller.getAppController().showBanner("Failed to cleared state",
-			 {source: 'notification'});
 }

@@ -62,7 +62,7 @@ DbUtils.prototype.onLoadPrefsFailure = function(code){
 		     {source: 'notification'});
 }
 
-DbUtils.prototype.setState = function(value){
+DbUtils.prototype.saveState = function(value){
 	if(value){
 		this.db.add("state", value, this.onSaveStateSuccess.bind(this), this.onSaveStateFailure.bind(this));
 	}
@@ -75,8 +75,47 @@ DbUtils.prototype.onSaveStateFailure = function(){
 		{source: 'notification'});
 }
 
-DbUtils.prototype.setPrefs = function(value){
+DbUtils.prototype.savePrefs = function(value){
 	if(value){
+		if(isNaN(value.height)){
+			Mojo.Controller.errorDialog("Height must be a number");
+			value.height = 68;
+		}
+		if(value.height < 1.0){
+			value.height = 1.0;
+		}
+		if(value.height > 120){
+			value.height = 120;
+		}
+		
+		if(isNaN(value.weight)){
+			Mojo.Controller.errorDialog("Weight must be a number");
+			value.weight = 180;
+		}
+		if(value.weight < 1.0){
+			value.weight = 1.0;
+		}
+		if(value.weight > 1000){
+			value.weight = 1000;
+		}
+		
+		if(value.age < 0){
+			value.age = 0;
+		}
+		if(value.age > 120){
+			value.age = 120;
+		}
+		
+		if(isNaN(value.limit)){
+			Mojo.Controller.errorDialog("Limit must be a number");
+			value.limit = 0.08;
+		}
+		if(value.limit < 0){
+			value.limit = 0;
+		}
+		if(value.limit > 1){
+			value.limit = 1;
+		}
 		this.db.add("prefs", value, this.onSavePrefsSuccess.bind(this), this.onSavePrefsFailure.bind(this));
 	}
 }
