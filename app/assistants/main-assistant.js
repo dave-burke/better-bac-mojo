@@ -17,9 +17,6 @@
  */
 function MainAssistant(dbUtils, state, prefs) {
 	this.dbUtils = dbUtils;
-	this.state = this.dbUtils.get("state");
-	this.prefs = this.dbUtils.get("prefs");
-	
 	this.bacUtils = new BacUtils();
 }
 

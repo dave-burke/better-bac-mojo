@@ -15,43 +15,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-var MainStageName = "main";
-var DashboardStageName = "dashboard";
+var mainStage = "main";
+var dashboardStage = "dashboard";
 
 function AppAssistant(appController){
 	
 }
 
 AppAssistant.prototype.handleLaunch = function (launchParams) {
-	
-    // Look for an existing main stage by name.
-    var stageProxy = this.controller.getStageProxy(MainStageName);
-    var stageController = this.controller.getStageController(MainStageName);
-
-    if(launchParams){
-    	this.handleLaunchParams(launchParams);
-    }else{
-    	if (stageProxy) {
-    		// If the stage exists, just bring it to the front by focusing its window.
-    		// Or, if it is just the proxy, then it is being focused, so exit.
-    		if (stageController) {
-    			stageController.window.focus();
-    		}
-    	}
-    }
+	if(launchParams){
+		this.handleLaunchParams(launchParams);
+	}else{
+		Mojo.Log.info("No launch params");
+		var stageProxy = this.controller.getStageProxy(mainStage);
+		if (stageProxy) {
+			Mojo.Log.info("Got stage proxy");
+			var stageController = this.controller.getStageController(mainStage);
+			if (stageController) {
+				Mojo.Log.info("Got stage controller");
+				stageController.window.focus();
+			}
+		}
+	}
 };
 
 AppAssistant.prototype.handleLaunchParams = function(launchParams) {
-	Mojo.Log.warn("handleLaunchParams called: %s", launchParams.action);
-	var dashboardOpen = this.controller.getStageController(DashboardStageName);
+	Mojo.Log.info("handleLaunchParams called: %s", launchParams.action);
+	var dashboardOpen = this.controller.getStageController(dashboardStage);
 	switch (launchParams.action) {
 		case "atLimit":
 			Mojo.Controller.getAppController().showBanner("Your BAC is at the limit",
-				     {source: 'notification'});
+					 {source: 'notification'});
 			break;
 		case "atZero":
 			Mojo.Controller.getAppController().showBanner("Your BAC is at zero",
-				     {source: 'notification'});
+					 {source: 'notification'});
 			break;
 	}
 };
