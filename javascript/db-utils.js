@@ -21,7 +21,7 @@ function DbUtils(dbName) {
 DbUtils.prototype.loadDb = function(successCallback){
 	Mojo.Log.info("Loading database (asynchronous)...");
 	this.db = new Mojo.Depot(
-			{name: "net.snew.betterbac.db"}, successCallback, this.onLoadDbFailure.bind(this));
+			{name: Mojo.appInfo.id + ".db"}, successCallback, this.onLoadDbFailure.bind(this));
 }
 
 DbUtils.prototype.onLoadDbFailure = function(code){

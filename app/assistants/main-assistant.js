@@ -20,6 +20,7 @@ function MainAssistant(dbUtils, state, prefs) {
 	this.state = state;
 	this.prefs = prefs;
 	this.bacUtils = new BacUtils();
+	this.timeoutUtils = new TimeoutUtils();
 }
 
 MainAssistant.prototype.saveState = function(){
@@ -351,9 +352,11 @@ MainAssistant.prototype.updateStatus = function(){
 	
 	var timeToLimit = this.bacUtils.calcTimeTo(this.state.bac, this.prefs.limit);
 	this.controller.get("timeToLimit").update(timeToLimit);
+	this.setLimitAlarm(timeToLimit + ":00");
 	
 	var timeToZero = this.bacUtils.calcTimeTo(this.state.bac, 0);
 	this.controller.get("timeToZero").update(timeToZero);
+	this.setZeroAlarm(timeToZero + ":00");
 
 	this.saveState();
 }
@@ -386,11 +389,12 @@ MainAssistant.prototype.debugDrinks = function(drinks, abridged, message){
 	}
 }
 
-MainAssistant.prototype.setLimitAlarm = function(){
+MainAssistant.prototype.setLimitAlarm = function(time){
+	this.timeoutUtils.setAtLimit(time);
 }
 
-MainAssistant.prototype.setZeroAlarm = function(){
-	
+MainAssistant.prototype.setZeroAlarm = function(time){
+	this.timeoutUtils.setAtZero(time);
 }
 
 MainAssistant.prototype.deactivate = function(){

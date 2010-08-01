@@ -83,7 +83,7 @@ BacUtils.prototype.calcTimeTo = function(currentBac, targetBac, asInt){
 	var hours =	Math.floor(totalMinutes / 60);
 	var minutes = totalMinutes % 60;
 	
-	var timeTo = hours + "h " + minutes + "m";
+	var timeTo = hours + ":" + minutes;
 	
 	//Mojo.Log.info("%i = %s",totalMinutes, timeTo);
 	if(asInt){
