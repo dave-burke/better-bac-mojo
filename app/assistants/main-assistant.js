@@ -324,11 +324,11 @@ MainAssistant.prototype.soberUp = function(millis){
 		if(drink.bac == 0){
 			//skip
 		}else if(drink.bac <= bacDelta){
-			Mojo.Log.info("%s bac (%d) is less than %d. This drink is history",drink.name, drink.bac, bacDelta);
+			//Mojo.Log.info("%s bac (%d) is less than %d. This drink is history",drink.name, drink.bac, bacDelta);
 			bacDelta -= drink.bac;
             drink.bac = 0;
 		}else{
-			Mojo.Log.info("%s bac (%d) is greater than %d. This drink is still current",drink.name, drink.bac, bacDelta);
+			//Mojo.Log.info("%s bac (%d) is greater than %d. This drink is still current",drink.name, drink.bac, bacDelta);
 			drink.bac -= bacDelta;
 			bacDelta = 0;
 			break;

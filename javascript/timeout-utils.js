@@ -18,6 +18,19 @@
 function TimeoutUtils() {
 	this.atLimitKey = "atLimit";
 	this.atZeroKey = "atZero";
+
+	this.alarms = {};
+}
+
+TimeoutUtils.prototype.setState = function(key, isSet){
+	this.alarms[key] = isSet;
+}
+
+TimeoutUtils.prototype.getState = function(key){
+	if(this.alarms[key] == undefined){
+		this.alarms[key] = false;
+	}
+	return this.alarms[key];
 }
 
 TimeoutUtils.prototype.setAtLimit = function(time){
@@ -25,7 +38,7 @@ TimeoutUtils.prototype.setAtLimit = function(time){
 }
 
 TimeoutUtils.prototype.clearAtLimit = function(){
-	this.clearAlarm(time,this.atLimitKey);
+	this.clearAlarm(this.atLimitKey);
 }
 
 TimeoutUtils.prototype.setAtZero = function(time){
@@ -33,7 +46,7 @@ TimeoutUtils.prototype.setAtZero = function(time){
 }
 
 TimeoutUtils.prototype.clearAtZero = function(){
-	this.clearAlarm(time,this.atZeroKey);
+	this.clearAlarm(this.atZeroKey);
 }
 
 TimeoutUtils.prototype.setAlarmIn = function(time, key){
@@ -45,40 +58,58 @@ TimeoutUtils.prototype.setAlarmAt = function(time, key){
 }
 
 TimeoutUtils.prototype.setAlarm = function(time, key, type){
-	var parameters = {};
-	parameters.wakeup = true;
-	parameters.key = Mojo.appInfo.id + '.' + key;
-	//parameters.uri = "palm://com.palm.applicationManager/open";
-	parameters.uri = "palm://com.palm.applicationManager/launch";
-	parameters.params = {
-		"id": Mojo.appInfo.id,
-		"params": {"action": key}
-	};
-	parameters[type] = time;
-	this.controller.serviceRequest("palm://com.palm.power/timeout", {
-	    method: "set",
-	    parameters: parameters,
-	    onSuccess: function(response) {
-			Mojo.Log.info("Alarm set success: %s", response.returnValue);
-		},
-		onFailure: function(response) {
-			Mojo.Log.info("Alarm set failure: %s:%s", response.returnValue, response.errorText);
-		}
-	});
+	var isSet = this.getState(key);
+	if(isSet){
+		Mojo.Log.warn("Already set " + key);
+	}else if(time == "0:0:00"){
+		Mojo.Log.warn("Won't set " + key + " when time is zero");
+	}else{
+		this.setState(key,true);
+		var parameters = {};
+		parameters.wakeup = true;
+		parameters.key = Mojo.appInfo.id + '.' + key;
+		//parameters.uri = "palm://com.palm.applicationManager/open";
+		parameters.uri = "palm://com.palm.applicationManager/launch";
+		parameters.params = {
+			"id": Mojo.appInfo.id,
+			"params": {"action": key}
+		};
+		parameters[type] = time;
+		this.schedulerClearRequest = new Mojo.Service.Request(
+			"palm://com.palm.power/timeout",
+			{
+				method: "set",
+				parameters: parameters,
+				onSuccess: function(response) {
+					Mojo.Log.warn("Set " + key + " for " + time);
+				}.bind(this),
+				onFailure: function(response) {
+					Mojo.Log.warn("Failed to set " + key + " for " + time + ": %s", response.errorText);
+					this.setState(key,false);
+				}.bind(this)
+			}
+		);
+	}
 }
 
 TimeoutUtils.prototype.clearAlarm = function(key){
-	this.schedulerSetRequest = new Mojo.Service.Request(
-		    "palm://com.palm.power/timeout",
-		    {
-		        method: "clear",
-		        parameters: {"key": key},
-		        onSuccess: function(response) {
-					Mojo.Log.info("Alarm clear success: %s", response.returnValue);
-				},
-				onFailure: function(response) {
-					Mojo.Log.info("Alarm clear failure: %s:%s", response.returnValue, response.errorText);
-				}
-		    }
-		);
+	var isSet = this.getState(key);
+	if(isSet){
+		this.setState(key,false);
+		this.schedulerSetRequest = new Mojo.Service.Request(
+			    "palm://com.palm.power/timeout",
+			    {
+			        method: "clear",
+			        parameters: {"key": Mojo.appInfo.id + "." + key},
+			        onSuccess: function(response) {
+						Mojo.Log.warn(key + " alarm clear success");
+					}.bind(this),
+					onFailure: function(response) {
+						Mojo.Log.warn(key + " alarm clear failure: %s", response.errorText);
+					}.bind(this)
+			    }
+			);
+	}else{
+		Mojo.Log.warn("Not clearing " + key + " because it is not set.")
+	}
 }
