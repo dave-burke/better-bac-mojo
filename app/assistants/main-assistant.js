@@ -373,7 +373,7 @@ MainAssistant.prototype.setAlarms = function(){
 	this.timeoutUtils.setAtLimit(timeToLimit);
 
 	var timeToZero = this.bacUtils.calcTimeTo(this.state.bac, 0, true);
-	this.timeoutUtils.setZeroLimit(timeToZero);
+	this.timeoutUtils.setAtZero(timeToZero);
 }
 
 MainAssistant.prototype.debugDrinks = function(drinks, abridged, message){

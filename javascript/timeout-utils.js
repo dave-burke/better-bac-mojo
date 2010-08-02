@@ -47,7 +47,15 @@ TimeoutUtils.prototype.setAlarmAt = function(time, key){
 TimeoutUtils.prototype.setAlarm = function(time, key, type){
 	if(time <= 5){
 		Mojo.Log.warn("Won't set " + key + " when time is <= 5");
+		//TODO actually lauch app with params based on alarm key
+		Mojo.Controller.getAppController().showBanner("Skipping " + key + " alarm",
+				 {source: 'notification'});
+		this.clearAlarm(key);
 	}else{
+		var hours =	Math.floor(time / 60);
+		var minutes = time % 60;
+		var timeFormatted = hours + ":" + minutes + ":00";
+		
 		var parameters = {};
 		parameters.wakeup = true;
 		parameters.key = Mojo.appInfo.id + '.' + key;
@@ -57,7 +65,7 @@ TimeoutUtils.prototype.setAlarm = function(time, key, type){
 			"id": Mojo.appInfo.id,
 			"params": {"action": key}
 		};
-		parameters[type] = time;
+		parameters[type] = timeFormatted;
 		this.schedulerClearRequest = new Mojo.Service.Request(
 			"palm://com.palm.power/timeout",
 			{
