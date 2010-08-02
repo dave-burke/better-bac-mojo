@@ -18,19 +18,6 @@
 function TimeoutUtils() {
 	this.atLimitKey = "atLimit";
 	this.atZeroKey = "atZero";
-
-	this.alarms = {};
-}
-
-TimeoutUtils.prototype.setState = function(key, isSet){
-	this.alarms[key] = isSet;
-}
-
-TimeoutUtils.prototype.getState = function(key){
-	if(this.alarms[key] == undefined){
-		this.alarms[key] = false;
-	}
-	return this.alarms[key];
 }
 
 TimeoutUtils.prototype.setAtLimit = function(time){
@@ -58,13 +45,9 @@ TimeoutUtils.prototype.setAlarmAt = function(time, key){
 }
 
 TimeoutUtils.prototype.setAlarm = function(time, key, type){
-	var isSet = this.getState(key);
-	if(isSet){
-		Mojo.Log.warn("Already set " + key);
-	}else if(time == "0:0:00"){
-		Mojo.Log.warn("Won't set " + key + " when time is zero");
+	if(time <= 5){
+		Mojo.Log.warn("Won't set " + key + " when time is <= 5");
 	}else{
-		this.setState(key,true);
 		var parameters = {};
 		parameters.wakeup = true;
 		parameters.key = Mojo.appInfo.id + '.' + key;
@@ -85,7 +68,6 @@ TimeoutUtils.prototype.setAlarm = function(time, key, type){
 				}.bind(this),
 				onFailure: function(response) {
 					Mojo.Log.warn("Failed to set " + key + " for " + time + ": %s", response.errorText);
-					this.setState(key,false);
 				}.bind(this)
 			}
 		);
@@ -93,23 +75,16 @@ TimeoutUtils.prototype.setAlarm = function(time, key, type){
 }
 
 TimeoutUtils.prototype.clearAlarm = function(key){
-	var isSet = this.getState(key);
-	if(isSet){
-		this.setState(key,false);
-		this.schedulerSetRequest = new Mojo.Service.Request(
-			    "palm://com.palm.power/timeout",
-			    {
-			        method: "clear",
-			        parameters: {"key": Mojo.appInfo.id + "." + key},
-			        onSuccess: function(response) {
-						Mojo.Log.warn(key + " alarm clear success");
-					}.bind(this),
-					onFailure: function(response) {
-						Mojo.Log.warn(key + " alarm clear failure: %s", response.errorText);
-					}.bind(this)
-			    }
-			);
-	}else{
-		Mojo.Log.warn("Not clearing " + key + " because it is not set.")
-	}
+	this.schedulerSetRequest = new Mojo.Service.Request(
+		    "palm://com.palm.power/timeout",
+		    {
+			method: "clear",
+			parameters: {"key": Mojo.appInfo.id + "." + key},
+			onSuccess: function(response) {
+					Mojo.Log.warn(key + " alarm clear success"); }.bind(this),
+				onFailure: function(response) {
+					Mojo.Log.warn(key + " alarm clear failure: %s", response.errorText);
+				}.bind(this)
+		    }
+		);
 }

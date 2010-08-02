@@ -32,10 +32,10 @@ MainAssistant.prototype.saveState = function(){
 }
 
 MainAssistant.prototype.activateRefresh = function(){
-    this.refresh();
+	this.refresh();
 	if(!this.autoUpdate){
-	    Mojo.Log.info("Setting refresh interval");
-	    var interval = 30000;
+		Mojo.Log.info("Setting refresh interval");
+		var interval = 30000;
 		this.autoUpdate = this.controller.window.setInterval(this.refresh.bind(this),interval);
 	}
 }
@@ -46,7 +46,7 @@ MainAssistant.prototype.refresh = function(){
 }
 
 MainAssistant.prototype.deactivateRefresh = function(){
-    this.refresh();
+	this.refresh();
 	if(this.autoUpdate){
 	   	Mojo.Log.info("Clearing refresh interval");
 		this.controller.window.clearInterval(this.autoUpdate);
@@ -60,10 +60,10 @@ MainAssistant.prototype.setup = function() {
 		
 	this.controller.setupWidget("drinksList",
 		this.attributes = {
-        	itemTemplate: "main/drink-list-entry",
-            listTemplate: "main/drink-list-container",
-            dividerTemplate:"main/divider", 
-            dividerFunction: this.divideHistory.bind(this),
+			itemTemplate: "main/drink-list-entry",
+			listTemplate: "main/drink-list-container",
+			dividerTemplate:"main/divider", 
+			dividerFunction: this.divideHistory.bind(this),
 			formatters:{
 				name:this.formatName.bind(this),
 				time:this.formatDateTime.bind(this),
@@ -71,11 +71,11 @@ MainAssistant.prototype.setup = function() {
 				vol:this.formatVol.bind(this),
 				bac: this.formatBac.bind(this)
 			},
-            //addItemLabel: $L("Add a drink"),
-            swipeToDelete: true,
-            reorderable: false
-        },
-        this.model = {
+			//addItemLabel: $L("Add a drink"),
+			swipeToDelete: true,
+			reorderable: false
+		},
+		this.model = {
 			listTitle: $L("Drinks you've had"),
 			items: this.state.drinks
 		}
@@ -83,28 +83,28 @@ MainAssistant.prototype.setup = function() {
 	
 	this.cmdMenuModel = {
 		items: [
-		    {label: "Add", command: "add-cmd"},
-		    //{label: "Preferences", command: "do-myPrefs"},
-		    {label: "Graph", command: "do-graph"}
+			{label: "Add", command: "add-cmd"},
+			//{label: "Preferences", command: "do-myPrefs"},
+			{label: "Graph", command: "do-graph"}
 		]
 	};
 	this.controller.setupWidget(Mojo.Menu.commandMenu, this.handleCommand, this.cmdMenuModel);
 	
 	this.appMenuAttr = {
-	    omitDefaultItems: true
+		omitDefaultItems: true
 	};
 	this.appMenuModel = {
 		visible: true,
 		items: [ 
-		    { label: "About", command: "do-myAbout"},
-		    //{ label: "Graph BAC", command: "do-graph"},
-		    { label: "Clear all drinks", command: "do-clearState"},
-		    { label: "Preferences", command: "do-myPrefs"},
-		    { label: "Help", command: "do-help"}
-	    ]
+			{ label: "About", command: "do-myAbout"},
+			//{ label: "Graph BAC", command: "do-graph"},
+			{ label: "Clear all drinks", command: "do-clearState"},
+			{ label: "Preferences", command: "do-myPrefs"},
+			{ label: "Help", command: "do-help"}
+		]
 	};
-    this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
-    
+	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
+	
 	this.activateRefresh();
 }
 
@@ -112,18 +112,18 @@ MainAssistant.prototype.activate = function(newDrink) {
 	Mojo.Log.info("Setting main event listeners");
 	this.drinksList = this.controller.get("drinksList");
 	
-    this.addButtonHandler = this.handleAddButton.bind(this);
-    Mojo.Event.listen(this.drinksList, Mojo.Event.listAdd, this.addButtonHandler);
+	this.addButtonHandler = this.handleAddButton.bind(this);
+	Mojo.Event.listen(this.drinksList, Mojo.Event.listAdd, this.addButtonHandler);
 	
-    this.drinkDeleteHandler = this.handleDrinkDelete.bind(this);
+	this.drinkDeleteHandler = this.handleDrinkDelete.bind(this);
 	Mojo.Event.listen(this.drinksList, Mojo.Event.listDelete, this.drinkDeleteHandler);
 	
 	this.drinkTapHandler = this.handleDrinkTap.bind(this);
 	Mojo.Event.listen(this.drinksList, Mojo.Event.listTap, this.drinkTapHandler);
-    
+	
 	this.stageActivateHandler = this.activateRefresh.bind(this);
 	Mojo.Event.listen(Mojo.Controller.stageController.document, Mojo.Event.stageActivate, this.stageActivateHandler);
-    
+	
 	this.stageDeactivateHandler = this.deactivateRefresh.bind(this);
 	Mojo.Event.listen(Mojo.Controller.stageController.document, Mojo.Event.stageDeactivate, this.stageDeactivateHandler);
 	
@@ -134,7 +134,7 @@ MainAssistant.prototype.activate = function(newDrink) {
 			this.addDrink(newDrink);
 		}
 	}else{
-	    this.refresh();
+		this.refresh();
 	}
 }
 
@@ -308,6 +308,7 @@ MainAssistant.prototype.recalculate = function(){
 		}
 	}
 	this.soberUp(this.getTimeSinceLastUpdate());
+	this.setAlarms();
 	Mojo.Log.info("New state is: %j",this.state.drinks);
 }
 
@@ -326,7 +327,7 @@ MainAssistant.prototype.soberUp = function(millis){
 		}else if(drink.bac <= bacDelta){
 			//Mojo.Log.info("%s bac (%d) is less than %d. This drink is history",drink.name, drink.bac, bacDelta);
 			bacDelta -= drink.bac;
-            drink.bac = 0;
+			drink.bac = 0;
 		}else{
 			//Mojo.Log.info("%s bac (%d) is greater than %d. This drink is still current",drink.name, drink.bac, bacDelta);
 			drink.bac -= bacDelta;
@@ -352,11 +353,9 @@ MainAssistant.prototype.updateStatus = function(){
 	
 	var timeToLimit = this.bacUtils.calcTimeTo(this.state.bac, this.prefs.limit);
 	this.controller.get("timeToLimit").update(timeToLimit);
-	this.setLimitAlarm(timeToLimit + ":00");
 	
 	var timeToZero = this.bacUtils.calcTimeTo(this.state.bac, 0);
 	this.controller.get("timeToZero").update(timeToZero);
-	this.setZeroAlarm(timeToZero + ":00");
 
 	this.saveState();
 }
@@ -367,6 +366,14 @@ MainAssistant.prototype.getTimeSinceLastUpdate = function(){
 	this.state.lastUpdate = newUpdateTime;
 	
 	return milliseconds;
+}
+
+MainAssistant.prototype.setAlarms = function(){
+	var timeToLimit = this.bacUtils.calcTimeTo(this.state.bac, this.prefs.limit, true);
+	this.timeoutUtils.setAtLimit(timeToLimit);
+
+	var timeToZero = this.bacUtils.calcTimeTo(this.state.bac, 0, true);
+	this.timeoutUtils.setZeroLimit(timeToZero);
 }
 
 MainAssistant.prototype.debugDrinks = function(drinks, abridged, message){
@@ -389,19 +396,11 @@ MainAssistant.prototype.debugDrinks = function(drinks, abridged, message){
 	}
 }
 
-MainAssistant.prototype.setLimitAlarm = function(time){
-	this.timeoutUtils.setAtLimit(time);
-}
-
-MainAssistant.prototype.setZeroAlarm = function(time){
-	this.timeoutUtils.setAtZero(time);
-}
-
 MainAssistant.prototype.deactivate = function(){
 	Mojo.Log.info("Clearing main event listeners");
 	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listAdd, this.addButtonHandler);
 	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listDelete, this.drinkDeleteHandler);
 	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listTap, this.drinkTapHandler);
-    Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageActivate, this.stageActivateHandler);
-    Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageDeactivate, this.stageDeactivateHandler);
+	Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageActivate, this.stageActivateHandler);
+	Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageDeactivate, this.stageDeactivateHandler);
 }

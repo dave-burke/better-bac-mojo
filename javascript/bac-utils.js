@@ -79,16 +79,15 @@ BacUtils.prototype.calcTimeTo = function(currentBac, targetBac, asInt){
 	}
 	
 	var totalMinutes = Math.round(bacDelta / 0.00025);
-	
-	var hours =	Math.floor(totalMinutes / 60);
-	var minutes = totalMinutes % 60;
-	
-	var timeTo = hours + ":" + minutes;
-	
-	//Mojo.Log.info("%i = %s",totalMinutes, timeTo);
 	if(asInt){
 		return totalMinutes;
 	}else{
+		var hours =	Math.floor(totalMinutes / 60);
+		var minutes = totalMinutes % 60;
+		
+		var timeTo = hours + ":" + minutes;
+		
+		//Mojo.Log.info("%i = %s",totalMinutes, timeTo);
 		return timeTo;
 	}
 }
