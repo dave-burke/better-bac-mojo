@@ -21,7 +21,17 @@ function TimeoutUtils() {
 }
 
 TimeoutUtils.prototype.setAtLimit = function(time){
-	this.setAlarmIn(time,this.atLimitKey);
+	if(time == 0){
+		//Mojo.Controller.getAppController().showBanner("BAC is at limit",
+				 //{source: 'notification'});
+		this.clearAlarm(this.atLimitKey);
+	}else if(time <= 5){
+		//Mojo.Controller.getAppController().showBanner("BAC will be at limit in less than 5 minutes",
+				 //{source: 'notification'});
+		this.clearAlarm(this.atLimitKey);
+	}else{
+		this.setAlarmIn(time,this.atLimitKey);
+	}
 }
 
 TimeoutUtils.prototype.clearAtLimit = function(){
@@ -29,7 +39,17 @@ TimeoutUtils.prototype.clearAtLimit = function(){
 }
 
 TimeoutUtils.prototype.setAtZero = function(time){
-	this.setAlarmIn(time,this.atZeroKey);
+	if(time == 0){
+		//Mojo.Controller.getAppController().showBanner("BAC is at zero",
+				 //{source: 'notification'});
+		this.clearAlarm(this.atZeroKey);
+	}else if(time <= 5){
+		//Mojo.Controller.getAppController().showBanner("BAC will be at zero in less than 5 minutes",
+				//{source: 'notification'});
+		this.clearAlarm(this.atZeroKey);
+	}else{
+		this.setAlarmIn(time,this.atZeroKey);
+	}
 }
 
 TimeoutUtils.prototype.clearAtZero = function(){
@@ -45,28 +65,21 @@ TimeoutUtils.prototype.setAlarmAt = function(time, key){
 }
 
 TimeoutUtils.prototype.setAlarm = function(time, key, type){
-	if(time <= 5){
-		Mojo.Log.warn("Won't set " + key + " when time is <= 5");
-		//TODO actually lauch app with params based on alarm key
-		Mojo.Controller.getAppController().showBanner("Skipping " + key + " alarm",
-				 {source: 'notification'});
-		this.clearAlarm(key);
-	}else{
-		var hours =	Math.floor(time / 60);
-		var minutes = time % 60;
-		var timeFormatted = hours + ":" + minutes + ":00";
-		
-		var parameters = {};
-		parameters.wakeup = true;
-		parameters.key = Mojo.appInfo.id + '.' + key;
-		//parameters.uri = "palm://com.palm.applicationManager/open";
-		parameters.uri = "palm://com.palm.applicationManager/launch";
-		parameters.params = {
+	var hours =	Math.floor(time / 60);
+	var minutes = time % 60;
+	var timeFormatted = hours + ":" + minutes + ":00";
+
+	var parameters = {};
+	parameters.wakeup = true;
+	parameters.key = Mojo.appInfo.id + '.' + key;
+	parameters.uri = "palm://com.palm.applicationManager/open";
+	//parameters.uri = "palm://com.palm.applicationManager/launch";
+	parameters.params = {
 			"id": Mojo.appInfo.id,
 			"params": {"action": key}
-		};
-		parameters[type] = timeFormatted;
-		this.schedulerClearRequest = new Mojo.Service.Request(
+	};
+	parameters[type] = timeFormatted;
+	this.schedulerSetRequest = new Mojo.Service.Request(
 			"palm://com.palm.power/timeout",
 			{
 				method: "set",
@@ -78,12 +91,11 @@ TimeoutUtils.prototype.setAlarm = function(time, key, type){
 					Mojo.Log.warn("Failed to set " + key + " for " + time + ": %s", response.errorText);
 				}.bind(this)
 			}
-		);
-	}
+	);
 }
 
 TimeoutUtils.prototype.clearAlarm = function(key){
-	this.schedulerSetRequest = new Mojo.Service.Request(
+	this.schedulerClearRequest = new Mojo.Service.Request(
 		    "palm://com.palm.power/timeout",
 		    {
 			method: "clear",

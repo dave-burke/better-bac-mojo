@@ -6,6 +6,10 @@
         "source": "app/assistants/main-assistant.js"
     },
     {
+        "scenes": "dashboard",
+        "source": "app/assistants/dashboard-assistant.js"
+    },
+    {
         "scenes": "new-drink",
         "source": "app/assistants/new-drink-assistant.js"
     },

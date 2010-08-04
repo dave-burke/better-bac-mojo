@@ -1,3 +1,7 @@
+Version 0.9.1 (Unreleased)
+-------------
+Created dashboard scene for notifications
+
 Version 0.9.0 (Unreleased)
 -------------
 Alarms go off when you reach zero or your preset limit

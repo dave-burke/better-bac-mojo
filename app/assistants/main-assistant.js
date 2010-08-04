@@ -57,7 +57,7 @@ MainAssistant.prototype.deactivateRefresh = function(){
 MainAssistant.prototype.setup = function() {
 	
 	Mojo.Log.info("Setting up widgets");
-		
+	
 	this.controller.setupWidget("drinksList",
 		this.attributes = {
 			itemTemplate: "main/drink-list-entry",
@@ -369,6 +369,8 @@ MainAssistant.prototype.getTimeSinceLastUpdate = function(){
 }
 
 MainAssistant.prototype.setAlarms = function(){
+	//var appController = Mojo.Controller.getAppController();
+	//appController.assistant.handleLaunch({action:"atLimit"});
 	var timeToLimit = this.bacUtils.calcTimeTo(this.state.bac, this.prefs.limit, true);
 	this.timeoutUtils.setAtLimit(timeToLimit);
 
