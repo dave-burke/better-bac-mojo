@@ -27,6 +27,7 @@ AppAssistant.prototype.setup = function() {
 }
 
 AppAssistant.prototype.handleLaunch = function (launchParams) {
+	launchParams = {action:"atZero"};
 	if(!launchParams || launchParams.action === undefined){
 		var cardStageController = this.controller.getStageController(mainStageName);
 		if (cardStageController) {

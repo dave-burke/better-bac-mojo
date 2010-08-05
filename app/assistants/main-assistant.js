@@ -19,6 +19,7 @@ function MainAssistant(dbUtils, state, prefs) {
 	this.dbUtils = dbUtils;
 	this.state = state;
 	this.prefs = prefs;
+	this.dateUtils = new DateUtils();
 	this.bacUtils = new BacUtils();
 	this.timeoutUtils = new TimeoutUtils();
 }
@@ -157,34 +158,12 @@ MainAssistant.prototype.formatName = function(name, model){
 
 MainAssistant.prototype.formatTime = function(time, model) {
 	var date = new Date(time);
-	var minutes = String(date.getMinutes());
-	if(minutes.length == 1){
-		minutes = "0" + minutes;
-	}
-	var hours = date.getHours();
-	if(hours >= 12){
-		if (hours > 12) {
-			hours = hours - 12;
-		}
-		return hours + ":" + minutes + " PM";
-	}else{
-		return hours + ":" + minutes + " AM";
-	}
+	return this.dateUtils.formatTime(date);
 }
 
 MainAssistant.prototype.formatDateTime = function(time, model) {
 	var date = new Date(time);
-	
-	//Format date
-	var month = date.getMonth() + 1;
-	var day = date.getDate();
-	var year = date.getFullYear();
-	
-	var dateString = month + "/" + day;// + "/" + year;
-	
-	//Format time
-	var timeString = this.formatTime(time,model);
-	return dateString + " " + timeString;
+	return this.dateUtils.formatDateTime(date);
 }
 
 MainAssistant.prototype.formatAbv = function(abv, model) {
