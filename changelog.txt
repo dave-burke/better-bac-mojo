@@ -1,3 +1,7 @@
+Version 0.9.2 (unreleased)
+-------------
+Fixed a weird bug when deleting the top drink.
+
 Version 0.9.1 (Unreleased)
 -------------
 Created dashboard scene for notifications
