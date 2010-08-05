@@ -24,11 +24,13 @@ function MainAssistant(dbUtils, state, prefs) {
 }
 
 MainAssistant.prototype.saveState = function(){
-	this.dbUtils.saveState(this.state);
-	var drinksList = this.controller.get("drinksList");
-	if(drinksList.mojo){
+	this.dbUtils.saveState(this.state, function(){
+		/* If this doesn't happen inside a callback function, then it doesn't work right.
+		 * I'll be damned if I know why that makes any sense at all.
+		 */
+		var drinksList = this.controller.get("drinksList");
 		drinksList.mojo.noticeUpdatedItems(0,this.state.drinks);
-	}
+	}.bind(this));
 }
 
 MainAssistant.prototype.activateRefresh = function(){
@@ -40,11 +42,6 @@ MainAssistant.prototype.activateRefresh = function(){
 	}
 }
 
-MainAssistant.prototype.refresh = function(){
-	this.soberUp(this.getTimeSinceLastUpdate());
-	this.updateStatus();
-}
-
 MainAssistant.prototype.deactivateRefresh = function(){
 	this.refresh();
 	if(this.autoUpdate){
@@ -52,6 +49,11 @@ MainAssistant.prototype.deactivateRefresh = function(){
 		this.controller.window.clearInterval(this.autoUpdate);
 		this.autoUpdate = null;
 	 }
+}
+
+MainAssistant.prototype.refresh = function(){
+	this.soberUp(this.getTimeSinceLastUpdate());
+	this.updateStatus();
 }
 
 MainAssistant.prototype.setup = function() {
@@ -80,6 +82,7 @@ MainAssistant.prototype.setup = function() {
 			items: this.state.drinks
 		}
 	);
+	
 	
 	this.cmdMenuModel = {
 		items: [
@@ -309,7 +312,7 @@ MainAssistant.prototype.recalculate = function(){
 	}
 	this.soberUp(this.getTimeSinceLastUpdate());
 	this.setAlarms();
-	Mojo.Log.info("New state is: %j",this.state.drinks);
+	Mojo.Log.info("New drinksList is: %j",this.state.drinks);
 }
 
 MainAssistant.prototype.soberUp = function(millis){

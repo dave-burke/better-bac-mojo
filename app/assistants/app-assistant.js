@@ -35,7 +35,7 @@ AppAssistant.prototype.handleLaunch = function (launchParams) {
 		} else {
 			Mojo.Log.info("Create Main Stage");
 			var pushMainScene = function(stageController) {
-				stageController.pushScene(mainStageName);
+				//scenes will be pushed by the stage assistant
 			};
 			var stageArguments = {
 					name: mainStageName,

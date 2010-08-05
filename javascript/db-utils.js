@@ -62,9 +62,13 @@ DbUtils.prototype.onLoadPrefsFailure = function(code){
 		     {source: 'notification'});
 }
 
-DbUtils.prototype.saveState = function(value){
+DbUtils.prototype.saveState = function(value, callback){
 	if(value){
-		this.db.add("state", value, this.onSaveStateSuccess.bind(this), this.onSaveStateFailure.bind(this));
+		if(callback){
+			this.db.add("state", value, callback, this.onSaveStateFailure.bind(this));
+		}else{
+			this.db.add("state", value, this.onSaveStateSuccess.bind(this), this.onSaveStateFailure.bind(this));
+		}
 	}
 }
 DbUtils.prototype.onSaveStateSuccess = function(){
@@ -75,7 +79,7 @@ DbUtils.prototype.onSaveStateFailure = function(){
 		{source: 'notification'});
 }
 
-DbUtils.prototype.savePrefs = function(value){
+DbUtils.prototype.savePrefs = function(value, callback){
 	if(value){
 		if(isNaN(value.height)){
 			Mojo.Controller.errorDialog("Height must be a number");
@@ -116,7 +120,11 @@ DbUtils.prototype.savePrefs = function(value){
 		if(value.limit > 1){
 			value.limit = 1;
 		}
-		this.db.add("prefs", value, this.onSavePrefsSuccess.bind(this), this.onSavePrefsFailure.bind(this));
+		if(callback){
+			this.db.add("prefs", value, callback, this.onSavePrefsFailure.bind(this));
+		}else{
+			this.db.add("prefs", value, this.onSavePrefsSuccess.bind(this), this.onSavePrefsFailure.bind(this));
+		}
 	}
 }
 DbUtils.prototype.onSavePrefsSuccess = function(){
