@@ -115,8 +115,6 @@ NewDrinkAssistant.prototype.setup = function() {
 	    ]
 	};
 	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
-	
-    Mojo.Log.info("I AM HERE");
 }
 
 NewDrinkAssistant.prototype.activate = function(event) {

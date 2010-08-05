@@ -15,82 +15,57 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function MainAssistant(db, state, prefs) {
-	this.db = db;
+function MainAssistant(dbUtils, state, prefs) {
+	this.dbUtils = dbUtils;
 	this.state = state;
 	this.prefs = prefs;
 	this.bacUtils = new BacUtils();
+	this.timeoutUtils = new TimeoutUtils();
 }
 
 MainAssistant.prototype.saveState = function(){
-	this.db.add("state", this.state, this.onSaveStateSuccess.bind(this), this.onSaveStateFailure.bind(this));
-};
-
-MainAssistant.prototype.onSaveStateSuccess = function(){
-	Mojo.Log.info("Successfully saved state");
-	//TODO this may cause timing issues if handleAdd/handleDelete calls return AFTER save state onSuccess returns
-	this.controller.get("drinksList").mojo.noticeUpdatedItems(0,this.state.drinks);
-};
-
-MainAssistant.prototype.onSaveStateFailure = function(){
-	Mojo.Log.info("FAILED TO SAVE STATE");
-};
-
-MainAssistant.prototype.onLoadPrefsSuccess = function(value){
-	this.prefs = value;
-	
-	//If no prefs, push prefs screen
-	if(!this.prefs){
-		this.prefs = {
-				"gender": "m",
-				"height": 60,
-				"weight": 180,
-				"age": 25,
-				"limit": 0.08,
-				"calc": "widmark"
-			};
-		Mojo.Controller.stageController.pushScene("prefs", this.db, this.prefs);
-	}else{
-		Mojo.Log.info("Successfully loaded prefs: %j",this.prefs);
-	}
-};
-MainAssistant.prototype.onLoadPrefsFailure = function(code){
-	Mojo.Log.info("Loading prefs failed with code ",code);
-};
+	this.dbUtils.saveState(this.state, function(){
+		/* If this doesn't happen inside a callback function, then it doesn't work right.
+		 * I'll be damned if I know why that makes any sense at all.
+		 */
+		var drinksList = this.controller.get("drinksList");
+		drinksList.mojo.noticeUpdatedItems(0,this.state.drinks);
+	}.bind(this));
+}
 
 MainAssistant.prototype.activateRefresh = function(){
-    this.refresh();
+	this.refresh();
 	if(!this.autoUpdate){
-	    Mojo.Log.info("Setting refresh interval");
-	    var interval = 30000;
+		Mojo.Log.info("Setting refresh interval");
+		var interval = 30000;
 		this.autoUpdate = this.controller.window.setInterval(this.refresh.bind(this),interval);
 	}
-};
-
-MainAssistant.prototype.refresh = function(){
-	this.soberUp(this.getTimeSinceLastUpdate());
-	this.updateStatus();
-};
+}
 
 MainAssistant.prototype.deactivateRefresh = function(){
-    this.refresh();
+	this.refresh();
 	if(this.autoUpdate){
 	   	Mojo.Log.info("Clearing refresh interval");
 		this.controller.window.clearInterval(this.autoUpdate);
 		this.autoUpdate = null;
 	 }
-};
+}
+
+MainAssistant.prototype.refresh = function(){
+	this.soberUp(this.getTimeSinceLastUpdate());
+	this.updateStatus();
+}
 
 MainAssistant.prototype.setup = function() {
 	
 	Mojo.Log.info("Setting up widgets");
-		
+	
 	this.controller.setupWidget("drinksList",
 		this.attributes = {
-        	itemTemplate: "main/drink-list-entry",
-            listTemplate: "main/drink-list-container",
-            dividerTemplate:"main/divider", 
-            dividerFunction: this.divideHistory.bind(this),
+			itemTemplate: "main/drink-list-entry",
+			listTemplate: "main/drink-list-container",
+			dividerTemplate:"main/divider", 
+			dividerFunction: this.divideHistory.bind(this),
 			formatters:{
 				name:this.formatName.bind(this),
 				time:this.formatDateTime.bind(this),
@@ -98,49 +73,62 @@ MainAssistant.prototype.setup = function() {
 				vol:this.formatVol.bind(this),
 				bac: this.formatBac.bind(this)
 			},
-            //addItemLabel: $L("Add a drink"),
-            swipeToDelete: true,
-            reorderable: false
-        },
-        this.model = {
+			//addItemLabel: $L("Add a drink"),
+			swipeToDelete: true,
+			reorderable: false
+		},
+		this.model = {
 			listTitle: $L("Drinks you've had"),
 			items: this.state.drinks
 		}
 	);
 	
+	
 	this.cmdMenuModel = {
 		items: [
-		    {label: "Add", command: "add-cmd"},
-		    //{label: "Preferences", command: "do-myPrefs"},
-		    {label: "Graph", command: "do-graph"}
+			{label: "Add", command: "add-cmd"},
+			//{label: "Preferences", command: "do-myPrefs"},
+			{label: "Graph", command: "do-graph"}
 		]
 	};
 	this.controller.setupWidget(Mojo.Menu.commandMenu, this.handleCommand, this.cmdMenuModel);
 	
 	this.appMenuAttr = {
-	    omitDefaultItems: true
+		omitDefaultItems: true
 	};
 	this.appMenuModel = {
 		visible: true,
 		items: [ 
-		    { label: "About", command: "do-myAbout"},
-		    //{ label: "Graph BAC", command: "do-graph"},
-		    { label: "Clear all drinks", command: "do-clearState"},
-		    { label: "Preferences", command: "do-myPrefs"},
-		    { label: "Help", command: "do-help"}
-	    ]
+			{ label: "About", command: "do-myAbout"},
+			//{ label: "Graph BAC", command: "do-graph"},
+			{ label: "Clear all drinks", command: "do-clearState"},
+			{ label: "Preferences", command: "do-myPrefs"},
+			{ label: "Help", command: "do-help"}
+		]
 	};
-    this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
-    
+	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
+	
 	this.activateRefresh();
-};
+}
 
 MainAssistant.prototype.activate = function(newDrink) {
-	//Make sure we have the current prefs
-	this.db.get("prefs", this.onLoadPrefsSuccess.bind(this), this.onLoadPrefsFailure.bind(this));
-	//TODO there would be a short time after this call when the user could enter a drink
-	//before the current prefs load. In my testing it was less than one second, but I guess it
-	//could be longer.
+	Mojo.Log.info("Setting main event listeners");
+	this.drinksList = this.controller.get("drinksList");
+	
+	this.addButtonHandler = this.handleAddButton.bind(this);
+	Mojo.Event.listen(this.drinksList, Mojo.Event.listAdd, this.addButtonHandler);
+	
+	this.drinkDeleteHandler = this.handleDrinkDelete.bind(this);
+	Mojo.Event.listen(this.drinksList, Mojo.Event.listDelete, this.drinkDeleteHandler);
+	
+	this.drinkTapHandler = this.handleDrinkTap.bind(this);
+	Mojo.Event.listen(this.drinksList, Mojo.Event.listTap, this.drinkTapHandler);
+	
+	this.stageActivateHandler = this.activateRefresh.bind(this);
+	Mojo.Event.listen(Mojo.Controller.stageController.document, Mojo.Event.stageActivate, this.stageActivateHandler);
+	
+	this.stageDeactivateHandler = this.deactivateRefresh.bind(this);
+	Mojo.Event.listen(Mojo.Controller.stageController.document, Mojo.Event.stageDeactivate, this.stageDeactivateHandler);
 	
 	// Process new drinks, if any
 	if(newDrink){
@@ -149,27 +137,9 @@ MainAssistant.prototype.activate = function(newDrink) {
 			this.addDrink(newDrink);
 		}
 	}else{
-	    this.refresh();
+		this.refresh();
 	}
-	
-	Mojo.Log.info("Setting main event listeners");
-	this.drinksList = this.controller.get("drinksList");
-	
-    this.addButtonHandler = this.handleAddButton.bind(this);
-    Mojo.Event.listen(this.drinksList, Mojo.Event.listAdd, this.addButtonHandler);
-	
-    this.dringDeleteHandler = this.handleDrinkDelete.bind(this);
-	Mojo.Event.listen(this.drinksList, Mojo.Event.listDelete, this.dringDeleteHandler);
-	
-	this.drinkTapHandler = this.handleDrinkTap.bind(this);
-	Mojo.Event.listen(this.drinksList, Mojo.Event.listTap, this.drinkTapHandler);
-    
-	this.stageActivateHandler = this.activateRefresh.bind(this);
-	Mojo.Event.listen(Mojo.Controller.stageController.document, Mojo.Event.stageActivate, this.stageActivateHandler);
-    
-	this.stageDeactivateHandler = this.deactivateRefresh.bind(this);
-	Mojo.Event.listen(Mojo.Controller.stageController.document, Mojo.Event.stageDeactivate, this.stageDeactivateHandler);
-};
+}
 
 MainAssistant.prototype.divideHistory = function(item){
 	if(item){
@@ -179,11 +149,11 @@ MainAssistant.prototype.divideHistory = function(item){
 			return "Current";
 		}
 	}
-};
+}
 
 MainAssistant.prototype.formatName = function(name, model){
 	return name;
-};
+}
 
 MainAssistant.prototype.formatTime = function(time, model) {
 	var date = new Date(time);
@@ -200,7 +170,7 @@ MainAssistant.prototype.formatTime = function(time, model) {
 	}else{
 		return hours + ":" + minutes + " AM";
 	}
-};
+}
 
 MainAssistant.prototype.formatDateTime = function(time, model) {
 	var date = new Date(time);
@@ -215,15 +185,15 @@ MainAssistant.prototype.formatDateTime = function(time, model) {
 	//Format time
 	var timeString = this.formatTime(time,model);
 	return dateString + " " + timeString;
-};
+}
 
 MainAssistant.prototype.formatAbv = function(abv, model) {
 	return abv + "%";
-};
+}
 
 MainAssistant.prototype.formatVol = function(vol, model) {
 	return vol + " oz.";
-};
+}
 
 MainAssistant.prototype.formatBac = function(bac, model) {
 	var roundedBac = String(this.bacUtils.roundBac(bac));
@@ -233,7 +203,7 @@ MainAssistant.prototype.formatBac = function(bac, model) {
 	}else{
 		return roundedBac + " / " + roundedOrigBac;
 	}
-};
+}
 
 MainAssistant.prototype.handleCommand = function(event){
 	if (event.type === Mojo.Event.command) {
@@ -243,11 +213,11 @@ MainAssistant.prototype.handleCommand = function(event){
 				break;
 		}
 	}
-};
+}
 
 MainAssistant.prototype.handleAddButton = function(event){
 	Mojo.Controller.stageController.pushScene("new-drink", this.state, this.prefs);
-};
+}
 
 MainAssistant.prototype.handleDrinkDelete = function(event){
 	Mojo.Log.info("Deleting drink at %i: %s",event.index, this.state.drinks[event.index].name);
@@ -258,11 +228,11 @@ MainAssistant.prototype.handleDrinkDelete = function(event){
 	
 	//Update display
 	this.updateStatus();
-};
+}
 
 MainAssistant.prototype.handleDrinkTap = function(event){
 	Mojo.Controller.stageController.pushScene("new-drink", this.state, this.prefs, event.item);
-};
+}
 
 MainAssistant.prototype.isValid = function(drink){
 	if (drink) {
@@ -291,7 +261,7 @@ MainAssistant.prototype.isValid = function(drink){
 	}
 	Mojo.Log.info("Drink is valid");
 	return true;
-};
+}
 
 MainAssistant.prototype.addDrink = function(newDrink){
 	Mojo.Log.info("Adding drink: %j",newDrink);
@@ -316,7 +286,7 @@ MainAssistant.prototype.addDrink = function(newDrink){
 	
 	//Update display
 	this.updateStatus();
-};
+}
 
 MainAssistant.prototype.recalculate = function(){
 	Mojo.Log.info("Recalculating for: %j",this.state.drinks);
@@ -341,8 +311,9 @@ MainAssistant.prototype.recalculate = function(){
 		}
 	}
 	this.soberUp(this.getTimeSinceLastUpdate());
-	Mojo.Log.info("New state is: %j",this.state.drinks);
-};
+	this.setAlarms();
+	Mojo.Log.info("New drinksList is: %j",this.state.drinks);
+}
 
 MainAssistant.prototype.soberUp = function(millis){
 	var bacDelta = this.bacUtils.calcBacDecrease(millis);
@@ -357,28 +328,30 @@ MainAssistant.prototype.soberUp = function(millis){
 		if(drink.bac == 0){
 			//skip
 		}else if(drink.bac <= bacDelta){
-			Mojo.Log.info("%s bac (%d) is less than %d. This drink is history",drink.name, drink.bac, bacDelta);
+			//Mojo.Log.info("%s bac (%d) is less than %d. This drink is history",drink.name, drink.bac, bacDelta);
 			bacDelta -= drink.bac;
-            drink.bac = 0;
+			drink.bac = 0;
 		}else{
-			Mojo.Log.info("%s bac (%d) is greater than %d. This drink is still current",drink.name, drink.bac, bacDelta);
+			//Mojo.Log.info("%s bac (%d) is greater than %d. This drink is still current",drink.name, drink.bac, bacDelta);
 			drink.bac -= bacDelta;
 			bacDelta = 0;
 			break;
 		}
 	}
-};
+}
 
 MainAssistant.prototype.updateStatus = function(){
 	Mojo.Log.info("Updating status...");
 	var roundedBac = this.bacUtils.roundBac(this.state.bac);
 	if(roundedBac <= 0){
+		Mojo.Log.info("Rounded BAC is zero. Clearing BAC");
 		// close enough
 		roundedBac = 0;
 		this.soberUp(60000); //just sober up enough to clear everything
 		this.state.bac = 0;
 	}
 	
+	Mojo.Log.info("Updating display widgets");
 	this.controller.get("currentBac").update(roundedBac);
 	
 	var timeToLimit = this.bacUtils.calcTimeTo(this.state.bac, this.prefs.limit);
@@ -388,7 +361,7 @@ MainAssistant.prototype.updateStatus = function(){
 	this.controller.get("timeToZero").update(timeToZero);
 
 	this.saveState();
-};
+}
 
 MainAssistant.prototype.getTimeSinceLastUpdate = function(){
 	var newUpdateTime = new Date().getTime();
@@ -396,7 +369,17 @@ MainAssistant.prototype.getTimeSinceLastUpdate = function(){
 	this.state.lastUpdate = newUpdateTime;
 	
 	return milliseconds;
-};
+}
+
+MainAssistant.prototype.setAlarms = function(){
+	//var appController = Mojo.Controller.getAppController();
+	//appController.assistant.handleLaunch({action:"atLimit"});
+	var timeToLimit = this.bacUtils.calcTimeTo(this.state.bac, this.prefs.limit, true);
+	this.timeoutUtils.setAtLimit(timeToLimit);
+
+	var timeToZero = this.bacUtils.calcTimeTo(this.state.bac, 0, true);
+	this.timeoutUtils.setAtZero(timeToZero);
+}
 
 MainAssistant.prototype.debugDrinks = function(drinks, abridged, message){
 	if(message){
@@ -416,13 +399,13 @@ MainAssistant.prototype.debugDrinks = function(drinks, abridged, message){
 			Mojo.Log.info("%s @ %o : %d + %d (%d)",drinks[i].name,new Date(drinks[i].time),drinks[i].bacWhenAdded,drinks[i].origBac, drinks[i].bac);
 		}
 	}
-};
+}
 
 MainAssistant.prototype.deactivate = function(){
 	Mojo.Log.info("Clearing main event listeners");
 	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listAdd, this.addButtonHandler);
-	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listDelete, this.dringDeleteHandler);
+	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listDelete, this.drinkDeleteHandler);
 	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listTap, this.drinkTapHandler);
-    Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageActivate, this.stageActivateHandler);
-    Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageDeactivate, this.stageDeactivateHandler);
-};
+	Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageActivate, this.stageActivateHandler);
+	Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageDeactivate, this.stageDeactivateHandler);
+}
