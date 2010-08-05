@@ -27,7 +27,7 @@ AppAssistant.prototype.setup = function() {
 }
 
 AppAssistant.prototype.handleLaunch = function (launchParams) {
-	launchParams = {action:"atZero"};
+	//launchParams = {action:"atLimit"};
 	if(!launchParams || launchParams.action === undefined){
 		var cardStageController = this.controller.getStageController(mainStageName);
 		if (cardStageController) {
@@ -52,22 +52,31 @@ AppAssistant.prototype.handleLaunch = function (launchParams) {
 
 AppAssistant.prototype.handleLaunchParams = function(launchParams) {
 	Mojo.Log.info("handleLaunchParams called: %s", launchParams.action);
-	var dashboardOpen = this.controller.getStageController(dashboardStage);
-
-	switch (launchParams.action) {
-		case "atLimit":
-			var message = "Your BAC is at the limit";
-			Mojo.Controller.getAppController().playSoundNotification("notifications");
-			Mojo.Controller.getAppController().showBanner(message, {source: 'notification'});
-			break;
-		case "atZero":
-			var message = "Your BAC is at zero";
-			Mojo.Controller.getAppController().playSoundNotification("notifications");
-			Mojo.Controller.getAppController().showBanner(message,
-					 {source: 'notification'});
-			break;
-	}
-	this.launchDashboard(message);
+	this.dbUtils = new DbUtils();
+	this.dbUtils.loadDb(function(){
+		this.dbUtils.getPrefs(function(value){
+			this.prefs = value;
+			Mojo.Log.info("Successfully loaded prefs: %j",this.prefs);
+			if(this.prefs && this.prefs.alarms){
+				switch (launchParams.action) {
+					case "atLimit":
+						var message = "Your BAC is at " + this.prefs.limit;
+						Mojo.Controller.getAppController().playSoundNotification("notifications");
+						Mojo.Controller.getAppController().showBanner(message, {source: 'notification'});
+						break;
+					case "atZero":
+						var message = "Your BAC is at zero";
+						Mojo.Controller.getAppController().playSoundNotification("notifications");
+						Mojo.Controller.getAppController().showBanner(message,
+								 {source: 'notification'});
+						break;
+				}
+				this.launchDashboard(message);
+			}else{
+				Mojo.Log.info("No prefs or alarms off");
+			}
+		}.bind(this));
+	}.bind(this));
 };
 
 AppAssistant.prototype.launchDashboard = function(message){
