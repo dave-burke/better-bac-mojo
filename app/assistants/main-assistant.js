@@ -113,6 +113,12 @@ MainAssistant.prototype.setup = function() {
 }
 
 MainAssistant.prototype.activate = function(newDrink) {
+	if(!this.prefs.alarms){
+		Mojo.Log.info("Alarms are turned off. Clearing existing alarms (if any)");
+		this.timeoutUtils.clearAll();
+		
+	}
+	
 	Mojo.Log.info("Setting main event listeners");
 	this.drinksList = this.controller.get("drinksList");
 	
@@ -351,13 +357,15 @@ MainAssistant.prototype.getTimeSinceLastUpdate = function(){
 }
 
 MainAssistant.prototype.setAlarms = function(){
-	//var appController = Mojo.Controller.getAppController();
-	//appController.assistant.handleLaunch({action:"atLimit"});
-	var timeToLimit = this.bacUtils.calcTimeTo(this.state.bac, this.prefs.limit, true);
-	this.timeoutUtils.setAtLimit(timeToLimit);
-
-	var timeToZero = this.bacUtils.calcTimeTo(this.state.bac, 0, true);
-	this.timeoutUtils.setAtZero(timeToZero);
+	if(this.prefs.alarms){
+		var timeToLimit = this.bacUtils.calcTimeTo(this.state.bac, this.prefs.limit, true);
+		this.timeoutUtils.setAtLimit(timeToLimit);
+	
+		var timeToZero = this.bacUtils.calcTimeTo(this.state.bac, 0, true);
+		this.timeoutUtils.setAtZero(timeToZero);
+	}else{
+		Mojo.Log.info("Alarms disabled. Not setting");
+	}
 }
 
 MainAssistant.prototype.debugDrinks = function(drinks, abridged, message){

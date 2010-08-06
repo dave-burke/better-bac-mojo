@@ -28,9 +28,23 @@ TimeoutUtils.prototype.setAtLimit = function(time){
 	}else if(time <= 5){
 		//Mojo.Controller.getAppController().showBanner("BAC will be at limit in less than 5 minutes",
 				 //{source: 'notification'});
-		this.clearAlarm(this.atLimitKey);
+		this.clearAtLimit();
 	}else{
 		this.setAlarmIn(time,this.atLimitKey);
+	}
+}
+
+TimeoutUtils.prototype.setAtZero = function(time){
+	if(time == 0){
+		//Mojo.Controller.getAppController().showBanner("BAC is at zero",
+				 //{source: 'notification'});
+		this.clearAtZero();
+	}else if(time <= 5){
+		//Mojo.Controller.getAppController().showBanner("BAC will be at zero in less than 5 minutes",
+				//{source: 'notification'});
+		this.clearAtZero();
+	}else{
+		this.setAlarmIn(time,this.atZeroKey);
 	}
 }
 
@@ -38,22 +52,13 @@ TimeoutUtils.prototype.clearAtLimit = function(){
 	this.clearAlarm(this.atLimitKey);
 }
 
-TimeoutUtils.prototype.setAtZero = function(time){
-	if(time == 0){
-		//Mojo.Controller.getAppController().showBanner("BAC is at zero",
-				 //{source: 'notification'});
-		this.clearAlarm(this.atZeroKey);
-	}else if(time <= 5){
-		//Mojo.Controller.getAppController().showBanner("BAC will be at zero in less than 5 minutes",
-				//{source: 'notification'});
-		this.clearAlarm(this.atZeroKey);
-	}else{
-		this.setAlarmIn(time,this.atZeroKey);
-	}
-}
-
 TimeoutUtils.prototype.clearAtZero = function(){
 	this.clearAlarm(this.atZeroKey);
+}
+
+TimeoutUtils.prototype.clearAll = function(){
+	this.clearAtLimit();
+	this.clearAtZero();
 }
 
 TimeoutUtils.prototype.setAlarmIn = function(time, key){

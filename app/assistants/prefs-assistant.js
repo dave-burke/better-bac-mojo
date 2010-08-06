@@ -59,7 +59,7 @@ PrefsAssistant.prototype.setup = function() {
 	this.controller.setupWidget("agePicker",
 		this.attributes = {
 			modelProperty: "age",
-			label: $L("Age:"),
+			label: $L(" "),
 	        min: 18,
 	        max: 99
 		},
@@ -89,7 +89,7 @@ PrefsAssistant.prototype.setup = function() {
 	this.controller.setupWidget("historyMaxDaysPicker",
 		this.attributes = {
 			modelProperty: "historyMaxDays",
-			label: $L("Max history days:"),
+			label: $L(" "),
 	        min: 1,
 	        max: 31
 		},
@@ -99,11 +99,18 @@ PrefsAssistant.prototype.setup = function() {
 	this.controller.setupWidget("historyMaxLengthPicker",
 		this.attributes = {
 			modelProperty: "historyMaxLength",
-			label: $L("Max history items:"),
+			label: $L(" "),
 	        min: 0,
 	        max: 100,
 		},
 	    this.prefs
+	);
+	
+	this.controller.setupWidget("alarmToggle",
+		this.attributes = {
+			modelProperty: "alarms" 
+		},
+		this.prefs
 	);
 	
 	this.controller.setupWidget("doneButton",
@@ -139,6 +146,7 @@ PrefsAssistant.prototype.activate = function(event){
 	Mojo.Event.listen(this.controller.get("calcSelector"), Mojo.Event.propertyChange, this.saveHandler);
 	Mojo.Event.listen(this.controller.get("historyMaxDaysPicker"), Mojo.Event.propertyChange, this.saveHandler);
 	Mojo.Event.listen(this.controller.get("historyMaxLengthPicker"), Mojo.Event.propertyChange, this.saveHandler);
+	Mojo.Event.listen(this.controller.get("alarmToggle"), Mojo.Event.propertyChange, this.saveHandler);
 	Mojo.Event.listen(Mojo.Controller.stageController.document, Mojo.Event.stageDeactivate, this.saveHandler);
 	
 	this.doneButtonHandler = this.handleDoneButton.bind(this);
@@ -159,6 +167,7 @@ PrefsAssistant.prototype.deactivate = function(){
 	Mojo.Event.stopListening(this.controller.get("calcSelector"), Mojo.Event.propertyChange, this.saveHandler);
 	Mojo.Event.stopListening(this.controller.get("historyMaxDaysPicker"), Mojo.Event.propertyChange, this.saveHandler);
 	Mojo.Event.stopListening(this.controller.get("historyMaxLengthPicker"), Mojo.Event.propertyChange, this.saveHandler);
+	Mojo.Event.stopListening(this.controller.get("alarmToggle"), Mojo.Event.propertyChange, this.saveHandler);
 	Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageDeactivate, this.saveHandler);
 	Mojo.Event.stopListening(this.controller.get("doneButton"),Mojo.Event.tap, this.doneButtonHandler);
 }

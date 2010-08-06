@@ -47,7 +47,8 @@ StageAssistant.prototype.setup = function(){
 							"limit": 0.08,
 							"calc": "widmark",
 							"historyMaxDays": 7,
-							"historyMaxLength": 30
+							"historyMaxLength": 30,
+							"alarms":true
 						};
 					this.dbUtils.savePrefs(this.prefs);
 					this.controller.pushScene("main", this.dbUtils, this.state, this.prefs);
