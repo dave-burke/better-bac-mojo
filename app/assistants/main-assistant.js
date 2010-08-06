@@ -19,9 +19,10 @@ function MainAssistant(dbUtils, state, prefs) {
 	this.dbUtils = dbUtils;
 	this.state = state;
 	this.prefs = prefs;
-	this.dateUtils = new DateUtils();
+	this.formatUtils = new FormatUtils();
 	this.bacUtils = new BacUtils();
 	this.timeoutUtils = new TimeoutUtils();
+	this.formatUtils = new FormatUtils();
 }
 
 MainAssistant.prototype.saveState = function(){
@@ -68,11 +69,11 @@ MainAssistant.prototype.setup = function() {
 			dividerTemplate:"main/divider", 
 			dividerFunction: this.divideHistory.bind(this),
 			formatters:{
-				name:this.formatName.bind(this),
-				time:this.formatDateTime.bind(this),
-				abv:this.formatAbv.bind(this),
-				vol:this.formatVol.bind(this),
-				bac: this.formatBac.bind(this)
+				name:this.formatUtils.formatName,
+				time:this.formatUtils.formatDateTime,
+				abv:this.formatUtils.formatAbv,
+				vol:this.formatUtils.formatVol,
+				bac: this.formatUtils.formatBac
 			},
 			//addItemLabel: $L("Add a drink"),
 			swipeToDelete: true,
@@ -155,38 +156,6 @@ MainAssistant.prototype.divideHistory = function(item){
 		}else{
 			return "Current";
 		}
-	}
-}
-
-MainAssistant.prototype.formatName = function(name, model){
-	return name;
-}
-
-MainAssistant.prototype.formatTime = function(time, model) {
-	var date = new Date(time);
-	return this.dateUtils.formatTime(date);
-}
-
-MainAssistant.prototype.formatDateTime = function(time, model) {
-	var date = new Date(time);
-	return this.dateUtils.formatDateTime(date);
-}
-
-MainAssistant.prototype.formatAbv = function(abv, model) {
-	return abv + "%";
-}
-
-MainAssistant.prototype.formatVol = function(vol, model) {
-	return vol + " oz.";
-}
-
-MainAssistant.prototype.formatBac = function(bac, model) {
-	var roundedBac = String(this.bacUtils.roundBac(bac));
-	var roundedOrigBac = String(this.bacUtils.roundBac(model.origBac));
-	if(roundedBac == 0){
-		return roundedOrigBac;
-	}else{
-		return roundedBac + " / " + roundedOrigBac;
 	}
 }
 

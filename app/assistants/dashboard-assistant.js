@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function DashboardAssistant(message) {
-	this.dateUtils = new DateUtils();
+	this.formatUtils = new FormatUtils();
 	this.message = message;
 }
 
@@ -41,7 +41,7 @@ DashboardAssistant.prototype.setMessage = function(message){
 
 DashboardAssistant.prototype.updateDisplay = function() {
 	var now = new Date();
-	var time = this.dateUtils.formatTime(now);
+	var time = this.formatUtils.formatTime(now);
 	var info = {
 			time: time,
 			message: this.message

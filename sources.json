@@ -44,7 +44,11 @@
     {"source": "javascript/bac-utils.js"},
     {"source": "javascript/timeout-utils.js"},
     {"source": "javascript/db-utils.js"},
-    {"source": "javascript/date-utils.js"},
+    {"source": "javascript/format-utils.js"},
     {"source": "javascript/flot/jquery.js"},
     {"source": "javascript/flot/jquery.flot.js"},
+    {
+        "scenes": "templates",
+        "source": "app/assistants/templates-assistant.js"
+    }
 ]

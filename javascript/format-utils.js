@@ -15,10 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function DateUtils() {
+function FormatUtils() {
+	this.bacUtils = new BacUtils();
 }
 
-DateUtils.prototype.formatTime = function(date){
+/*
+ * Format time as HH:mm a
+ */
+FormatUtils.prototype.formatTime = function(time, model) {
+	var date = new Date(time);
+	return this.formatTime(date);
+}
+FormatUtils.prototype.formatTime = function(date){
 	var minutes = String(date.getMinutes());
 	if(minutes.length == 1){
 		minutes = "0" + minutes;
@@ -34,7 +42,10 @@ DateUtils.prototype.formatTime = function(date){
 	}
 }
 
-DateUtils.prototype.formatDate = function(date, withYear){
+/*
+ * Format date as m/d
+ */
+FormatUtils.prototype.formatDate = function(date, withYear){
 	var month = date.getMonth() + 1;
 	var day = date.getDate();
 	var year = date.getFullYear();
@@ -46,8 +57,37 @@ DateUtils.prototype.formatDate = function(date, withYear){
 	return dateString;
 }
 
-DateUtils.prototype.formatDateTime = function(date, withYear){
-	var dateString = this.formatDate(date, withYear);
-	var timeString = this.formatTime(date, withYear);
+/*
+ * Format date/time as m/d HH:mm a
+ */
+FormatUtils.prototype.formatDateTime = function(time, model) {
+	var date = new Date(time);
+	return this.formatDateTime(date);
+}
+FormatUtils.prototype.formatDateTime = function(date){
+	var dateString = this.formatDate(date);
+	var timeString = this.formatTime(date);
 	return dateString + " " + timeString;
+}
+
+FormatUtils.prototype.formatName = function(name, model){
+	return name;
+}
+
+FormatUtils.prototype.formatAbv = function(abv, model) {
+	return abv + "%";
+}
+
+FormatUtils.prototype.formatVol = function(vol, model) {
+	return vol + " oz.";
+}
+
+FormatUtils.prototype.formatBac = function(bac, model) {
+	var roundedBac = String(this.bacUtils.roundBac(bac));
+	var roundedOrigBac = String(this.bacUtils.roundBac(model.origBac));
+	if(roundedBac == 0){
+		return roundedOrigBac;
+	}else{
+		return roundedBac + " / " + roundedOrigBac;
+	}
 }
