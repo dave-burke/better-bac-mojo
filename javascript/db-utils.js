@@ -16,8 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function DbUtils(dbName) {
+	this.validator = new Validator();
+	this.defaults = new Defaults();
+	this.state = null;
+	this.prefs = null;
+	this.templates = null;
+	
+	this.defaultedPrefs = null;
+	this.defaultedState = null;
+	this.defaultedTemplates = null;
 }
 
+/*
+ * Load Database
+ */
 DbUtils.prototype.loadDb = function(successCallback){
 	Mojo.Log.info("Loading database (asynchronous)...");
 	this.db = new Mojo.Depot(
@@ -30,45 +42,106 @@ DbUtils.prototype.onLoadDbFailure = function(code){
 		     {source: 'notification'});
 }
 
+/*
+ * Get state
+ */
 DbUtils.prototype.getState = function(successCallback){
-	Mojo.Log.info("Loading state...");
-	if(this.db){
-		this.db.get("state", successCallback, this.onLoadStateFailure.bind(this));
+	if(this.state == null){
+		Mojo.Log.info("Loading state...");
+		if(this.db){
+			this.db.get("state", function(value){
+				if(value){
+					Mojo.Log.info("Successfully loaded state");
+					this.state = value;
+					this.defaultedState = false;
+				}else{
+					Mojo.Log.info("No state found, loading defaults");
+					this.state = this.defaults.state;
+					this.saveState();
+					this.defaultedState = true;
+				}
+				successCallback(this.state);
+			}.bind(this),
+			this.onLoadStateFailure.bind(this));
+		}else{
+			Mojo.Controller.getAppController().showBanner("Can't load state, DB is undefined!",
+					{source: 'notification'});
+		}
 	}else{
-		Mojo.Controller.getAppController().showBanner("Can't load state, DB is undefined!",
-			{source: 'notification'});
+		Mojo.Log.info("Returning preloaded state");
+		successCallback(this.state);
 	}
 }
-		
 DbUtils.prototype.onLoadStateFailure = function(code){
 	Mojo.Log.info("Loading state failed with code ",code);
 	Mojo.Controller.getAppController().showBanner("Loading state failed with code " + code,
 		     {source: 'notification'});
 }
 
+/*
+ * Get Prefs
+ */
 DbUtils.prototype.getPrefs = function(successCallback){
-	Mojo.Log.info("Getting prefs...");
-	if(this.db){
-		this.db.get("prefs", successCallback, this.onLoadPrefsFailure.bind(this));
+	if(this.prefs == null){
+		Mojo.Log.info("Getting prefs...");
+		if(this.db){
+			this.db.get("prefs", function(value){
+				if(value){
+					Mojo.Log.info("Successfully loaded prefs");
+					this.prefs = value;
+					this.defaultedPrefs = false;
+				}else{
+					Mojo.Log.info("No prefs found, loading defaults");
+					this.prefs = this.defaults.prefs;
+					this.savePrefs();
+					this.defaultedPrefs = true;
+				}
+				successCallback(this.prefs);
+			}.bind(this),
+			this.onLoadPrefsFailure.bind(this));
+		}else{
+			Mojo.Controller.getAppController().showBanner("Can't load prefs, DB is undefined!",
+					{source: 'notification'});
+		}
 	}else{
-		Mojo.Controller.getAppController().showBanner("Can't load prefs, DB is undefined!",
-			{source: 'notification'});
+		Mojo.Log.info("Returning preloaded prefs");
+		successCallback(this.prefs);
 	}
 }
-
 DbUtils.prototype.onLoadPrefsFailure = function(code){
 	Mojo.Log.info("Loading prefs failed with code ",code);
 	Mojo.Controller.getAppController().showBanner("Loading prefs failed with code " + code,
 		     {source: 'notification'});
 }
 
+/*
+ * Get templates
+ */
 DbUtils.prototype.getTemplates = function(successCallback){
-	Mojo.Log.info("Getting templates...");
-	if(this.db){
-		this.db.get("prefs", successCallback, this.onLoadTemplatesFailure.bind(this));
+	if(this.templates == null){
+		Mojo.Log.info("Getting templates...");
+		if(this.db){
+			this.db.get("templates", function(value){
+				if(value){
+					Mojo.Log.info("Successfully loaded templates");
+					this.templates = value;
+					this.defaultedTemplates = false;
+				}else{
+					Mojo.Log.info("No templates found, loading defaults");
+					this.templates = this.defaults.templates;
+					this.saveTemplates();
+					this.defaultedTemplates = true;
+				}
+				successCallback(this.templates);
+			}.bind(this),
+			this.onLoadTemplatesFailure.bind(this));
+		}else{
+			Mojo.Controller.getAppController().showBanner("Can't load templates, DB is undefined!",
+					{source: 'notification'});
+		}
 	}else{
-		Mojo.Controller.getAppController().showBanner("Can't load templates, DB is undefined!",
-				{source: 'notification'});
+		Mojo.Log.info("Returning preloaded templates");
+		successCallback(this.templates);
 	}
 }
 
@@ -78,13 +151,19 @@ DbUtils.prototype.onLoadTemplatesFailure = function(code){
 		     {source: 'notification'});
 }
 
+/*
+ * Save state
+ */
 DbUtils.prototype.saveState = function(value, callback){
 	if(value){
+		this.state = value;
 		if(callback){
 			this.db.add("state", value, callback, this.onSaveStateFailure.bind(this));
 		}else{
 			this.db.add("state", value, this.onSaveStateSuccess.bind(this), this.onSaveStateFailure.bind(this));
 		}
+	}else{
+		this.db.add("state", this.state, this.onSaveStateSuccess.bind(this), this.onSaveStateFailure.bind(this));
 	}
 }
 DbUtils.prototype.onSaveStateSuccess = function(){
@@ -95,52 +174,20 @@ DbUtils.prototype.onSaveStateFailure = function(){
 		{source: 'notification'});
 }
 
+/*
+ * Save prefs
+ */
 DbUtils.prototype.savePrefs = function(value, callback){
 	if(value){
-		if(isNaN(value.height)){
-			Mojo.Controller.errorDialog("Height must be a number");
-			value.height = 68;
-		}
-		if(value.height < 1.0){
-			value.height = 1.0;
-		}
-		if(value.height > 120){
-			value.height = 120;
-		}
-		
-		if(isNaN(value.weight)){
-			Mojo.Controller.errorDialog("Weight must be a number");
-			value.weight = 180;
-		}
-		if(value.weight < 1.0){
-			value.weight = 1.0;
-		}
-		if(value.weight > 1000){
-			value.weight = 1000;
-		}
-		
-		if(value.age < 0){
-			value.age = 0;
-		}
-		if(value.age > 120){
-			value.age = 120;
-		}
-		
-		if(isNaN(value.limit)){
-			Mojo.Controller.errorDialog("Limit must be a number");
-			value.limit = 0.08;
-		}
-		if(value.limit < 0){
-			value.limit = 0;
-		}
-		if(value.limit > 1){
-			value.limit = 1;
-		}
+		this.prefs = value;
+		this.validator.validatePrefs(this.prefs);
 		if(callback){
 			this.db.add("prefs", value, callback, this.onSavePrefsFailure.bind(this));
 		}else{
 			this.db.add("prefs", value, this.onSavePrefsSuccess.bind(this), this.onSavePrefsFailure.bind(this));
 		}
+	}else{
+		this.db.add("prefs", this.prefs, this.onSavePrefsSuccess.bind(this), this.onSavePrefsFailure.bind(this));
 	}
 }
 DbUtils.prototype.onSavePrefsSuccess = function(){
@@ -151,13 +198,19 @@ DbUtils.prototype.onSavePrefsFailure = function(){
 		{source: 'notification'});
 }
 
+/*
+ * Save templates
+ */
 DbUtils.prototype.saveTemplates = function(value, callback){
 	if(value){
+		this.templates = value;
 		if(callback){
 			this.db.add("templates", value, callback, this.onSaveTemplatesFailure.bind(this));
 		}else{
 			this.db.add("templates", value, this.onSaveTemplatesSuccess.bind(this), this.onSaveTemplatesFailure.bind(this));
 		}
+	}else{
+		this.db.add("templates", this.templates, this.onSaveTemplatesSuccess.bind(this), this.onSaveTemplatesFailure.bind(this));
 	}
 }
 DbUtils.prototype.onSaveTemplatesSuccess = function(){

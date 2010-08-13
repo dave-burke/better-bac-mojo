@@ -16,49 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function StageAssistant(){
+	this.db = new DbUtils();
 }
 
 StageAssistant.prototype.setup = function(){
-	this.dbUtils = new DbUtils();
-	this.dbUtils.loadDb(function(){
-		this.dbUtils.getState(function(value){
+	this.db.loadDb(function(){
+		this.db.getState(function(value){
 			this.state = value;
-			if(!this.state){
-				Mojo.Log.info("No state found in db, creating new state.");
-				this.state = {
-					bac: 0.0,
-					lastUpdate: new Date().getTime(),
-					drinks: []
-				};
-				this.dbUtils.saveState(this.state);
+			if(this.state){
+				this.db.getPrefs(function(value){
+					this.prefs = value;
+					if(!this.prefs){
+						Mojo.Log.info("db returned no prefs. That's not supposed to happen.");
+					}else{
+						this.cleanHistory();
+						this.controller.pushScene("main", this.db, this.state, this.prefs);
+						if(this.db.defaultedPrefs){
+							Mojo.Log.info("Prefs were defaulted. Pushing prefs scene.");
+							this.controller.pushScene("prefs", this.db, this.prefs);
+						}else{
+							Mojo.Log.info("Prefs were loaded. Don't push prefs scene");
+						}
+					}
+				}.bind(this));
 			}else{
-				Mojo.Log.info("Successfully loaded State: %j",this.state);
+				Mojo.Log.info("db didn't return a state. That's not supposed to happen.");
 			}
-			this.dbUtils.getPrefs(function(value){
-				this.prefs = value;
-				//If no prefs, also push prefs screen
-				if(!this.prefs){
-					Mojo.Log.info("No prefs found in db, creating new prefs and pushing prefs scene.");
-					this.prefs = {
-							"gender": "m",
-							"height": 68,
-							"weight": 180,
-							"age": 25,
-							"limit": 0.08,
-							"calc": "widmark",
-							"historyMaxDays": 7,
-							"historyMaxLength": 30,
-							"alarms":true
-						};
-					this.dbUtils.savePrefs(this.prefs);
-					this.controller.pushScene("main", this.dbUtils, this.state, this.prefs);
-					this.controller.pushScene("prefs", this.dbUtils, this.prefs);
-				}else{
-					Mojo.Log.info("Successfully loaded prefs: %j",this.prefs);
-					this.cleanHistory();
-					this.controller.pushScene("main", this.dbUtils, this.state, this.prefs);
-				}
-			}.bind(this));
 		}.bind(this));
 	}.bind(this));
 }
@@ -96,7 +79,7 @@ StageAssistant.prototype.handleCommand = function(event){
 	if (event.type == Mojo.Event.command) {
 		switch (event.command) {
 			case 'do-myPrefs':
-				Mojo.Controller.stageController.pushScene("prefs", this.dbUtils, this.prefs);
+				Mojo.Controller.stageController.pushScene("prefs", this.db, this.prefs);
 				Mojo.Log.info("Prefs menu item");
 				break;
 			case 'do-help':
@@ -120,7 +103,7 @@ StageAssistant.prototype.handleCommand = function(event){
 				Mojo.Log.info("About menu item");
 				break;
 			case 'do-graph':
-				Mojo.Controller.stageController.pushScene("graph",this.dbUtils,this.state);
+				Mojo.Controller.stageController.pushScene("graph",this.db,this.state);
 				Mojo.Log.info("Graph menu item");
 				break;
 			case 'do-clearState':
@@ -130,9 +113,9 @@ StageAssistant.prototype.handleCommand = function(event){
 						lastUpdate: new Date().getTime(),
 						drinks: [],
 					};
-				this.dbUtils.saveState(this.state);
+				this.db.saveState(this.state);
 				Mojo.Controller.stageController.popScenesTo();
-				this.controller.pushScene("main", this.dbUtils, this.state, this.prefs);
+				this.controller.pushScene("main", this.db, this.state, this.prefs);
 				break;
 			default:
 				break;
