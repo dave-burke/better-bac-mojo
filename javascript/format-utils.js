@@ -22,11 +22,7 @@ function FormatUtils() {
 /*
  * Format time as HH:mm a
  */
-FormatUtils.prototype.formatTime = function(time, model) {
-	var date = new Date(time);
-	return this.formatTime(date);
-}
-FormatUtils.prototype.formatTime = function(date){
+FormatUtils.prototype.formatTime = function(date, model){
 	var minutes = String(date.getMinutes());
 	if(minutes.length == 1){
 		minutes = "0" + minutes;
@@ -45,7 +41,7 @@ FormatUtils.prototype.formatTime = function(date){
 /*
  * Format date as m/d
  */
-FormatUtils.prototype.formatDate = function(date, withYear){
+FormatUtils.prototype.formatDate = function(date, model, withYear){
 	var month = date.getMonth() + 1;
 	var day = date.getDate();
 	var year = date.getFullYear();
@@ -62,11 +58,8 @@ FormatUtils.prototype.formatDate = function(date, withYear){
  */
 FormatUtils.prototype.formatDateTime = function(time, model) {
 	var date = new Date(time);
-	return this.formatDateTime(date);
-}
-FormatUtils.prototype.formatDateTime = function(date){
-	var dateString = this.formatDate(date);
-	var timeString = this.formatTime(date);
+	var dateString = this.formatDate(date, model);
+	var timeString = this.formatTime(date, model);
 	return dateString + " " + timeString;
 }
 

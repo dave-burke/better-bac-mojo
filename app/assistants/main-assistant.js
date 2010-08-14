@@ -69,11 +69,11 @@ MainAssistant.prototype.setup = function() {
 			dividerTemplate:"main/divider", 
 			dividerFunction: this.divideHistory.bind(this),
 			formatters:{
-				name:this.formatUtils.formatName,
-				time:this.formatUtils.formatDateTime,
-				abv:this.formatUtils.formatAbv,
-				vol:this.formatUtils.formatVol,
-				bac: this.formatUtils.formatBac
+				name:this.formatUtils.formatName.bind(this.formatUtils),
+				time:this.formatUtils.formatDateTime.bind(this.formatUtils),
+				abv:this.formatUtils.formatAbv.bind(this.formatUtils),
+				vol:this.formatUtils.formatVol.bind(this.formatUtils),
+				bac: this.formatUtils.formatBac.bind(this.formatUtils)
 			},
 			//addItemLabel: $L("Add a drink"),
 			swipeToDelete: true,
