@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function NewDrinkAssistant(state, prefs, templateDrink) {
+function CustomDrinkAssistant(state, prefs, templateDrink) {
 	if(state){
 		Mojo.Log.info("Received state %j",state);
 		this.state = state;
@@ -54,7 +54,7 @@ function NewDrinkAssistant(state, prefs, templateDrink) {
 	}
 }
 
-NewDrinkAssistant.prototype.setup = function() {
+CustomDrinkAssistant.prototype.setup = function() {
 	this.bacUtils = new BacUtils();
 	
 	//Set up drink name field
@@ -111,13 +111,13 @@ NewDrinkAssistant.prototype.setup = function() {
 		visible: true,
 		items: [ 
 		    { label: "About", command: 'do-myAbout'},
-		    { label: "Help for this scene", command: 'do-help-new-drink'},
+		    { label: "Help for this scene", command: 'do-help-custom-drink'},
 	    ]
 	};
 	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
 }
 
-NewDrinkAssistant.prototype.activate = function(event) {
+CustomDrinkAssistant.prototype.activate = function(templateDrink) {
 	Mojo.Log.info("Setting new drink listeners");
 	
 	this.submitButton = this.controller.get("submitButton");
@@ -127,9 +127,19 @@ NewDrinkAssistant.prototype.activate = function(event) {
 	this.drinkTimePicker = this.controller.get("drinkTimePicker");
 	this.timeChangeHandler = this.changeTime.bind(this);
 	Mojo.Event.listen(this.drinkTimePicker, Mojo.Event.propertyChange, this.timeChangeHandler);
+	
+	if(templateDrink){
+		Mojo.Log.info("Got template drink!");
+		this.newDrinkModel.name = templateDrink.name;
+		this.newDrinkModel.abv = String(templateDrink.abv);
+		this.controller.modelChanged(this.newDrinkModel);
+		this.controller.get("drinkVolField").mojo.focus();
+	}else{
+		Mojo.Log.info("No template drink");
+	}
 }
 
-NewDrinkAssistant.prototype.changeTime = function(event){
+CustomDrinkAssistant.prototype.changeTime = function(event){
 	var currentTime = new Date().getTime();
 	var selectedTime = event.value.getTime();
 	
@@ -143,19 +153,19 @@ NewDrinkAssistant.prototype.changeTime = function(event){
 	this.newDrinkModel.time = selectedTime;
 }
 
-NewDrinkAssistant.prototype.submit = function(event){
+CustomDrinkAssistant.prototype.submit = function(event){
 	this.newDrinkModel.bac = this.bacUtils.calcBacIncrease(this.prefs, this.newDrinkModel);
 	this.newDrinkModel.origBac = this.newDrinkModel.bac;
 	Mojo.Controller.stageController.popScene(this.newDrinkModel);
 }
 
-NewDrinkAssistant.prototype.deactivate = function(event) {
+CustomDrinkAssistant.prototype.deactivate = function(event) {
 	Mojo.Log.info("Clearing new drink listeners");
 	Mojo.Event.stopListening(this.submitButton, Mojo.Event.tap, this.submitHandler);
 	Mojo.Event.stopListening(this.drinkTimePicker, Mojo.Event.propertyChange, this.timeChangeHandler);
 }
 
-NewDrinkAssistant.prototype.cleanup = function(event) {
+CustomDrinkAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
 }

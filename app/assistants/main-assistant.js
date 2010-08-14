@@ -75,7 +75,6 @@ MainAssistant.prototype.setup = function() {
 				vol:this.formatUtils.formatVol.bind(this.formatUtils),
 				bac: this.formatUtils.formatBac.bind(this.formatUtils)
 			},
-			//addItemLabel: $L("Add a drink"),
 			swipeToDelete: true,
 			reorderable: false
 		},
@@ -102,7 +101,6 @@ MainAssistant.prototype.setup = function() {
 		visible: true,
 		items: [ 
 			{ label: "About", command: "do-myAbout"},
-			//{ label: "Graph BAC", command: "do-graph"},
 			{ label: "Clear all drinks", command: "do-clearState"},
 			{ label: "Preferences", command: "do-myPrefs"},
 			{ label: "Help", command: "do-help"}
@@ -117,14 +115,10 @@ MainAssistant.prototype.activate = function(newDrink) {
 	if(!this.prefs.alarms){
 		Mojo.Log.info("Alarms are turned off. Clearing existing alarms (if any)");
 		this.timeoutUtils.clearAll();
-		
 	}
 	
 	Mojo.Log.info("Setting main event listeners");
 	this.drinksList = this.controller.get("drinksList");
-	
-	this.addButtonHandler = this.handleAddButton.bind(this);
-	Mojo.Event.listen(this.drinksList, Mojo.Event.listAdd, this.addButtonHandler);
 	
 	this.drinkDeleteHandler = this.handleDrinkDelete.bind(this);
 	Mojo.Event.listen(this.drinksList, Mojo.Event.listDelete, this.drinkDeleteHandler);
@@ -163,14 +157,11 @@ MainAssistant.prototype.handleCommand = function(event){
 	if (event.type === Mojo.Event.command) {
 		switch (event.command) {
 			case "add-cmd":
-				Mojo.Controller.stageController.pushScene("new-drink", this.state, this.prefs);
+				Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs);
+				Mojo.Controller.stageController.pushScene("fav-drinks", this.dbUtils, this.prefs);
 				break;
 		}
 	}
-}
-
-MainAssistant.prototype.handleAddButton = function(event){
-	Mojo.Controller.stageController.pushScene("new-drink", this.state, this.prefs);
 }
 
 MainAssistant.prototype.handleDrinkDelete = function(event){
@@ -185,7 +176,7 @@ MainAssistant.prototype.handleDrinkDelete = function(event){
 }
 
 MainAssistant.prototype.handleDrinkTap = function(event){
-	Mojo.Controller.stageController.pushScene("new-drink", this.state, this.prefs, event.item);
+	Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs, event.item);
 }
 
 MainAssistant.prototype.isValid = function(drink){
@@ -359,7 +350,6 @@ MainAssistant.prototype.debugDrinks = function(drinks, abridged, message){
 
 MainAssistant.prototype.deactivate = function(){
 	Mojo.Log.info("Clearing main event listeners");
-	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listAdd, this.addButtonHandler);
 	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listDelete, this.drinkDeleteHandler);
 	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listTap, this.drinkTapHandler);
 	Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageActivate, this.stageActivateHandler);

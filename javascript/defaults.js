@@ -36,7 +36,7 @@ function Defaults() {
 		"alarms":true
 	};
 	
-	//Default templates
+	//Default favorite drinks
 	var beer = {
 		name: "Beer",
 		abv: 5,
@@ -61,5 +61,5 @@ function Defaults() {
 			count: 0,
 			lastTime: new Date()
 	}
-	this.templates = [beer,wine,shot,cocktail];
+	this.favDrinks = [beer,wine,shot,cocktail];
 }

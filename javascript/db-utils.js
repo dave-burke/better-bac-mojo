@@ -20,11 +20,11 @@ function DbUtils(dbName) {
 	this.defaults = new Defaults();
 	this.state = null;
 	this.prefs = null;
-	this.templates = null;
+	this.favDrinks = null;
 	
 	this.defaultedPrefs = null;
 	this.defaultedState = null;
-	this.defaultedTemplates = null;
+	this.defaultedFavDrinks = null;
 }
 
 /*
@@ -115,39 +115,39 @@ DbUtils.prototype.onLoadPrefsFailure = function(code){
 }
 
 /*
- * Get templates
+ * Get favorite drinks
  */
-DbUtils.prototype.getTemplates = function(successCallback){
-	if(this.templates == null){
-		Mojo.Log.info("Getting templates...");
+DbUtils.prototype.getFavDrinks = function(successCallback){
+	if(this.favDrinks == null){
+		Mojo.Log.info("Getting favorite drinks...");
 		if(this.db){
-			this.db.get("templates", function(value){
+			this.db.get("favDrinks", function(value){
 				if(value){
-					Mojo.Log.info("Successfully loaded templates");
-					this.templates = value;
-					this.defaultedTemplates = false;
+					Mojo.Log.info("Successfully loaded favorite drinks");
+					this.favDrinks = value;
+					this.defaultedFavDrinks = false;
 				}else{
-					Mojo.Log.info("No templates found, loading defaults");
-					this.templates = this.defaults.templates;
-					this.saveTemplates();
-					this.defaultedTemplates = true;
+					Mojo.Log.info("No favorite drinks found, loading defaults");
+					this.favDrinks = this.defaults.favDrinks;
+					this.saveFavDrinks();
+					this.defaultedFavDrinks = true;
 				}
-				successCallback(this.templates);
+				successCallback(this.favDrinks);
 			}.bind(this),
-			this.onLoadTemplatesFailure.bind(this));
+			this.onLoadFavDrinksFailure.bind(this));
 		}else{
-			Mojo.Controller.getAppController().showBanner("Can't load templates, DB is undefined!",
+			Mojo.Controller.getAppController().showBanner("Can't load favorite drinks, DB is undefined!",
 					{source: 'notification'});
 		}
 	}else{
-		Mojo.Log.info("Returning preloaded templates");
-		successCallback(this.templates);
+		Mojo.Log.info("Returning preloaded favorite drinks");
+		successCallback(this.favDrinks);
 	}
 }
 
-DbUtils.prototype.onLoadTemplatesFailure = function(code){
-	Mojo.Log.info("Loading templates failed with code ",code);
-	Mojo.Controller.getAppController().showBanner("Loading templates failed with code " + code,
+DbUtils.prototype.onLoadFavDrinksFailure = function(code){
+	Mojo.Log.info("Loading favorite drinks failed with code ",code);
+	Mojo.Controller.getAppController().showBanner("Loading favorite drinks failed with code " + code,
 		     {source: 'notification'});
 }
 
@@ -199,24 +199,24 @@ DbUtils.prototype.onSavePrefsFailure = function(){
 }
 
 /*
- * Save templates
+ * Save favorite drinks
  */
-DbUtils.prototype.saveTemplates = function(value, callback){
+DbUtils.prototype.saveFavDrinks = function(value, callback){
 	if(value){
-		this.templates = value;
+		this.favDrinks = value;
 		if(callback){
-			this.db.add("templates", value, callback, this.onSaveTemplatesFailure.bind(this));
+			this.db.add("favDrinks", value, callback, this.onSaveFavDrinksFailure.bind(this));
 		}else{
-			this.db.add("templates", value, this.onSaveTemplatesSuccess.bind(this), this.onSaveTemplatesFailure.bind(this));
+			this.db.add("favDrinks", value, this.onSaveFavDrinksSuccess.bind(this), this.onSaveFavDrinksFailure.bind(this));
 		}
 	}else{
-		this.db.add("templates", this.templates, this.onSaveTemplatesSuccess.bind(this), this.onSaveTemplatesFailure.bind(this));
+		this.db.add("favDrinks", this.favDrinks, this.onSaveFavDrinksSuccess.bind(this), this.onSaveFavDrinksFailure.bind(this));
 	}
 }
-DbUtils.prototype.onSaveTemplatesSuccess = function(){
-	Mojo.Log.info("Successfully saved templates");
+DbUtils.prototype.onSaveFavDrinksSuccess = function(){
+	Mojo.Log.info("Successfully saved favorite drinks");
 }
-DbUtils.prototype.onSaveTemplatesFailure = function(){
-	Mojo.Controller.getAppController().showBanner("Save templates failed with code " + code,
+DbUtils.prototype.onSaveFavDrinksFailure = function(){
+	Mojo.Controller.getAppController().showBanner("Save favorite drinks failed with code " + code,
 		{source: 'notification'});
 }

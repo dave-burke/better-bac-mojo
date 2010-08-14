@@ -10,8 +10,12 @@
         "source": "app/assistants/dashboard-assistant.js"
     },
     {
-        "scenes": "new-drink",
-        "source": "app/assistants/new-drink-assistant.js"
+        "scenes": "fav-drinks",
+        "source": "app/assistants/fav-drinks-assistant.js"
+    },
+    {
+        "scenes": "custom-drink",
+        "source": "app/assistants/custom-drink-assistant.js"
     },
     {
         "scenes": "prefs",
@@ -48,9 +52,5 @@
     {"source": "javascript/validator.js"},
     {"source": "javascript/format-utils.js"},
     {"source": "javascript/flot/jquery.js"},
-    {"source": "javascript/flot/jquery.flot.js"},
-    {
-        "scenes": "templates",
-        "source": "app/assistants/templates-assistant.js"
-    }
+    {"source": "javascript/flot/jquery.flot.js"}
 ]
