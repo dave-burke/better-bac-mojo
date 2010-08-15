@@ -69,6 +69,7 @@ FavDrinksAssistant.prototype.loadFavDrinks = function() {
 	this.db.getFavDrinks(function(value){
 		if(value){
 			this.favDrinks = value;
+			this.clearOldDrinks(this.favDrinks);
 			this.favDrinks.sort(this.sortByName);
 			var drinksList = this.controller.get("favDrinksList").mojo
 			if(drinksList){
@@ -78,6 +79,21 @@ FavDrinksAssistant.prototype.loadFavDrinks = function() {
 			Mojo.Log.info("db returned no favorite drinks. That shouldn't happen");
 		}
 	}.bind(this));
+};
+
+FavDrinksAssistant.prototype.clearOldDrinks = function(favDrinks){
+	while(favDrinks.length > 100){ //Make this a 'max fav drinks' preference
+		var oldestIndex = 0;
+		var oldestTime = favDrinks[oldestIndex].lastTime;
+		for(var i = 1;i<favDrinks.length;i++){
+			var indexTime = favDrinks[i].lastTime;
+			if(indexTime < oldestTime){
+				oldestIndex = i;
+				oldestTime = indexTime;
+			}
+		}
+		this.favDrinks.splice(oldestIndex, 1);
+	}
 };
 
 FavDrinksAssistant.prototype.sortByName = function(a, b){
