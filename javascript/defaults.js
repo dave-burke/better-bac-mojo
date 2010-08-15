@@ -40,26 +40,30 @@ function Defaults() {
 	var beer = {
 		name: "Beer",
 		abv: 5,
+		vol: 16,
 		count: 0,
 		lastTime: new Date()
 	}
 	var wine = {
-			name: "Wine",
-			abv: 12,
-			count: 0,
-			lastTime: new Date()
+		name: "Wine",
+		abv: 12,
+		vol: 4,
+		count: 0,
+		lastTime: new Date()
 	}
 	var shot = {
-			name: "Shot",
-			abv: 35,
-			count: 0,
-			lastTime: new Date()
+		name: "Shot",
+		abv: 35,
+		vol: 1.5,
+		count: 0,
+		lastTime: new Date()
 	}
 	var cocktail = {
-			name: "Cocktail",
-			abv: 20,
-			count: 0,
-			lastTime: new Date()
+		name: "Cocktail",
+		abv: 20,
+		vol: 5,
+		count: 0,
+		lastTime: new Date()
 	}
 	this.favDrinks = [beer,wine,shot,cocktail];
 }

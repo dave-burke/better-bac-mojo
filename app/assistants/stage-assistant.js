@@ -118,6 +118,7 @@ StageAssistant.prototype.handleCommand = function(event){
 				this.controller.pushScene("main", this.db, this.state, this.prefs);
 				break;
 			default:
+				Mojo.Log.info("Unknown command: " + event.command);
 				break;
 		}
 		

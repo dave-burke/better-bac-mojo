@@ -62,7 +62,7 @@ CustomDrinkAssistant.prototype.setup = function() {
         this.attributes = {
 			modelProperty: 'name',
             hintText: $L('Drink name'),
-            autoFocus: true,
+            focusMode: Mojo.Widget.focusSelectMode
         },
         this.newDrinkModel
 	);
@@ -82,6 +82,7 @@ CustomDrinkAssistant.prototype.setup = function() {
         this.attributes = {
 			modelProperty: 'vol',
             hintText: $L('Volume (in oz.)'),
+            focusMode: Mojo.Widget.focusSelectMode,
 			modifierState: Mojo.Widget.numLock,
         },
 		this.newDrinkModel
@@ -132,10 +133,12 @@ CustomDrinkAssistant.prototype.activate = function(templateDrink) {
 		Mojo.Log.info("Got template drink!");
 		this.newDrinkModel.name = templateDrink.name;
 		this.newDrinkModel.abv = String(templateDrink.abv);
+		this.newDrinkModel.vol = String(templateDrink.vol);
 		this.controller.modelChanged(this.newDrinkModel);
 		this.controller.get("drinkVolField").mojo.focus();
 	}else{
 		Mojo.Log.info("No template drink");
+		this.controller.get("drinkNameField").mojo.focus();
 	}
 }
 

@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function MainAssistant(dbUtils, state, prefs) {
-	this.dbUtils = dbUtils;
+function MainAssistant(db, state, prefs) {
+	this.db = db;
 	this.state = state;
 	this.prefs = prefs;
 	this.formatUtils = new FormatUtils();
@@ -26,7 +26,7 @@ function MainAssistant(dbUtils, state, prefs) {
 }
 
 MainAssistant.prototype.saveState = function(){
-	this.dbUtils.saveState(this.state, function(){
+	this.db.saveState(this.state, function(){
 		/* If this doesn't happen inside a callback function, then it doesn't work right.
 		 * I'll be damned if I know why that makes any sense at all.
 		 */
@@ -42,7 +42,7 @@ MainAssistant.prototype.activateRefresh = function(){
 		var interval = 30000;
 		this.autoUpdate = this.controller.window.setInterval(this.refresh.bind(this),interval);
 	}
-}
+};
 
 MainAssistant.prototype.deactivateRefresh = function(){
 	this.refresh();
@@ -51,12 +51,12 @@ MainAssistant.prototype.deactivateRefresh = function(){
 		this.controller.window.clearInterval(this.autoUpdate);
 		this.autoUpdate = null;
 	 }
-}
+};
 
 MainAssistant.prototype.refresh = function(){
 	this.soberUp(this.getTimeSinceLastUpdate());
 	this.updateStatus();
-}
+};
 
 MainAssistant.prototype.setup = function() {
 	
@@ -109,7 +109,7 @@ MainAssistant.prototype.setup = function() {
 	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
 	
 	this.activateRefresh();
-}
+};
 
 MainAssistant.prototype.activate = function(newDrink) {
 	if(!this.prefs.alarms){
@@ -137,11 +137,12 @@ MainAssistant.prototype.activate = function(newDrink) {
 		Mojo.Log.info("Received a newDrink: %s",newDrink.name);
 		if (this.isValid(newDrink)) {
 			this.addDrink(newDrink);
+			this.saveFavorite(newDrink);
 		}
 	}else{
 		this.refresh();
 	}
-}
+};
 
 MainAssistant.prototype.divideHistory = function(item){
 	if(item){
@@ -151,18 +152,18 @@ MainAssistant.prototype.divideHistory = function(item){
 			return "Current";
 		}
 	}
-}
+};
 
 MainAssistant.prototype.handleCommand = function(event){
 	if (event.type === Mojo.Event.command) {
 		switch (event.command) {
 			case "add-cmd":
 				Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs);
-				Mojo.Controller.stageController.pushScene("fav-drinks", this.dbUtils, this.prefs);
+				Mojo.Controller.stageController.pushScene("fav-drinks", this.db, this.prefs);
 				break;
 		}
 	}
-}
+};
 
 MainAssistant.prototype.handleDrinkDelete = function(event){
 	Mojo.Log.info("Deleting drink at %i: %s",event.index, this.state.drinks[event.index].name);
@@ -173,11 +174,11 @@ MainAssistant.prototype.handleDrinkDelete = function(event){
 	
 	//Update display
 	this.updateStatus();
-}
+};
 
 MainAssistant.prototype.handleDrinkTap = function(event){
 	Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs, event.item);
-}
+};
 
 MainAssistant.prototype.isValid = function(drink){
 	if (drink) {
@@ -206,7 +207,34 @@ MainAssistant.prototype.isValid = function(drink){
 	}
 	Mojo.Log.info("Drink is valid");
 	return true;
-}
+};
+
+MainAssistant.prototype.saveFavorite = function(newDrink){
+	this.db.getFavDrinks(function(value){
+		if(value){
+			var favDrinks = value;
+			var exists = false;
+			for(var i = 0;i<favDrinks.length;i++){
+				var drink = favDrinks[i];
+				if(drink.name == newDrink.name){
+					drink.abv = newDrink.abv;
+					drink.vol = newDrink.vol;
+					drink.count++;
+					drink.lastTime = new Date();
+					favDrinks[i] = drink;
+					exists = true;
+					break;
+				}
+			}
+			if(!exists){
+				favDrinks.push(newDrink);
+			}
+			this.db.saveFavDrinks(favDrinks);
+		}else{
+			Mojo.Log.info("Db didn't return a value for favDrinks");
+		}
+	}.bind(this));
+};
 
 MainAssistant.prototype.addDrink = function(newDrink){
 	Mojo.Log.info("Adding drink: %j",newDrink);
@@ -231,7 +259,7 @@ MainAssistant.prototype.addDrink = function(newDrink){
 	
 	//Update display
 	this.updateStatus();
-}
+};
 
 MainAssistant.prototype.recalculate = function(){
 	Mojo.Log.info("Recalculating for: %j",this.state.drinks);
@@ -258,7 +286,7 @@ MainAssistant.prototype.recalculate = function(){
 	this.soberUp(this.getTimeSinceLastUpdate());
 	this.setAlarms();
 	Mojo.Log.info("New drinksList is: %j",this.state.drinks);
-}
+};
 
 MainAssistant.prototype.soberUp = function(millis){
 	var bacDelta = this.bacUtils.calcBacDecrease(millis);
@@ -283,7 +311,7 @@ MainAssistant.prototype.soberUp = function(millis){
 			break;
 		}
 	}
-}
+};
 
 MainAssistant.prototype.updateStatus = function(){
 	Mojo.Log.info("Updating status...");
@@ -306,7 +334,7 @@ MainAssistant.prototype.updateStatus = function(){
 	this.controller.get("timeToZero").update(timeToZero);
 
 	this.saveState();
-}
+};
 
 MainAssistant.prototype.getTimeSinceLastUpdate = function(){
 	var newUpdateTime = new Date().getTime();
@@ -314,7 +342,7 @@ MainAssistant.prototype.getTimeSinceLastUpdate = function(){
 	this.state.lastUpdate = newUpdateTime;
 	
 	return milliseconds;
-}
+};
 
 MainAssistant.prototype.setAlarms = function(){
 	if(this.prefs.alarms){
@@ -326,7 +354,7 @@ MainAssistant.prototype.setAlarms = function(){
 	}else{
 		Mojo.Log.info("Alarms disabled. Not setting");
 	}
-}
+};
 
 MainAssistant.prototype.debugDrinks = function(drinks, abridged, message){
 	if(message){
@@ -346,7 +374,7 @@ MainAssistant.prototype.debugDrinks = function(drinks, abridged, message){
 			Mojo.Log.info("%s @ %o : %d + %d (%d)",drinks[i].name,new Date(drinks[i].time),drinks[i].bacWhenAdded,drinks[i].origBac, drinks[i].bac);
 		}
 	}
-}
+};
 
 MainAssistant.prototype.deactivate = function(){
 	Mojo.Log.info("Clearing main event listeners");
@@ -354,4 +382,4 @@ MainAssistant.prototype.deactivate = function(){
 	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listTap, this.drinkTapHandler);
 	Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageActivate, this.stageActivateHandler);
 	Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageDeactivate, this.stageDeactivateHandler);
-}
+};
