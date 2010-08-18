@@ -107,16 +107,34 @@ FavDrinksAssistant.prototype.filterDrinks = function(filterString, listWidget, o
 		this.db.getFavDrinks(function(value){
 			if(value){
 				this.favDrinks = value;
-				this.clearOldDrinks(this.favDrinks);
-				Mojo.Controller.getAppController().showBanner(this.favDrinks.length + " fav drinks", {source: 'notification'});
-				this.favDrinks.sort(this.sortByName);
+				this.updateDrinksList();
 				this.doFilter(filterString, listWidget, offset, count);
-				this.db.saveFavDrinks(this.favDrinks);
 			}else{
 				Mojo.Log.info("db returned no favorite drinks. That shouldn't happen");
 			}
 		}.bind(this));
 	}
+};
+
+FavDrinksAssistant.prototype.removeDuplicates = function(drinks) {
+	var out=[];
+	var map={};
+
+	for (var i=0;i<drinks.length;i++) {
+		map[drinks[i].name]=drinks[i];
+	}
+	for (drinkName in map) {
+		out.push(map[drinkName]);
+	}
+	return out;
+}
+
+FavDrinksAssistant.prototype.updateDrinksList = function(){
+	this.clearOldDrinks(this.favDrinks);
+	this.favDrinks = this.removeDuplicates(this.favDrinks);
+	Mojo.Controller.getAppController().showBanner(this.favDrinks.length + " fav drinks", {source: 'notification'});
+	this.favDrinks.sort(this.sortByName);
+	this.db.saveFavDrinks(this.favDrinks);
 };
 
 FavDrinksAssistant.prototype.doFilter = function(filterString, listWidget, offset, count){
@@ -163,13 +181,9 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 						var text = transport.responseText
 						var json = Mojo.parseJSON(text);
 						var drinks = json.data;
-						this.favDrinks = drinks;
-						this.db.saveFavDrinks(this.favDrinks);
-						var drinksList = this.controller.get("favDrinksList").mojo
-						if(drinksList){
-							drinksList.noticeAddedItems(0,this.favDrinks);
-						}
-						//Mojo.Log.info("JSON (%i): %j",drinks.length,drinks);
+						this.favDrinks = this.favDrinks.concat(drinks);
+						this.updateDrinksList();
+						this.controller.get("favDrinksList").mojo.noticeUpdatedItems(0,this.favDrinks);
 					}.bind(this)
 				});
 				break;
