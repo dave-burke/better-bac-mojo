@@ -1,3 +1,8 @@
+Version 0.9.5
+-------------
+Fixed favorite drinks list rendering
+Added favorite drinks "import" feature
+
 Version 0.9.4 (unreleased)
 -------------
 Added "Favorite drinks" list of drink templates
