@@ -42,28 +42,28 @@ function Defaults() {
 		abv: 5,
 		vol: 16,
 		count: 0,
-		lastTime: new Date()
+		lastTime: 0
 	}
 	var wine = {
 		name: "Wine",
 		abv: 12,
 		vol: 4,
 		count: 0,
-		lastTime: new Date()
+		lastTime: 0
 	}
 	var shot = {
 		name: "Shot",
 		abv: 35,
 		vol: 1.5,
 		count: 0,
-		lastTime: new Date()
+		lastTime: 0
 	}
 	var cocktail = {
 		name: "Cocktail",
 		abv: 20,
 		vol: 5,
 		count: 0,
-		lastTime: new Date()
+		lastTime: 0
 	}
 	this.favDrinks = [beer,wine,shot,cocktail];
 }

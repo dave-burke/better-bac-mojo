@@ -15,14 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function CustomDrinkAssistant(state, prefs, templateDrink) {
-	if(state){
-		Mojo.Log.info("Received state %j",state);
-		this.state = state;
-	}else{
-		Mojo.Log.error("No state!");
-	}
-	
+function CustomDrinkAssistant(prefs, templateDrink) {
 	if(prefs){
 		Mojo.Log.info("Received prefs %j",prefs);
 		this.prefs = prefs;
@@ -35,8 +28,8 @@ function CustomDrinkAssistant(state, prefs, templateDrink) {
 			"name": templateDrink.name,
 			"abv": templateDrink.abv,
 			"vol": templateDrink.vol,
-			"bac": templateDrink.bac,
-			"origBac": templateDrink.origBac,
+			"bac": 0,
+			"origBac": 0,
 			"time": new Date().getTime()
 		}
 		Mojo.Log.info("Got template: %j", this.newDrinkModel);
@@ -57,7 +50,7 @@ function CustomDrinkAssistant(state, prefs, templateDrink) {
 CustomDrinkAssistant.prototype.setup = function() {
 	this.bacUtils = new BacUtils();
 	
-	//Set up drink name field
+	// Set up drink name field
 	this.controller.setupWidget("drinkNameField",
         this.attributes = {
 			modelProperty: 'name',
@@ -67,7 +60,7 @@ CustomDrinkAssistant.prototype.setup = function() {
         this.newDrinkModel
 	);
 	
-	//Set up drink ABV field
+	// Set up drink ABV field
 	this.controller.setupWidget("drinkAbvField",
         this.attributes = {
 			modelProperty: 'abv',
@@ -77,7 +70,7 @@ CustomDrinkAssistant.prototype.setup = function() {
         this.newDrinkModel
 	);
 	
-	//Set up drink vol field
+	// Set up drink vol field
 	this.controller.setupWidget("drinkVolField",
         this.attributes = {
 			modelProperty: 'vol',
@@ -97,7 +90,7 @@ CustomDrinkAssistant.prototype.setup = function() {
     	}
 	);
     
-	//Set up submit button
+	// Set up submit button
 	this.controller.setupWidget("submitButton",
         this.attributes = {},
         this.model = {
@@ -129,12 +122,8 @@ CustomDrinkAssistant.prototype.activate = function(templateDrink) {
 	this.timeChangeHandler = this.changeTime.bind(this);
 	Mojo.Event.listen(this.drinkTimePicker, Mojo.Event.propertyChange, this.timeChangeHandler);
 	
-	if(templateDrink){
+	if(this.newDrinkModel.name.length > 0){
 		Mojo.Log.info("Got template drink!");
-		this.newDrinkModel.name = templateDrink.name;
-		this.newDrinkModel.abv = String(templateDrink.abv);
-		this.newDrinkModel.vol = String(templateDrink.vol);
-		this.controller.modelChanged(this.newDrinkModel);
 		this.controller.get("drinkVolField").mojo.focus();
 	}else{
 		Mojo.Log.info("No template drink");
@@ -149,7 +138,7 @@ CustomDrinkAssistant.prototype.changeTime = function(event){
 	var timeDelta = currentTime - selectedTime;
 	
 	if(timeDelta < 0){
-		//time should always be in the past
+		// time should always be in the past
 		selectedTime = selectedTime - 86400000;
 	}
 	Mojo.Log.info("New Time is ", new Date(selectedTime));
@@ -169,6 +158,8 @@ CustomDrinkAssistant.prototype.deactivate = function(event) {
 }
 
 CustomDrinkAssistant.prototype.cleanup = function(event) {
-	/* this function should do any cleanup needed before the scene is destroyed as 
-	   a result of being popped off the scene stack */
+	/*
+	 * this function should do any cleanup needed before the scene is destroyed
+	 * as a result of being popped off the scene stack
+	 */
 }

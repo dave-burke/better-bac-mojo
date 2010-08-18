@@ -22,7 +22,6 @@ function MainAssistant(db, state, prefs) {
 	this.formatUtils = new FormatUtils();
 	this.bacUtils = new BacUtils();
 	this.timeoutUtils = new TimeoutUtils();
-	this.formatUtils = new FormatUtils();
 }
 
 MainAssistant.prototype.saveState = function(){
@@ -158,8 +157,9 @@ MainAssistant.prototype.handleCommand = function(event){
 	if (event.type === Mojo.Event.command) {
 		switch (event.command) {
 			case "add-cmd":
-				Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs);
+				//Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs);
 				Mojo.Controller.stageController.pushScene("fav-drinks", this.db, this.prefs);
+				event.stopPropagation();
 				break;
 		}
 	}
@@ -177,7 +177,7 @@ MainAssistant.prototype.handleDrinkDelete = function(event){
 };
 
 MainAssistant.prototype.handleDrinkTap = function(event){
-	Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs, event.item);
+	Mojo.Controller.stageController.pushScene("custom-drink", this.prefs, event.item);
 };
 
 MainAssistant.prototype.isValid = function(drink){

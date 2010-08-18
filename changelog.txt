@@ -1,3 +1,11 @@
+Version 0.9.4 (unreleased)
+-------------
+Added "Favorite drinks" list of drink templates
+
+Version 0.9.3 (Beta)
+-------------
+Released in beta feed
+
 Version 0.9.2 (unreleased)
 -------------
 Fixed a weird bug when deleting the top drink.
@@ -125,7 +133,4 @@ TODO
 ----
 Update existing about/help
 Include in the about page a list of reasons the calculations are not (and cannot) be completely accurate.
-Put "Add drink" in floating footer
-Add popups for feedback (on invalid drinks etc)
-Add alarms on reaching limit/zero (can be turned off in prefs)
 Allow manual setting of Widmark constant

@@ -17,8 +17,8 @@
  */
 function FavDrinksAssistant(dbUtils, prefs) {
 	this.db = dbUtils;
+	this.prefs = prefs;
 	this.formatUtils = new FormatUtils();
-	this.favDrinks = [];
 }
 
 FavDrinksAssistant.prototype.setup = function(){
@@ -36,7 +36,6 @@ FavDrinksAssistant.prototype.setup = function(){
 		},
 		this.model = {
 			listTitle: $L("Favorite drinks"),
-			items: this.favDrinks,
 			disabled: false
 		}
 	);
@@ -47,6 +46,19 @@ FavDrinksAssistant.prototype.setup = function(){
 		]
 	};
 	this.controller.setupWidget(Mojo.Menu.commandMenu, this.handleCommand, this.cmdMenuModel);
+	
+	this.appMenuAttr = {
+			omitDefaultItems: true
+		};
+		this.appMenuModel = {
+			visible: true,
+			items: [ 
+				{ label: "Load json", command: "do-fav-drinks-import"},
+				{ label: "Clear favorites", command: "do-fav-drinks-clear"},
+				{ label: "Preferences", command: "do-myPrefs"}
+			]
+		};
+		this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
 };
 
 FavDrinksAssistant.prototype.activate = function(event) {
@@ -61,28 +73,10 @@ FavDrinksAssistant.prototype.activate = function(event) {
 	
 	this.drinkDeleteHandler = this.handleDrinkDelete.bind(this);
 	Mojo.Event.listen(this.favDrinksList, Mojo.Event.listDelete, this.drinkDeleteHandler);
-	
-	this.loadFavDrinks();
-};
-
-FavDrinksAssistant.prototype.loadFavDrinks = function() {
-	this.db.getFavDrinks(function(value){
-		if(value){
-			this.favDrinks = value;
-			this.clearOldDrinks(this.favDrinks);
-			this.favDrinks.sort(this.sortByName);
-			var drinksList = this.controller.get("favDrinksList").mojo
-			if(drinksList){
-				drinksList.noticeUpdatedItems(0,this.favDrinks);
-			}
-		}else{
-			Mojo.Log.info("db returned no favorite drinks. That shouldn't happen");
-		}
-	}.bind(this));
 };
 
 FavDrinksAssistant.prototype.clearOldDrinks = function(favDrinks){
-	while(favDrinks.length > 100){ //Make this a 'max fav drinks' preference
+	while(favDrinks.length > 1000){ //Make this a 'max fav drinks' preference
 		var oldestIndex = 0;
 		var oldestTime = favDrinks[oldestIndex].lastTime;
 		for(var i = 1;i<favDrinks.length;i++){
@@ -92,7 +86,7 @@ FavDrinksAssistant.prototype.clearOldDrinks = function(favDrinks){
 				oldestTime = indexTime;
 			}
 		}
-		this.favDrinks.splice(oldestIndex, 1);
+		favDrinks.splice(oldestIndex, 1);
 	}
 };
 
@@ -107,39 +101,112 @@ FavDrinksAssistant.prototype.sortByName = function(a, b){
 };
 
 FavDrinksAssistant.prototype.filterDrinks = function(filterString, listWidget, offset, count){
-	//Mojo.Log.info("Filtering with " + filterString);
-	var filteredList = [];
-	var nResults = 0;
-	for(var i = offset;i<offset+count && i < this.favDrinks.length;i++){
-		var name = this.favDrinks[i].name;
+	if(this.favDrinks){
+		this.doFilter(filterString, listWidget, offset, count);
+	}else{
+		this.db.getFavDrinks(function(value){
+			if(value){
+				this.favDrinks = value;
+				this.clearOldDrinks(this.favDrinks);
+				Mojo.Controller.getAppController().showBanner(this.favDrinks.length + " fav drinks", {source: 'notification'});
+				this.favDrinks.sort(this.sortByName);
+				this.doFilter(filterString, listWidget, offset, count);
+				this.db.saveFavDrinks(this.favDrinks);
+			}else{
+				Mojo.Log.info("db returned no favorite drinks. That shouldn't happen");
+			}
+		}.bind(this));
+	}
+};
+
+FavDrinksAssistant.prototype.doFilter = function(filterString, listWidget, offset, count){
+	Mojo.Log.info("list asked for items: filter=" + filterString + " offset=" + offset + " limit=" + count);
+	
+	var drinks = this.favDrinks;
+	var totalSubsetSize = 0;
+	var subset = [];
+	
+	for(var i = 0;i < drinks.length;i++){
+		var name = drinks[i].name;
 		if(name.toUpperCase().indexOf(filterString.toUpperCase()) >= 0){
-			filteredList.push(this.favDrinks[i]);
-			nResults++;
+			if (subset.length < count && totalSubsetSize >= offset) {
+				//Mojo.Log.info(name + " matches" + filterString);
+				subset.push(drinks[i]);
+			}
+			totalSubsetSize++;
 		}
 	}
-	listWidget.mojo.noticeUpdatedItems(offset, filteredList);
-	listWidget.mojo.setLength(nResults);
-	listWidget.mojo.setCount(nResults);
+	//Mojo.Log.info("Found " + nResults + " results out of " + drinks.length + " at " + offset + ": " + this.debugDrinks(subset));
+	listWidget.mojo.noticeUpdatedItems(offset, subset);
+	listWidget.mojo.setLength(totalSubsetSize);
+	listWidget.mojo.setCount(totalSubsetSize);
 };
 
 FavDrinksAssistant.prototype.handleCommand = function(event){
 	if (event.type === Mojo.Event.command) {
 		switch (event.command) {
-			case "do-custom":
+			case 'do-custom':
 				Mojo.Controller.stageController.popScene();
+				Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs);
+				break;
+			case 'do-fav-drinks-import':
+				Mojo.Log.info("Doing import");
+				var req = new Ajax.Request("/media/internal/better-bac.json", {
+					method: 'get',
+					onFailure: function() {
+						Mojo.Log.info("JSON get failed");
+					},
+					on404: function() {
+						Mojo.Log.info("JSON not found");
+					},
+					onSuccess: function(transport) {
+						var text = transport.responseText
+						var json = Mojo.parseJSON(text);
+						var drinks = json.data;
+						this.favDrinks = drinks;
+						this.db.saveFavDrinks(this.favDrinks);
+						var drinksList = this.controller.get("favDrinksList").mojo
+						if(drinksList){
+							drinksList.noticeAddedItems(0,this.favDrinks);
+						}
+						//Mojo.Log.info("JSON (%i): %j",drinks.length,drinks);
+					}.bind(this)
+				});
+				break;
+			case 'do-fav-drinks-clear':
+				this.favDrinks = [];
+				this.db.saveFavDrinks(this.favDrinks);
+				var drinksList = this.controller.get("favDrinksList").mojo
+				if(drinksList){
+					drinksList.noticeRemovedItems(0,drinksList.getLength());
+				}
 				break;
 		}
 	}
 };
 
 FavDrinksAssistant.prototype.handleDrinkTap = function(event){
-	Mojo.Controller.stageController.popScene(event.item);
+	Mojo.Controller.stageController.popScene();
+	Mojo.Controller.stageController.pushScene("custom-drink", this.prefs, event.item);
 };
 
 FavDrinksAssistant.prototype.handleDrinkDelete = function(event){
 	Mojo.Log.info("Deleting drink at %i: %s",event.index, this.favDrinks[event.index].name);
 	this.favDrinks.splice(event.index,1);
 	this.db.saveFavDrinks(this.favDrinks);
+};
+
+FavDrinksAssistant.prototype.debugDrinks = function(drinks){
+	var message = "";
+	for(var i = 0;i<drinks.length;i++){
+		var drink = drinks[i];
+		if(i!=0){
+			message+=", ";
+		}
+		message+=drink.name;
+	}
+	//Mojo.Log.info(message);
+	return message;
 };
 
 FavDrinksAssistant.prototype.deactivate = function(event) {
