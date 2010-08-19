@@ -102,6 +102,7 @@ MainAssistant.prototype.setup = function() {
 			{ label: "About", command: "do-myAbout"},
 			{ label: "Clear all drinks", command: "do-clearState"},
 			{ label: "Preferences", command: "do-myPrefs"},
+			{ label: "Review this app", command: "do-appCatalog"},
 			{ label: "Help", command: "do-help"}
 		]
 	};

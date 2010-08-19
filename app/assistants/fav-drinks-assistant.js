@@ -35,7 +35,7 @@ FavDrinksAssistant.prototype.setup = function(){
 			filterFunction: this.filterDrinks.bind(this)
 		},
 		this.model = {
-			listTitle: $L("Favorite drinks"),
+			listTitle: $L("Drinks (Start typing to search)"),
 			disabled: false
 		}
 	);
@@ -53,7 +53,13 @@ FavDrinksAssistant.prototype.setup = function(){
 		this.appMenuModel = {
 			visible: true,
 			items: [ 
-				{ label: "Load json", command: "do-fav-drinks-import"},
+			    {label: 'Load drinks',
+			    	items: [
+			    	    {label: $L("From web (official)"), command: "import-web-official"},
+			    	    //{label: $L("From web (custom)"), command: "import-web-custom"},
+			    	    {label: $L("From USB drive"), command: "import-usb"}
+			    	]
+			    },
 				{ label: "Clear favorites", command: "do-fav-drinks-clear"},
 				{ label: "Preferences", command: "do-myPrefs"}
 			]
@@ -165,27 +171,16 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 		switch (event.command) {
 			case 'do-custom':
 				Mojo.Controller.stageController.popScene();
-				Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs);
+				Mojo.Controller.stageController.pushScene("custom-drink", this.prefs);
 				break;
-			case 'do-fav-drinks-import':
-				Mojo.Log.info("Doing import");
-				var req = new Ajax.Request("/media/internal/better-bac.json", {
-					method: 'get',
-					onFailure: function() {
-						Mojo.Log.info("JSON get failed");
-					},
-					on404: function() {
-						Mojo.Log.info("JSON not found");
-					},
-					onSuccess: function(transport) {
-						var text = transport.responseText
-						var json = Mojo.parseJSON(text);
-						var drinks = json.data;
-						this.favDrinks = this.favDrinks.concat(drinks);
-						this.updateDrinksList();
-						this.controller.get("favDrinksList").mojo.noticeUpdatedItems(0,this.favDrinks);
-					}.bind(this)
-				});
+			case 'import-web-official':
+				this.ajaxGet("http://sites.google.com/site/snewsoftware/webos/files/better-bac.json");
+				break;
+			case 'import-web-custom':
+				this.ajaxGet("/media/internal/better-bac.json");
+				break;
+			case 'import-usb':
+				this.ajaxGet("/media/internal/better-bac.json");
 				break;
 			case 'do-fav-drinks-clear':
 				this.favDrinks = [];
@@ -199,15 +194,51 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 	}
 };
 
+FavDrinksAssistant.prototype.ajaxGet = function(source){
+	Mojo.Log.info("Loading drinks from " + source);
+	var req = new Ajax.Request(source, {
+		method: 'get',
+		onFailure: this.ajaxFailure.bind(this),
+		on404: this.ajax404.bind(this),
+		onSuccess: this.ajaxSuccess.bind(this)
+	});
+};
+
+FavDrinksAssistant.prototype.ajaxFailure = function(){
+	Mojo.Log.info("JSON get failed");
+};
+
+FavDrinksAssistant.prototype.ajax404 = function(){
+	Mojo.Log.info("JSON not found");
+};
+
+FavDrinksAssistant.prototype.ajaxSuccess = function(transport){
+	Mojo.Log.info("Ajax success!");
+	var text = transport.responseText
+	var json = Mojo.parseJSON(text);
+	var date = new Date(json.updated);
+	var drinks = json.data;
+	this.favDrinks = this.favDrinks.concat(drinks);
+	this.updateDrinksList();
+	this.controller.get("favDrinksList").mojo.noticeUpdatedItems(0,this.favDrinks);
+};
+
 FavDrinksAssistant.prototype.handleDrinkTap = function(event){
 	Mojo.Controller.stageController.popScene();
 	Mojo.Controller.stageController.pushScene("custom-drink", this.prefs, event.item);
 };
 
 FavDrinksAssistant.prototype.handleDrinkDelete = function(event){
-	Mojo.Log.info("Deleting drink at %i: %s",event.index, this.favDrinks[event.index].name);
-	this.favDrinks.splice(event.index,1);
-	this.db.saveFavDrinks(this.favDrinks);
+	var drink = event.item;
+	for(var i = 0;i<this.favDrinks.length;i++){
+		var iDrink = this.favDrinks[i];
+		if(iDrink.name == drink.name){
+			Mojo.Log.info("Deleting %s",drink.name);
+			this.favDrinks.splice(i,1);
+			this.db.saveFavDrinks(this.favDrinks);
+			break;
+		}
+	}
 };
 
 FavDrinksAssistant.prototype.debugDrinks = function(drinks){

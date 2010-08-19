@@ -78,6 +78,16 @@ StageAssistant.prototype.cleanHistoryAt = function(cleanPoint){
 StageAssistant.prototype.handleCommand = function(event){
 	if (event.type == Mojo.Event.command) {
 		switch (event.command) {
+			case 'do-appCatalog':
+				Mojo.Log.info("Loading app catalog");
+				var appUrl = 'http://developer.palm.com/appredirect/?packageid=' + Mojo.appInfo.id;
+				new Mojo.Service.Request('palm://com.palm.applicationManager', {
+					   method: "open",
+					   parameters: {
+					     target: appUrl
+					   }
+					});
+				break;
 			case 'do-myPrefs':
 				Mojo.Controller.stageController.pushScene("prefs", this.db, this.prefs);
 				Mojo.Log.info("Prefs menu item");

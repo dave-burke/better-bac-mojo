@@ -1,4 +1,10 @@
-Version 0.9.5
+Version 0.9.6
+-------------
+Fixed bug deleting drinks
+Fixed bug adding custom drinks
+Added web import
+
+Version 0.9.5 (unreleased)
 -------------
 Fixed favorite drinks list rendering
 Added favorite drinks "import" feature
