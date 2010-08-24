@@ -65,7 +65,7 @@ CustomDrinkAssistant.prototype.setup = function() {
         this.attributes = {
 			modelProperty: 'abv',
             hintText: $L('Alcohol By Volume'),
-			modifierState: Mojo.Widget.numLock,
+			modifierState: Mojo.Widget.numLock
         },
         this.newDrinkModel
 	);
@@ -76,14 +76,14 @@ CustomDrinkAssistant.prototype.setup = function() {
 			modelProperty: 'vol',
             hintText: $L('Volume (in oz.)'),
             focusMode: Mojo.Widget.focusSelectMode,
-			modifierState: Mojo.Widget.numLock,
+			modifierState: Mojo.Widget.numLock
         },
 		this.newDrinkModel
 	);
 	
     this.controller.setupWidget("drinkTimePicker",
         this.attributes = {
-            label: 'Time',
+            label: 'Time'
         },
         this.model = {
     		time: new Date()
@@ -94,7 +94,7 @@ CustomDrinkAssistant.prototype.setup = function() {
 	this.controller.setupWidget("submitButton",
         this.attributes = {},
         this.model = {
-            label : "Add Drink",
+            label : "Add Drink"
         }
 	);
 	
@@ -123,7 +123,7 @@ CustomDrinkAssistant.prototype.activate = function(templateDrink) {
 	Mojo.Event.listen(this.drinkTimePicker, Mojo.Event.propertyChange, this.timeChangeHandler);
 	
 	if(this.newDrinkModel.name.length > 0){
-		Mojo.Log.info("Got template drink!");
+		Mojo.Log.info("Popped with template drink!");
 		this.controller.get("drinkVolField").mojo.focus();
 	}else{
 		Mojo.Log.info("No template drink");

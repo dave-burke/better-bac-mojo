@@ -78,16 +78,6 @@ StageAssistant.prototype.cleanHistoryAt = function(cleanPoint){
 StageAssistant.prototype.handleCommand = function(event){
 	if (event.type == Mojo.Event.command) {
 		switch (event.command) {
-			case 'do-appCatalog':
-				Mojo.Log.info("Loading app catalog");
-				var appUrl = 'http://developer.palm.com/appredirect/?packageid=' + Mojo.appInfo.id;
-				new Mojo.Service.Request('palm://com.palm.applicationManager', {
-					   method: "open",
-					   parameters: {
-					     target: appUrl
-					   }
-					});
-				break;
 			case 'do-myPrefs':
 				Mojo.Controller.stageController.pushScene("prefs", this.db, this.prefs);
 				Mojo.Log.info("Prefs menu item");
@@ -111,21 +101,6 @@ StageAssistant.prototype.handleCommand = function(event){
 			case 'do-myAbout':
 				Mojo.Controller.stageController.pushScene("about");
 				Mojo.Log.info("About menu item");
-				break;
-			case 'do-graph':
-				Mojo.Controller.stageController.pushScene("graph",this.db,this.state);
-				Mojo.Log.info("Graph menu item");
-				break;
-			case 'do-clearState':
-				Mojo.Log.info("Clearing state!");
-				this.state = {
-						bac: 0.0,
-						lastUpdate: new Date().getTime(),
-						drinks: [],
-					};
-				this.db.saveState(this.state);
-				Mojo.Controller.stageController.popScenesTo();
-				this.controller.pushScene("main", this.db, this.state, this.prefs);
 				break;
 			default:
 				Mojo.Log.info("Unknown command: " + event.command);

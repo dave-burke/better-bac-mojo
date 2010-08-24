@@ -1,4 +1,10 @@
-Version 0.9.6
+Version 0.9.7
+-------------
+Fixed another bug adding custom drinks.
+Added confirmation dialog for clear all drinks
+Added confirmation dialog for import
+
+Version 0.9.6 (unreleased)
 -------------
 Fixed bug deleting drinks
 Fixed bug adding custom drinks

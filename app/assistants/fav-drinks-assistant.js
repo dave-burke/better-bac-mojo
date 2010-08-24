@@ -23,22 +23,23 @@ function FavDrinksAssistant(dbUtils, prefs) {
 
 FavDrinksAssistant.prototype.setup = function(){
 	this.controller.setupWidget("favDrinksList",
-		this.attributes = {
-			itemTemplate: "fav-drinks/drink-list-entry",
-			listTemplate: "fav-drinks/drink-list-container",
-			formatters:{
-				name:this.formatUtils.formatName.bind(this.formatUtils),
-				abv:this.formatUtils.formatAbv.bind(this.formatUtils),
+			this.attributes = {
+				itemTemplate: "fav-drinks/drink-list-entry",
+				listTemplate: "fav-drinks/drink-list-container",
+				emptyTemplate: "fav-drinks/drink-list-empty",
+				formatters:{
+					name:this.formatUtils.formatName.bind(this.formatUtils),
+					abv:this.formatUtils.formatAbv.bind(this.formatUtils)
+				},
+				swipeToDelete: true,
+				reorderable: false,
+				filterFunction: this.filterDrinks.bind(this)
 			},
-			swipeToDelete: true,
-			reorderable: false,
-			filterFunction: this.filterDrinks.bind(this)
-		},
-		this.model = {
-			listTitle: $L("Drinks (Start typing to search)"),
-			disabled: false
-		}
-	);
+			this.model = {
+				listTitle: $L("Drinks (Start typing to search)"),
+				disabled: false
+			}
+		);
 	
 	this.cmdMenuModel = {
 		items: [
@@ -122,22 +123,8 @@ FavDrinksAssistant.prototype.filterDrinks = function(filterString, listWidget, o
 	}
 };
 
-FavDrinksAssistant.prototype.removeDuplicates = function(drinks) {
-	var out=[];
-	var map={};
-
-	for (var i=0;i<drinks.length;i++) {
-		map[drinks[i].name]=drinks[i];
-	}
-	for (drinkName in map) {
-		out.push(map[drinkName]);
-	}
-	return out;
-}
-
 FavDrinksAssistant.prototype.updateDrinksList = function(){
 	this.clearOldDrinks(this.favDrinks);
-	this.favDrinks = this.removeDuplicates(this.favDrinks);
 	Mojo.Controller.getAppController().showBanner(this.favDrinks.length + " fav drinks", {source: 'notification'});
 	this.favDrinks.sort(this.sortByName);
 	this.db.saveFavDrinks(this.favDrinks);
@@ -172,15 +159,19 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 			case 'do-custom':
 				Mojo.Controller.stageController.popScene();
 				Mojo.Controller.stageController.pushScene("custom-drink", this.prefs);
+				event.stopPropagation();
 				break;
 			case 'import-web-official':
 				this.ajaxGet("http://sites.google.com/site/snewsoftware/webos/files/better-bac.json");
+				event.stopPropagation();
 				break;
 			case 'import-web-custom':
 				this.ajaxGet("/media/internal/better-bac.json");
+				event.stopPropagation();
 				break;
 			case 'import-usb':
 				this.ajaxGet("/media/internal/better-bac.json");
+				event.stopPropagation();
 				break;
 			case 'do-fav-drinks-clear':
 				this.favDrinks = [];
@@ -189,6 +180,7 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 				if(drinksList){
 					drinksList.noticeRemovedItems(0,drinksList.getLength());
 				}
+				event.stopPropagation();
 				break;
 		}
 	}
@@ -214,13 +206,68 @@ FavDrinksAssistant.prototype.ajax404 = function(){
 
 FavDrinksAssistant.prototype.ajaxSuccess = function(transport){
 	Mojo.Log.info("Ajax success!");
-	var text = transport.responseText
-	var json = Mojo.parseJSON(text);
+	var json = Mojo.parseJSON(transport.responseText);
 	var date = new Date(json.updated);
 	var drinks = json.data;
-	this.favDrinks = this.favDrinks.concat(drinks);
-	this.updateDrinksList();
-	this.controller.get("favDrinksList").mojo.noticeUpdatedItems(0,this.favDrinks);
+	this.handleImports(drinks);
+};
+
+FavDrinksAssistant.prototype.handleImports = function(imported){
+	var drinkMap = {};
+	var newDrinks = [];
+	var updatedDrinks = [];
+	
+	var drinks = this.favDrinks;
+	for (var i=0;i<drinks.length;i++) {
+		drinkMap[drinks[i].name]=drinks[i];
+	}
+	
+	for(var i = 0;i<imported.length;i++){
+		var drink = imported[i];
+		var existing = drinkMap[drink.name];
+		if(existing){
+			if(drink.abv === existing.abv){
+			}else{
+				Mojo.Log.info("%s already exists, but has a different abv",drink.name);
+				updatedDrinks.push(drink);
+			}
+		}else{
+			Mojo.Log.info("%s does not exist: %j",drink.name,existing);
+			newDrinks.push(drink);
+		}
+	}
+	
+	this.controller.showAlertDialog({
+		onChoose: function(choice){
+				if(choice){
+					Mojo.Log.info("Updated: %j",updatedDrinks);
+					Mojo.Log.info("New: %j",newDrinks);
+					for(var i = 0;i<updatedDrinks.length;i++){
+						var updatedDrink = updatedDrinks[i];
+						drinkMap[updatedDrink.name] = updatedDrink;
+					}
+					this.favDrinks = [];
+					for (drinkName in drinkMap) {
+						this.favDrinks.push(drinkMap[drinkName]);
+					}
+					this.favDrinks = this.favDrinks.concat(newDrinks);
+					this.updateDrinksList();
+					this.controller.get("favDrinksList").mojo.noticeUpdatedItems(0,this.favDrinks);
+				}else{
+					Mojo.Log.info("User cancelled import");
+				}
+			}.bind(this),
+		message: "Found " + newDrinks.length + " new & " + updatedDrinks.length + " updated.",
+		choices: [
+		    {label: "Import", value: true, type: "affirmative"},
+		    {label: "Cancel", value: false, type: "negative"}
+		]
+	});
+	
+//	this.controller.showDialog({
+//	    template: 'dialogs/import-drinks-dialog',
+//	    assistant: new ImportDrinksDialogAssistant(this, newDrinks, updatedDrinks)
+//	});
 };
 
 FavDrinksAssistant.prototype.handleDrinkTap = function(event){

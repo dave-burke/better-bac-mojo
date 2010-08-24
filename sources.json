@@ -14,6 +14,10 @@
         "source": "app/assistants/fav-drinks-assistant.js"
     },
     {
+        "scenes": "dialog",
+        "source": "app/assistants/import-drinks-dash-assistant.js"
+    },
+    {
         "scenes": "custom-drink",
         "source": "app/assistants/custom-drink-assistant.js"
     },

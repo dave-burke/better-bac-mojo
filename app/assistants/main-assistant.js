@@ -32,24 +32,28 @@ MainAssistant.prototype.saveState = function(){
 		var drinksList = this.controller.get("drinksList");
 		drinksList.mojo.noticeUpdatedItems(0,this.state.drinks);
 	}.bind(this));
-}
+};
 
 MainAssistant.prototype.activateRefresh = function(){
-	this.refresh();
 	if(!this.autoUpdate){
 		Mojo.Log.info("Setting refresh interval");
+		this.refresh();
 		var interval = 30000;
 		this.autoUpdate = this.controller.window.setInterval(this.refresh.bind(this),interval);
+	}else{
+		Mojo.Log.info("Interval already set");
 	}
 };
 
 MainAssistant.prototype.deactivateRefresh = function(){
-	this.refresh();
 	if(this.autoUpdate){
+		this.refresh();
 	   	Mojo.Log.info("Clearing refresh interval");
 		this.controller.window.clearInterval(this.autoUpdate);
 		this.autoUpdate = null;
-	 }
+	}else{
+		Mojo.Log.info("Interval not set");
+	}
 };
 
 MainAssistant.prototype.refresh = function(){
@@ -100,9 +104,9 @@ MainAssistant.prototype.setup = function() {
 		visible: true,
 		items: [ 
 			{ label: "About", command: "do-myAbout"},
-			{ label: "Clear all drinks", command: "do-clearState"},
 			{ label: "Preferences", command: "do-myPrefs"},
 			{ label: "Review this app", command: "do-appCatalog"},
+			{ label: "Clear all drinks", command: "do-clearState"},
 			{ label: "Help", command: "do-help"}
 		]
 	};
@@ -117,6 +121,7 @@ MainAssistant.prototype.activate = function(newDrink) {
 		this.timeoutUtils.clearAll();
 	}
 	
+	Mojo.Log.info("Drinks in activate = %j", this.state.drinks);
 	Mojo.Log.info("Setting main event listeners");
 	this.drinksList = this.controller.get("drinksList");
 	
@@ -134,14 +139,13 @@ MainAssistant.prototype.activate = function(newDrink) {
 	
 	// Process new drinks, if any
 	if(newDrink){
-		Mojo.Log.info("Received a newDrink: %s",newDrink.name);
+		Mojo.Log.info("Received a newDrink: %j",newDrink);
 		if (this.isValid(newDrink)) {
 			this.addDrink(newDrink);
 			this.saveFavorite(newDrink);
 		}
-	}else{
-		this.refresh();
 	}
+	this.activateRefresh();
 };
 
 MainAssistant.prototype.divideHistory = function(item){
@@ -157,10 +161,47 @@ MainAssistant.prototype.divideHistory = function(item){
 MainAssistant.prototype.handleCommand = function(event){
 	if (event.type === Mojo.Event.command) {
 		switch (event.command) {
+			case 'do-appCatalog':
+				Mojo.Log.info("Loading app catalog");
+				var appUrl = 'http://developer.palm.com/appredirect/?packageid=' + Mojo.appInfo.id;
+				new Mojo.Service.Request('palm://com.palm.applicationManager', {
+					method: "open",
+					parameters: {
+				     	target: appUrl
+				   	}
+				});
+				break;
 			case "add-cmd":
 				//Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs);
 				Mojo.Controller.stageController.pushScene("fav-drinks", this.db, this.prefs);
 				event.stopPropagation();
+				break;
+			case 'do-graph':
+				Mojo.Controller.stageController.pushScene("graph",this.db,this.state);
+				Mojo.Log.info("Graph menu item");
+				break;
+			case 'do-clearState':
+				this.controller.showAlertDialog({
+					onChoose: function(choice){
+							if(choice){
+								Mojo.Log.info("Clearing state!");
+								this.state = {
+										bac: 0.0,
+										lastUpdate: new Date().getTime(),
+										drinks: []
+									};
+								this.db.saveState(this.state);
+								this.timeoutUtils.clearAll();
+								Mojo.Controller.stageController.popScenesTo();
+								Mojo.Controller.stageController.pushScene("main", this.db, this.state, this.prefs);
+							}
+						}.bind(this),
+					message: "Are you sure you want to clear all your drink history?",
+					choices: [
+					    {label: "Yes", value: true, type: "affirmative"},
+					    {label: "No", value: false, type: "negative"}
+					]
+				});
 				break;
 		}
 	}
@@ -221,14 +262,21 @@ MainAssistant.prototype.saveFavorite = function(newDrink){
 					drink.abv = newDrink.abv;
 					drink.vol = newDrink.vol;
 					drink.count++;
-					drink.lastTime = new Date();
+					drink.lastTime = new Date().getTime();
 					favDrinks[i] = drink;
 					exists = true;
 					break;
 				}
 			}
 			if(!exists){
-				favDrinks.push(newDrink);
+				var newFav = {
+						name: newDrink.name,
+						abv: newDrink.abv,
+						vol: newDrink.vol,
+						count: 0,
+						lastTime: 0
+					}
+				favDrinks.push(newFav);
 			}
 			this.db.saveFavDrinks(favDrinks);
 		}else{
@@ -325,7 +373,7 @@ MainAssistant.prototype.updateStatus = function(){
 		this.state.bac = 0;
 	}
 	
-	Mojo.Log.info("Updating display widgets");
+	//Mojo.Log.info("Updating display widgets");
 	this.controller.get("currentBac").update(roundedBac);
 	
 	var timeToLimit = this.bacUtils.calcTimeTo(this.state.bac, this.prefs.limit);
@@ -383,4 +431,6 @@ MainAssistant.prototype.deactivate = function(){
 	Mojo.Event.stopListening(this.drinksList, Mojo.Event.listTap, this.drinkTapHandler);
 	Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageActivate, this.stageActivateHandler);
 	Mojo.Event.stopListening(Mojo.Controller.stageController.document, Mojo.Event.stageDeactivate, this.stageDeactivateHandler);
+	
+	this.deactivateRefresh();
 };
