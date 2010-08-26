@@ -1,5 +1,9 @@
+Version 0.10.6
+--------------
+Fixed email export formatting
+
 Version 0.10.5
--------------
+--------------
 Added loading spinner for favorite drinks
 Added email export
 

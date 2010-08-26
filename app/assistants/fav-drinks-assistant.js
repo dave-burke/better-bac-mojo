@@ -336,7 +336,8 @@ FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
 		updated: new Date().getTime(),
 		data: this.favDrinks
 	};
-	message += json;
+	message += Object.toJSON(json);
+	Mojo.Log.info("Sending message: " + message);
 	var obj = new Mojo.Service.Request("palm://com.palm.applicationManager/", {
 		method: "open",
 		parameters: {
