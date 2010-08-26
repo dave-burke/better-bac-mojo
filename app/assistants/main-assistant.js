@@ -259,6 +259,9 @@ MainAssistant.prototype.saveFavorite = function(newDrink){
 			for(var i = 0;i<favDrinks.length;i++){
 				var drink = favDrinks[i];
 				if(drink.name == newDrink.name){
+					if(drink.abv != newDrink.abv || drink.vol != newDrink.vol){
+						drink.updated = new Date().getTime();
+					}
 					drink.abv = newDrink.abv;
 					drink.vol = newDrink.vol;
 					drink.count++;
@@ -274,7 +277,8 @@ MainAssistant.prototype.saveFavorite = function(newDrink){
 						abv: newDrink.abv,
 						vol: newDrink.vol,
 						count: 0,
-						lastTime: 0
+						updated: 0,
+						lastTime: new Date().getTime()
 					}
 				favDrinks.push(newFav);
 			}

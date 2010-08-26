@@ -22,11 +22,22 @@ function FavDrinksAssistant(dbUtils, prefs) {
 }
 
 FavDrinksAssistant.prototype.setup = function(){
+	this.spinnerModel = {
+			spinning: false 
+		};
+	
+	this.controller.setupWidget("loadingSpinner",
+		this.attributes = {
+			spinnerSize: "large"
+		},
+		this.spinnerModel
+	); 
+	
 	this.controller.setupWidget("favDrinksList",
 			this.attributes = {
 				itemTemplate: "fav-drinks/drink-list-entry",
 				listTemplate: "fav-drinks/drink-list-container",
-				emptyTemplate: "fav-drinks/drink-list-empty",
+				//emptyTemplate: "fav-drinks/drink-list-empty",
 				formatters:{
 					name:this.formatUtils.formatName.bind(this.formatUtils),
 					abv:this.formatUtils.formatAbv.bind(this.formatUtils)
@@ -35,7 +46,7 @@ FavDrinksAssistant.prototype.setup = function(){
 				reorderable: false,
 				filterFunction: this.filterDrinks.bind(this)
 			},
-			this.model = {
+			this.listModel = {
 				listTitle: $L("Drinks (Start typing to search)"),
 				disabled: false
 			}
@@ -61,8 +72,10 @@ FavDrinksAssistant.prototype.setup = function(){
 			    	    {label: $L("From USB drive"), command: "import-usb"}
 			    	]
 			    },
-				{ label: "Clear favorites", command: "do-fav-drinks-clear"},
-				{ label: "Preferences", command: "do-myPrefs"}
+			    { label: 'Export via email', command: "do-fav-drinks-export"},
+			    { label: 'Submit ABVs to the author', command: "do-fav-drinks-submit"},
+				{ label: "Clear favorites", command: "do-fav-drinks-clear"}
+				//{ label: "Preferences", command: "do-myPrefs"}
 			]
 		};
 		this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
@@ -111,7 +124,9 @@ FavDrinksAssistant.prototype.filterDrinks = function(filterString, listWidget, o
 	if(this.favDrinks){
 		this.doFilter(filterString, listWidget, offset, count);
 	}else{
+		this.startSpinner();
 		this.db.getFavDrinks(function(value){
+			this.stopSpinner();
 			if(value){
 				this.favDrinks = value;
 				this.updateDrinksList();
@@ -123,9 +138,28 @@ FavDrinksAssistant.prototype.filterDrinks = function(filterString, listWidget, o
 	}
 };
 
+FavDrinksAssistant.prototype.startSpinner = function(){
+	Mojo.Log.info("Start spinning");
+	var spinner = this.controller.get("loadingSpinner").mojo;
+	if(spinner){
+		spinner.start();
+	}else{
+		this.spinnerModel.spinning = true;//Mojo.Log.info("Spinner not stopped!");
+	}
+};
+
+FavDrinksAssistant.prototype.stopSpinner = function(){
+	Mojo.Log.info("Stop spinning");
+	var spinner = this.controller.get("loadingSpinner").mojo;
+	if(spinner){
+		spinner.stop();
+	}else{
+		this.spinnerModel.spinning = false;//Mojo.Log.info("Spinner not stopped!");
+	}
+};
+
 FavDrinksAssistant.prototype.updateDrinksList = function(){
 	this.clearOldDrinks(this.favDrinks);
-	Mojo.Controller.getAppController().showBanner(this.favDrinks.length + " fav drinks", {source: 'notification'});
 	this.favDrinks.sort(this.sortByName);
 	this.db.saveFavDrinks(this.favDrinks);
 };
@@ -171,6 +205,14 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 				break;
 			case 'import-usb':
 				this.ajaxGet("/media/internal/better-bac.json");
+				event.stopPropagation();
+				break;
+			case 'do-fav-drinks-export':
+				this.handleExport();
+				event.stopPropagation();
+				break;
+			case 'do-fav-drinks-submit':
+				this.handleExport(true);
 				event.stopPropagation();
 				break;
 			case 'do-fav-drinks-clear':
@@ -226,13 +268,15 @@ FavDrinksAssistant.prototype.handleImports = function(imported){
 		var drink = imported[i];
 		var existing = drinkMap[drink.name];
 		if(existing){
-			if(drink.abv === existing.abv){
-			}else{
+			if(drink.abv != existing.abv){
 				Mojo.Log.info("%s already exists, but has a different abv",drink.name);
+				//TODO check updated date?
 				updatedDrinks.push(drink);
 			}
 		}else{
-			Mojo.Log.info("%s does not exist: %j",drink.name,existing);
+			Mojo.Log.info("%s does not exist",drink.name);
+			drink.count = 0;
+			drink.lastTime = 0;
 			newDrinks.push(drink);
 		}
 	}
@@ -253,6 +297,7 @@ FavDrinksAssistant.prototype.handleImports = function(imported){
 					this.favDrinks = this.favDrinks.concat(newDrinks);
 					this.updateDrinksList();
 					this.controller.get("favDrinksList").mojo.noticeUpdatedItems(0,this.favDrinks);
+					Mojo.Controller.getAppController().showBanner(this.favDrinks.length + " saved drinks.", {source: 'notification'});
 				}else{
 					Mojo.Log.info("User cancelled import");
 				}
@@ -268,6 +313,41 @@ FavDrinksAssistant.prototype.handleImports = function(imported){
 //	    template: 'dialogs/import-drinks-dialog',
 //	    assistant: new ImportDrinksDialogAssistant(this, newDrinks, updatedDrinks)
 //	});
+};
+
+FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
+	var message = "";
+	var recipients = [];
+	var subject = "";
+	if(submitToAuthor){
+		subject = "Better BAC json submission"
+		recipients.push({type: 'email',
+            role: 1,
+            value: 'snewsoftware@gmail.com',
+            contactDisplay: 'Snew Software'});
+		message += "Dear Snew Software,<br>Please consider merging this data with the official feed.<br>";
+	}else{
+		subject = "Better BAC json export"
+		message += "Copy the following out to a file named better-bac.json (Make sure the filename is all lowercase and Windows doesn't rename the file as better-bac.json.txt).<br>" +
+			"To load these drinks into Better BAC, simply copy better-bac.json to the root of the Pre's USB directory.<br>";
+	}
+	var json = {
+		version: "1.0",
+		updated: new Date().getTime(),
+		data: this.favDrinks
+	};
+	message += json;
+	var obj = new Mojo.Service.Request("palm://com.palm.applicationManager/", {
+		method: "open",
+		parameters: {
+			id: "com.palm.app.email",
+			params: {
+				"summary": subject,
+				"text": message,
+				"recipients": recipients
+			}
+		}
+	});
 };
 
 FavDrinksAssistant.prototype.handleDrinkTap = function(event){
