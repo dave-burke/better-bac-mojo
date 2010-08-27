@@ -38,32 +38,39 @@ function Defaults() {
 	
 	//Default favorite drinks
 	var beer = {
-		name: "Beer",
+		name: "Beer (generic)",
 		abv: 5,
 		vol: 16,
 		count: 0,
 		lastTime: 0
 	}
 	var wine = {
-		name: "Wine",
+		name: "Wine (generic)",
 		abv: 12,
 		vol: 4,
 		count: 0,
 		lastTime: 0
 	}
 	var shot = {
-		name: "Shot",
-		abv: 35,
+		name: "Shot (generic)",
+		abv: 40,
 		vol: 1.5,
 		count: 0,
 		lastTime: 0
 	}
-	var cocktail = {
-		name: "Cocktail",
-		abv: 20,
+	var rumAndCola = {
+		name: "Rum & Cola",
+		abv: 16,
 		vol: 5,
 		count: 0,
 		lastTime: 0
 	}
-	this.favDrinks = [beer,wine,shot,cocktail];
+	var cocktail = {
+		name: "Cocktail (generic)",
+		abv: 28,
+		vol: 3,
+		count: 0,
+		lastTime: 0
+	}
+	this.favDrinks = [beer,wine,shot,rumAndCola,cocktail];
 }

@@ -79,6 +79,8 @@ FavDrinksAssistant.prototype.setup = function(){
 			]
 		};
 		this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
+		
+	this.handleFirstTime();
 };
 
 FavDrinksAssistant.prototype.activate = function(event) {
@@ -297,7 +299,7 @@ FavDrinksAssistant.prototype.handleImports = function(imported){
 					this.favDrinks = this.favDrinks.concat(newDrinks);
 					this.updateDrinksList();
 					this.controller.get("favDrinksList").mojo.noticeUpdatedItems(0,this.favDrinks);
-					Mojo.Controller.getAppController().showBanner(this.favDrinks.length + " saved drinks.", {source: 'notification'});
+					Mojo.Controller.getAppController().showBanner("You now have " + this.favDrinks.length + " saved drinks.", {source: 'notification'});
 				}else{
 					Mojo.Log.info("User cancelled import");
 				}
@@ -331,12 +333,15 @@ FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
 		message += "Copy the following out to a file named better-bac.json (Make sure the filename is all lowercase and Windows doesn't rename the file as better-bac.json.txt).<br>" +
 			"To load these drinks into Better BAC, simply copy better-bac.json to the root of the Pre's USB directory.<br>";
 	}
-	var json = {
-		version: "1.0",
-		updated: new Date().getTime(),
-		data: this.favDrinks
-	};
-	message += Object.toJSON(json);
+	message += '<br>{version: "1.0", updated: ' + new Date().getTime() + ", data: [<br>";
+	for(var i = 0;i<this.favDrinks.length;i++){
+		var drink = this.favDrinks[i];
+		if(i!=0){
+			message +=",<br>";
+		}
+		message += '{name: "' + drink.name + '", abv: ' + drink.abv + ', vol: ' + drink.vol + ', updated: ' + drink.updated + '}'; 
+	}
+	message += '<br>]}';
 	Mojo.Log.info("Sending message: " + message);
 	var obj = new Mojo.Service.Request("palm://com.palm.applicationManager/", {
 		method: "open",
@@ -366,6 +371,27 @@ FavDrinksAssistant.prototype.handleDrinkDelete = function(event){
 			this.db.saveFavDrinks(this.favDrinks);
 			break;
 		}
+	}
+};
+
+FavDrinksAssistant.prototype.handleFirstTime = function(){
+	var cookie = new Mojo.Model.Cookie(Mojo.appInfo.id + '.firstTimes');
+	var firstTimes = cookie.get();
+	if (!firstTimes) {
+		firstTimes = {};
+	}
+	if(!firstTimes.favDrinks){
+		this.controller.showAlertDialog({
+			onChoose: function(choice){
+				}.bind(this),
+				message: 'Want more A.B.V. data? Choose "Load Drinks"->"From Web (Official)" from the app menu to download the A.B.V. for hundreds of drinks! Don\'t forget to check back later to see if there are updates!',
+				choices: [
+				    {label: "Okay", value: true, type: "affirmative"}
+				]
+			});
+		firstTimes.favDrinks = true;
+		Mojo.Log.info("Storing %j" + firstTimes);
+		cookie.put(firstTimes);
 	}
 };
 

@@ -1,3 +1,9 @@
+Version 0.10.7
+--------------
+Fixed JSON export formatting (again)
+Added "first time" dialog to fav-drinks scene explaining the load drinks option
+Updated default list
+
 Version 0.10.6
 --------------
 Fixed email export formatting
