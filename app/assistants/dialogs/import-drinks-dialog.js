@@ -32,24 +32,32 @@ function ImportDrinksDialogAssistant(sceneAssistant, imported) {
 	
 	for(var i = 0;i<imported.length;i++){
 		var drink = imported[i];
-		var existing = this.drinkMap[drink.name];
-		if(existing){
-			if(drink.abv != existing.abv){
-				Mojo.Log.info("%s already exists, but has a different abv",drink.name);
-				//TODO check updated date?
-				this.updatedDrinks.push(drink);
+		if(this.isValid(drink)){
+			var existing = this.drinkMap[drink.name];
+			if(existing){
+				if(drink.abv != existing.abv){
+					Mojo.Log.info("%s already exists, but has a different abv",drink.name);
+					//TODO check updated date?
+					this.updatedDrinks.push(drink);
+				}
+			}else{
+				Mojo.Log.info("%s does not exist",drink.name);
+				drink.count = 0;
+				drink.lastTime = 0;
+				this.newDrinks.push(drink);
 			}
-		}else{
-			Mojo.Log.info("%s does not exist",drink.name);
-			drink.count = 0;
-			drink.lastTime = 0;
-			this.newDrinks.push(drink);
 		}
 	}
 }
 
+ImportDrinksDialogAssistant.prototype.isValid = function(widget){
+	//TODO
+	return true;
+};
+
 ImportDrinksDialogAssistant.prototype.setup = function(widget){
 	this.widget = widget;
+	
 	
 	this.controller.setupWidget("newDrinksCheck",
 	    this.attributes = {},

@@ -256,22 +256,27 @@ FavDrinksAssistant.prototype.ajax404 = function(){
 
 FavDrinksAssistant.prototype.ajaxSuccess = function(transport){
 	Mojo.Log.info("Ajax success!");
-	var json = Mojo.parseJSON(transport.responseText);
-	if(json){
-		var updated = json.updated;
-		if(updated){
-			var date = new Date(json.updated);
-			var drinks = json.data;
-			if(drinks){
-				this.handleImports(drinks);
+	var response = transport.responseText;
+	if(response){
+		var json = Mojo.parseJSON(response);
+		if(json){
+			var updated = json.updated;
+			if(updated){
+				var date = new Date(json.updated);
+				var drinks = json.data;
+				if(drinks){
+					this.handleImports(drinks);
+				}else{
+					Mojo.Controller.errorDialog("Invalid JSON: No data field");
+				}
 			}else{
-				Mojo.Controller.errorDialog("Invalid JSON: No data field");
+				Mojo.Controller.errorDialog("Invalid JSON: no updated field");
 			}
 		}else{
-			Mojo.Controller.errorDialog("Invalid JSON: no updated field");
+			Mojo.Controller.errorDialog("JSON wasn't parsed");
 		}
 	}else{
-		Mojo.Controller.errorDialog("No json found at this location");
+		Mojo.Controller.errorDialog("Nothing at this location");
 	}
 };
 
