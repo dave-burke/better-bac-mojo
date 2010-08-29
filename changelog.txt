@@ -1,3 +1,8 @@
+Version 0.10.10
+---------------
+Actually import custom URL
+Handle some import errors
+
 Version 0.10.9
 --------------
 Implemented import dialog for custom urls
