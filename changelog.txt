@@ -1,6 +1,10 @@
+Version 0.10.9
+--------------
+Implemented import dialog for custom urls
+
 Version 0.10.8
 --------------
-Implemented custom import dialog
+Implemented import dialog
 
 Version 0.10.7
 --------------
