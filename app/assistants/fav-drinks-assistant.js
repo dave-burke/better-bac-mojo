@@ -206,7 +206,7 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 				    template: 'dialogs/import-custom-dialog',
 				    assistant: new ImportCustomDialogAssistant(this,function(url){
 				    		Mojo.Log.info("Got custom url: " + url);
-				    		//this.ajaxGet(url);
+				    		this.ajaxGet(url);
 				    	}.bind(this))
 				});
 				event.stopPropagation();
@@ -257,9 +257,22 @@ FavDrinksAssistant.prototype.ajax404 = function(){
 FavDrinksAssistant.prototype.ajaxSuccess = function(transport){
 	Mojo.Log.info("Ajax success!");
 	var json = Mojo.parseJSON(transport.responseText);
-	var date = new Date(json.updated);
-	var drinks = json.data;
-	this.handleImports(drinks);
+	if(json){
+		var updated = json.updated;
+		if(updated){
+			var date = new Date(json.updated);
+			var drinks = json.data;
+			if(drinks){
+				this.handleImports(drinks);
+			}else{
+				Mojo.Controller.errorDialog("Invalid JSON: No data field");
+			}
+		}else{
+			Mojo.Controller.errorDialog("Invalid JSON: no updated field");
+		}
+	}else{
+		Mojo.Controller.errorDialog("No json found at this location");
+	}
 };
 
 FavDrinksAssistant.prototype.handleImports = function(imported){
