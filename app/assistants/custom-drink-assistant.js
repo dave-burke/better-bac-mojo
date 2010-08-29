@@ -55,6 +55,7 @@ CustomDrinkAssistant.prototype.setup = function() {
         this.attributes = {
 			modelProperty: 'name',
             hintText: $L('Drink name'),
+            textCase: Mojo.Widget.steModeTitleCase,
             focusMode: Mojo.Widget.focusSelectMode
         },
         this.newDrinkModel

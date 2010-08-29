@@ -68,7 +68,7 @@ FavDrinksAssistant.prototype.setup = function(){
 			    {label: 'Load drinks',
 			    	items: [
 			    	    {label: $L("From web (official)"), command: "import-web-official"},
-			    	    //{label: $L("From web (custom)"), command: "import-web-custom"},
+			    	    {label: $L("From custom"), command: "import-custom"},
 			    	    {label: $L("From USB drive"), command: "import-usb"}
 			    	]
 			    },
@@ -201,8 +201,14 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 				this.ajaxGet("http://sites.google.com/site/snewsoftware/webos/files/better-bac.json");
 				event.stopPropagation();
 				break;
-			case 'import-web-custom':
-				this.ajaxGet("/media/internal/better-bac.json");
+			case 'import-custom':
+				this.controller.showDialog({
+				    template: 'dialogs/import-custom-dialog',
+				    assistant: new ImportCustomDialogAssistant(this,function(url){
+				    		Mojo.Log.info("Got custom url: " + url);
+				    		//this.ajaxGet(url);
+				    	}.bind(this))
+				});
 				event.stopPropagation();
 				break;
 			case 'import-usb':
@@ -257,12 +263,9 @@ FavDrinksAssistant.prototype.ajaxSuccess = function(transport){
 };
 
 FavDrinksAssistant.prototype.handleImports = function(imported){
-	Mojo.Log.info("Showing dialog");
 	this.controller.showDialog({
 	    template: 'dialogs/import-drinks-dialog',
-	    assistant: new ImportDrinksDialogAssistant(this,imported, function(){
-	    	
-	    }.bind(this))
+	    assistant: new ImportDrinksDialogAssistant(this,imported)
 	});
 };
 

@@ -34,8 +34,8 @@ PrefsAssistant.prototype.setup = function() {
 			label: $L("Gender"),
             choices: [
                 {label: $L("Male"), value: "m"},
-                {label: $L("Female"),value: "f"},
-            ],
+                {label: $L("Female"),value: "f"}
+            ]
 		},
         this.prefs
     );
@@ -43,7 +43,7 @@ PrefsAssistant.prototype.setup = function() {
 	this.controller.setupWidget("heightField",
         this.attributes = {
 			modelProperty: "height",
-			modifierState: Mojo.Widget.numLock,
+			modifierState: Mojo.Widget.numLock
         },
 		this.prefs
 	);
@@ -51,7 +51,7 @@ PrefsAssistant.prototype.setup = function() {
 	this.controller.setupWidget("weightField",
         this.attributes = {
 			modelProperty: "weight",
-			modifierState: Mojo.Widget.numLock,
+			modifierState: Mojo.Widget.numLock
         },
 		this.prefs
 	);
@@ -69,7 +69,7 @@ PrefsAssistant.prototype.setup = function() {
 	this.controller.setupWidget("limitField",
         this.attributes = {
 			modelProperty: "limit",
-			modifierState: Mojo.Widget.numLock,
+			modifierState: Mojo.Widget.numLock
         },
 		this.prefs
 	);
@@ -80,8 +80,8 @@ PrefsAssistant.prototype.setup = function() {
 			label: $L("Calc method"),
             choices: [
                 {label: "Widmark", value: "widmark"},
-                {label: "Watson",value: "watson"},
-            ],
+                {label: "Watson",value: "watson"}
+            ]
 		},
         this.prefs
     );
@@ -101,7 +101,7 @@ PrefsAssistant.prototype.setup = function() {
 			modelProperty: "historyMaxLength",
 			label: $L(" "),
 	        min: 0,
-	        max: 100,
+	        max: 100
 		},
 	    this.prefs
 	);
@@ -117,7 +117,7 @@ PrefsAssistant.prototype.setup = function() {
         this.attributes = {
             },
         this.model = {
-            label : "Done",
+            label : "Done"
         }
 	);
 	
@@ -128,7 +128,7 @@ PrefsAssistant.prototype.setup = function() {
 		visible: true,
 		items: [ 
 		    { label: "About", command: 'do-myAbout'},
-		    { label: "Help for this scene", command: 'do-help-prefs'},
+		    { label: "Help for this scene", command: 'do-help-prefs'}
 	    ]
 	};
 	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);

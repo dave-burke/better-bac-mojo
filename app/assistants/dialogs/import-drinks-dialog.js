@@ -15,10 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function ImportDrinksDialogAssistant(sceneAssistant, imported, callback) {
+function ImportDrinksDialogAssistant(sceneAssistant, imported) {
 	this.sceneAssistant = sceneAssistant;
 	this.controller = sceneAssistant.controller;
-	this.callback = callback;
 	sceneAssistant.favDrinks = sceneAssistant.favDrinks;
 	
 	this.drinkMap = {};

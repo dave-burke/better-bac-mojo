@@ -46,6 +46,7 @@
         "source": "app/assistants/help-new-drink-assistant.js"
     },
     {"source": "app/assistants/dialogs/import-drinks-dialog.js"},
+    {"source": "app/assistants/dialogs/import-custom-dialog.js"},
     {"source": "javascript/bac-utils.js"},
     {"source": "javascript/timeout-utils.js"},
     {"source": "javascript/db-utils.js"},
