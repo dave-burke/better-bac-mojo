@@ -49,6 +49,7 @@ function Defaults() {
 		abv: 12,
 		vol: 4,
 		count: 0,
+		updated: 0,
 		lastTime: 0
 	}
 	var shot = {
@@ -56,6 +57,7 @@ function Defaults() {
 		abv: 40,
 		vol: 1.5,
 		count: 0,
+		updated: 0,
 		lastTime: 0
 	}
 	var rumAndCola = {
@@ -63,6 +65,7 @@ function Defaults() {
 		abv: 16,
 		vol: 5,
 		count: 0,
+		updated: 0,
 		lastTime: 0
 	}
 	var cocktail = {
@@ -70,6 +73,7 @@ function Defaults() {
 		abv: 28,
 		vol: 3,
 		count: 0,
+		updated: 0,
 		lastTime: 0
 	}
 	this.favDrinks = [beer,wine,shot,rumAndCola,cocktail];

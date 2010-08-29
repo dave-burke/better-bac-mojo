@@ -14,10 +14,6 @@
         "source": "app/assistants/fav-drinks-assistant.js"
     },
     {
-        "scenes": "dialog",
-        "source": "app/assistants/import-drinks-dash-assistant.js"
-    },
-    {
         "scenes": "custom-drink",
         "source": "app/assistants/custom-drink-assistant.js"
     },
@@ -49,6 +45,7 @@
         "scenes": "help-new-drink",
         "source": "app/assistants/help-new-drink-assistant.js"
     },
+    {"source": "app/assistants/dialogs/import-drinks-dialog.js"},
     {"source": "javascript/bac-utils.js"},
     {"source": "javascript/timeout-utils.js"},
     {"source": "javascript/db-utils.js"},

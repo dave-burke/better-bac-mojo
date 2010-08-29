@@ -257,64 +257,13 @@ FavDrinksAssistant.prototype.ajaxSuccess = function(transport){
 };
 
 FavDrinksAssistant.prototype.handleImports = function(imported){
-	var drinkMap = {};
-	var newDrinks = [];
-	var updatedDrinks = [];
-	
-	var drinks = this.favDrinks;
-	for (var i=0;i<drinks.length;i++) {
-		drinkMap[drinks[i].name]=drinks[i];
-	}
-	
-	for(var i = 0;i<imported.length;i++){
-		var drink = imported[i];
-		var existing = drinkMap[drink.name];
-		if(existing){
-			if(drink.abv != existing.abv){
-				Mojo.Log.info("%s already exists, but has a different abv",drink.name);
-				//TODO check updated date?
-				updatedDrinks.push(drink);
-			}
-		}else{
-			Mojo.Log.info("%s does not exist",drink.name);
-			drink.count = 0;
-			drink.lastTime = 0;
-			newDrinks.push(drink);
-		}
-	}
-	
-	this.controller.showAlertDialog({
-		onChoose: function(choice){
-				if(choice){
-					Mojo.Log.info("Updated: %j",updatedDrinks);
-					Mojo.Log.info("New: %j",newDrinks);
-					for(var i = 0;i<updatedDrinks.length;i++){
-						var updatedDrink = updatedDrinks[i];
-						drinkMap[updatedDrink.name] = updatedDrink;
-					}
-					this.favDrinks = [];
-					for (drinkName in drinkMap) {
-						this.favDrinks.push(drinkMap[drinkName]);
-					}
-					this.favDrinks = this.favDrinks.concat(newDrinks);
-					this.updateDrinksList();
-					this.controller.get("favDrinksList").mojo.noticeUpdatedItems(0,this.favDrinks);
-					Mojo.Controller.getAppController().showBanner("You now have " + this.favDrinks.length + " saved drinks.", {source: 'notification'});
-				}else{
-					Mojo.Log.info("User cancelled import");
-				}
-			}.bind(this),
-		message: "Found " + newDrinks.length + " new & " + updatedDrinks.length + " updated.",
-		choices: [
-		    {label: "Import", value: true, type: "affirmative"},
-		    {label: "Cancel", value: false, type: "negative"}
-		]
+	Mojo.Log.info("Showing dialog");
+	this.controller.showDialog({
+	    template: 'dialogs/import-drinks-dialog',
+	    assistant: new ImportDrinksDialogAssistant(this,imported, function(){
+	    	
+	    }.bind(this))
 	});
-	
-//	this.controller.showDialog({
-//	    template: 'dialogs/import-drinks-dialog',
-//	    assistant: new ImportDrinksDialogAssistant(this, newDrinks, updatedDrinks)
-//	});
 };
 
 FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
