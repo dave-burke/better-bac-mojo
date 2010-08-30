@@ -170,6 +170,7 @@ MainAssistant.prototype.handleCommand = function(event){
 				     	target: appUrl
 				   	}
 				});
+				event.stopPropagation();
 				break;
 			case "add-cmd":
 				//Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs);
@@ -179,6 +180,7 @@ MainAssistant.prototype.handleCommand = function(event){
 			case 'do-graph':
 				Mojo.Controller.stageController.pushScene("graph",this.db,this.state);
 				Mojo.Log.info("Graph menu item");
+				event.stopPropagation();
 				break;
 			case 'do-clearState':
 				this.controller.showAlertDialog({
@@ -202,6 +204,7 @@ MainAssistant.prototype.handleCommand = function(event){
 					    {label: "No", value: false, type: "negative"}
 					]
 				});
+				event.stopPropagation();
 				break;
 		}
 	}

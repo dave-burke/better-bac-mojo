@@ -1,27 +1,34 @@
-Version 0.10.10
+Version 0.10.11
+---------------
+Added "clear favorites" confirmation
+Remember import/custom url prefs
+Change official file name to better-bac-drinks.json
+Specific dialog for "No updates found"
+
+Version 0.10.10 (private beta)
 ---------------
 Actually import custom URL
 Handle some import errors
 
-Version 0.10.9
+Version 0.10.9 (unreleased)
 --------------
 Implemented import dialog for custom urls
 
-Version 0.10.8
+Version 0.10.8 (unreleased)
 --------------
 Implemented import dialog
 
-Version 0.10.7
+Version 0.10.7 (unreleased)
 --------------
 Fixed JSON export formatting (again)
 Added "first time" dialog to fav-drinks scene explaining the load drinks option
 Updated default list
 
-Version 0.10.6
+Version 0.10.6 (unreleased)
 --------------
 Fixed email export formatting
 
-Version 0.10.5
+Version 0.10.5 (unreleased)
 --------------
 Added loading spinner for favorite drinks
 Added email export

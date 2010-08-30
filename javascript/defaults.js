@@ -25,15 +25,18 @@ function Defaults() {
 	
 	//Default prefs
 	this.prefs = {
-		"gender": "m",
-		"height": 68,
-		"weight": 180,
-		"age": 25,
-		"limit": 0.08,
-		"calc": "widmark",
-		"historyMaxDays": 7,
-		"historyMaxLength": 30,
-		"alarms":true
+		gender: "m",
+		height: 68,
+		weight: 180,
+		age: 25,
+		limit: 0.08,
+		calc: "widmark",
+		historyMaxDays: 7,
+		historyMaxLength: 30,
+		alarms:true,
+		customDrinkUrl: "",
+		importNew: true,
+		importUpdated: true
 	};
 	
 	//Default favorite drinks
@@ -77,4 +80,4 @@ function Defaults() {
 		lastTime: 0
 	}
 	this.favDrinks = [beer,wine,shot,rumAndCola,cocktail];
-}
+};

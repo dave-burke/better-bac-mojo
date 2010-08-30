@@ -20,9 +20,19 @@ function ImportDrinksDialogAssistant(sceneAssistant, imported) {
 	this.controller = sceneAssistant.controller;
 	sceneAssistant.favDrinks = sceneAssistant.favDrinks;
 	
+	this.prefs = sceneAssistant.prefs;
+	//TODO remove this defaulting in official release since everyone will have a freshly defaulted install then
+	if(this.prefs.importNew === undefined){
+		this.prefs.importNew = true;
+	}
+	if(this.prefs.importUpdated === undefined){
+		this.prefs.importUpdated = true;
+	}
+	
 	this.drinkMap = {};
 	this.newDrinks = [];
 	this.updatedDrinks = [];
+	this.invalidDrinks = 0;
 	
 	//Analyze imports
 	var drinks = sceneAssistant.favDrinks;
@@ -46,37 +56,63 @@ function ImportDrinksDialogAssistant(sceneAssistant, imported) {
 				drink.lastTime = 0;
 				this.newDrinks.push(drink);
 			}
+		}else{
+			this.invalidDrinks++;
 		}
 	}
 }
 
-ImportDrinksDialogAssistant.prototype.isValid = function(widget){
-	//TODO
+ImportDrinksDialogAssistant.prototype.isValid = function(drink){
+	if(drink.name === undefined){
+		return false;
+	}
+	if(drink.abv === undefined || isNaN(drink.abv) || drink.abv <= 0){
+		return false;
+	}
+	if (drink.vol === undefined || isNaN(drink.vol) || drink.vol <= 0) {
+		return false;
+	}
+	if(drink.updated === undefined || isNaN(drink.updated) || drink.updated <= 0){
+		return false;
+	}
 	return true;
 };
 
 ImportDrinksDialogAssistant.prototype.setup = function(widget){
 	this.widget = widget;
 	
+	if(this.updatedDrinks.length == 0 && this.newDrinks.length == 0){
+		//Mojo.Controller.errorDialog("No updates found. You have all the latest data.");
+		this.controller.showAlertDialog({
+			onChoose: function(choice){
+					//Nothing to do
+				}.bind(this),
+			message: "No updates found. You have all the latest A.B.V. data.",
+			choices: [
+			    {label: "Okay", value: true, type: "dismiss"}
+			]
+		});
+		this.widget.mojo.close();
+	}
 	
 	this.controller.setupWidget("newDrinksCheck",
 	    this.attributes = {},
 	    this.newDrinksCheckModel = {
-	        value: true
+	        value: this.prefs.importNew
 	    }
 	);
 	
 	this.controller.setupWidget("updatedDrinksCheck",
 		this.attributes = {},
 	    this.updatedDrinksCheckModel = {
-	        value: true
+	        value: this.prefs.importUpdated
 	    }
 	);
 	
 	this.controller.setupWidget("okButton",
 		this.attributes = {},
 		this.okButtonModel = {
-			buttonLabel: "Import selected",
+			buttonLabel: "Import selected"
 	    }
 	);
 	this.controller.get('okButton').addEventListener(Mojo.Event.tap, this.submit.bindAsEventListener(this));
@@ -84,7 +120,7 @@ ImportDrinksDialogAssistant.prototype.setup = function(widget){
 	this.controller.setupWidget("cancelButton",
 		this.attributes = {},
 		this.okButtonModel = {
-			buttonLabel: "Cancel",
+			buttonLabel: "Cancel"
 		}
 	);
 	this.controller.get('cancelButton').addEventListener(Mojo.Event.tap, this.cancel.bindAsEventListener(this));
@@ -125,10 +161,20 @@ ImportDrinksDialogAssistant.prototype.submit = function(){
 	this.sceneAssistant.updateDrinksList();
 	this.controller.get("favDrinksList").mojo.noticeUpdatedItems(0,this.sceneAssistant.favDrinks);
 	Mojo.Controller.getAppController().showBanner("You now have " + this.sceneAssistant.favDrinks.length + " saved drinks.", {source: 'notification'});
-	this.widget.mojo.close();
+
+	this.saveAndClose(doNew, doUpdated);
 };
 
 ImportDrinksDialogAssistant.prototype.cancel = function(){
 	Mojo.Log.info("Cancelled import");
+	var doNew = this.newDrinksCheckModel.value;
+	var doUpdated = this.updatedDrinksCheckModel.value;
+	this.saveAndClose(doNew, doUpdated);
+};
+
+ImportDrinksDialogAssistant.prototype.saveAndClose = function(doNew, doUpdated){
+	this.prefs.importNew = doNew;
+	this.prefs.importUpdated = doUpdated;
+	this.sceneAssistant.db.savePrefs(this.prefs);
 	this.widget.mojo.close();
 };

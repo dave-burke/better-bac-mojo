@@ -19,11 +19,18 @@ function ImportCustomDialogAssistant(sceneAssistant, callback) {
 	this.sceneAssistant = sceneAssistant;
 	this.controller = sceneAssistant.controller;
 	this.callback = callback;
+	
+	this.prefs = sceneAssistant.prefs;
+	//TODO remove this defaulting in official release since everyone will have a freshly defaulted install then
+	if(this.prefs.customDrinkUrl === undefined){
+		this.prefs.customDrinkUrl = "";
+	}
 }
 
 ImportCustomDialogAssistant.prototype.setup = function(widget){
 	this.widget = widget;
 	
+	Mojo.Log.info("Saved custom url = " + this.prefs.customDrinkUrl);
 	this.controller.setupWidget("urlField",
 	        this.attributes = {
 				hintText: $L("URL or file path"),
@@ -31,14 +38,14 @@ ImportCustomDialogAssistant.prototype.setup = function(widget){
 				autoFocus: true
 			},
 			this.urlFieldModel= {
-				value: ""
+				value: this.prefs.customDrinkUrl
 			}
 		);
 	
 	this.controller.setupWidget("okButton",
 		this.attributes = {},
 		this.okButtonModel = {
-			buttonLabel: "Import selected",
+			buttonLabel: "Import selected"
 	    }
 	);
 	this.controller.get('okButton').addEventListener(Mojo.Event.tap, this.submit.bindAsEventListener(this));
@@ -46,7 +53,7 @@ ImportCustomDialogAssistant.prototype.setup = function(widget){
 	this.controller.setupWidget("cancelButton",
 		this.attributes = {},
 		this.okButtonModel = {
-			buttonLabel: "Cancel",
+			buttonLabel: "Cancel"
 		}
 	);
 	this.controller.get('cancelButton').addEventListener(Mojo.Event.tap, this.cancel.bindAsEventListener(this));
@@ -55,10 +62,17 @@ ImportCustomDialogAssistant.prototype.setup = function(widget){
 ImportCustomDialogAssistant.prototype.submit = function(){
 	var url = this.urlFieldModel.value;
 	this.callback(url);
-	this.widget.mojo.close();
+	this.saveAndClose(url);
 };
 
 ImportCustomDialogAssistant.prototype.cancel = function(){
 	Mojo.Log.info("Cancelled import");
+	var url = this.urlFieldModel.value;
+	this.saveAndClose(url);
+};
+
+ImportCustomDialogAssistant.prototype.saveAndClose = function(url){
+	this.prefs.customDrinkUrl = url;
+	this.sceneAssistant.db.savePrefs(this.prefs);
 	this.widget.mojo.close();
 };

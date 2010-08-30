@@ -19,6 +19,11 @@ function FavDrinksAssistant(dbUtils, prefs) {
 	this.db = dbUtils;
 	this.prefs = prefs;
 	this.formatUtils = new FormatUtils();
+	
+	//TODO these should probably go somewhere else
+	this.urlPath = "http://sites.google.com/site/snewsoftware/webos/files/";
+	this.usbPath = "/media/internal/";
+	this.fileName = "better-bac-drinks.json";
 }
 
 FavDrinksAssistant.prototype.setup = function(){
@@ -65,21 +70,23 @@ FavDrinksAssistant.prototype.setup = function(){
 		this.appMenuModel = {
 			visible: true,
 			items: [ 
-			    {label: 'Load drinks',
+			    {label: 'Import drinks',
 			    	items: [
 			    	    {label: $L("From web (official)"), command: "import-web-official"},
-			    	    {label: $L("From custom"), command: "import-custom"},
-			    	    {label: $L("From USB drive"), command: "import-usb"}
+			    	    {label: $L("From custom URL"), command: "import-custom"},
+			    	    {label: $L("From USB file"), command: "import-usb"}
 			    	]
 			    },
-			    { label: 'Export via email', command: "do-fav-drinks-export"},
-			    { label: 'Submit ABVs to the author', command: "do-fav-drinks-submit"},
-				{ label: "Clear favorites", command: "do-fav-drinks-clear"}
-				//{ label: "Preferences", command: "do-myPrefs"}
+			    {label: 'Export drinks',
+			    	items: [
+						{ label: 'To the author', command: "do-fav-drinks-submit"},
+			    	    { label: 'To someone else', command: "do-fav-drinks-export"}
+			    	]
+			    },
+				{ label: "Clear saved drinks", command: "do-fav-drinks-clear"}
 			]
 		};
 		this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
-		
 	this.handleFirstTime();
 };
 
@@ -198,7 +205,7 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 				event.stopPropagation();
 				break;
 			case 'import-web-official':
-				this.ajaxGet("http://sites.google.com/site/snewsoftware/webos/files/better-bac.json");
+				this.ajaxGet(this.urlPath + this.fileName);
 				event.stopPropagation();
 				break;
 			case 'import-custom':
@@ -212,7 +219,7 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 				event.stopPropagation();
 				break;
 			case 'import-usb':
-				this.ajaxGet("/media/internal/better-bac.json");
+				this.ajaxGet(this.usbPath + this.fileName);
 				event.stopPropagation();
 				break;
 			case 'do-fav-drinks-export':
@@ -224,12 +231,23 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 				event.stopPropagation();
 				break;
 			case 'do-fav-drinks-clear':
-				this.favDrinks = [];
-				this.db.saveFavDrinks(this.favDrinks);
-				var drinksList = this.controller.get("favDrinksList").mojo
-				if(drinksList){
-					drinksList.noticeRemovedItems(0,drinksList.getLength());
-				}
+				this.controller.showAlertDialog({
+					onChoose: function(choice){
+							if(choice){
+								this.favDrinks = [];
+								this.db.saveFavDrinks(this.favDrinks);
+								var drinksList = this.controller.get("favDrinksList").mojo
+								if(drinksList){
+									drinksList.noticeRemovedItems(0,drinksList.getLength());
+								}
+							}
+						}.bind(this),
+					message: "Are you sure you want to clear all your saved drinks?",
+					choices: [
+					    {label: "Yes", value: true, type: "affirmative"},
+					    {label: "No", value: false, type: "negative"}
+					]
+				});
 				event.stopPropagation();
 				break;
 		}
@@ -300,7 +318,7 @@ FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
 		message += "Dear Snew Software,<br>Please consider merging this data with the official feed.<br>";
 	}else{
 		subject = "Better BAC json export"
-		message += "Copy the following out to a file named better-bac.json (Make sure the filename is all lowercase and Windows doesn't rename the file as better-bac.json.txt).<br>" +
+		message += "Copy the following out to a file named " + fileName + " (Make sure the filename is all lowercase and Windows doesn't rename the file as better-bac.json.txt).<br>" +
 			"To load these drinks into Better BAC, simply copy better-bac.json to the root of the Pre's USB directory.<br>";
 	}
 	message += '<br>{version: "1.0", updated: ' + new Date().getTime() + ", data: [<br>";
