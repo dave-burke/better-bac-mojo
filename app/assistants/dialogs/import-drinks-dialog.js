@@ -82,7 +82,6 @@ ImportDrinksDialogAssistant.prototype.setup = function(widget){
 	this.widget = widget;
 	
 	if(this.updatedDrinks.length == 0 && this.newDrinks.length == 0){
-		//Mojo.Controller.errorDialog("No updates found. You have all the latest data.");
 		this.controller.showAlertDialog({
 			onChoose: function(choice){
 					//Nothing to do

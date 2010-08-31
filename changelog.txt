@@ -1,4 +1,10 @@
-Version 0.10.11
+Version 0.10.12
+---------------
+Fix 1st time load drinks instructions
+Show error when custom URL is valid, but has no JSON (e.g. http://www.google.com)
+Fix email export text to refer to new file name
+
+Version 0.10.11 (unreleased)
 ---------------
 Added "clear favorites" confirmation
 Remember import/custom url prefs

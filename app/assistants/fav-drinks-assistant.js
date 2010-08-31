@@ -276,7 +276,11 @@ FavDrinksAssistant.prototype.ajaxSuccess = function(transport){
 	Mojo.Log.info("Ajax success!");
 	var response = transport.responseText;
 	if(response){
-		var json = Mojo.parseJSON(response);
+		try{
+			var json = Mojo.parseJSON(response);
+		}catch(err){
+			Mojo.Log.info("No valid JSON found at this location");
+		}
 		if(json){
 			var updated = json.updated;
 			if(updated){
@@ -285,15 +289,19 @@ FavDrinksAssistant.prototype.ajaxSuccess = function(transport){
 				if(drinks){
 					this.handleImports(drinks);
 				}else{
+					Mojo.Log.info("No drinks");
 					Mojo.Controller.errorDialog("Invalid JSON: No data field");
 				}
 			}else{
+				Mojo.Log.info("No updated");
 				Mojo.Controller.errorDialog("Invalid JSON: no updated field");
 			}
 		}else{
-			Mojo.Controller.errorDialog("JSON wasn't parsed");
+			Mojo.Log.info("No Json");
+			Mojo.Controller.errorDialog("No valid JSON found at this location");
 		}
 	}else{
+		Mojo.Log.info("No response");
 		Mojo.Controller.errorDialog("Nothing at this location");
 	}
 };
@@ -318,8 +326,8 @@ FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
 		message += "Dear Snew Software,<br>Please consider merging this data with the official feed.<br>";
 	}else{
 		subject = "Better BAC json export"
-		message += "Copy the following out to a file named " + fileName + " (Make sure the filename is all lowercase and Windows doesn't rename the file as better-bac.json.txt).<br>" +
-			"To load these drinks into Better BAC, simply copy better-bac.json to the root of the Pre's USB directory.<br>";
+		message += "Copy the following out to a file named " + fileName + " (Make sure the filename is all lowercase and Windows doesn't rename the file as " + fileName + ".txt).<br>" +
+			"To load these drinks into Better BAC, simply copy " + fileName + " to the root of the Pre's USB directory.<br>";
 	}
 	message += '<br>{version: "1.0", updated: ' + new Date().getTime() + ", data: [<br>";
 	for(var i = 0;i<this.favDrinks.length;i++){
@@ -372,7 +380,7 @@ FavDrinksAssistant.prototype.handleFirstTime = function(){
 		this.controller.showAlertDialog({
 			onChoose: function(choice){
 				}.bind(this),
-				message: 'Want more A.B.V. data? Choose "Load Drinks"->"From Web (Official)" from the app menu to download the A.B.V. for hundreds of drinks! Don\'t forget to check back later to see if there are updates!',
+				message: 'Want more A.B.V. data? Choose "Import Drinks"->"From Web (Official)" from the app menu to download the A.B.V. for hundreds of drinks! Don\'t forget to check back later to see if there are updates!',
 				choices: [
 				    {label: "Okay", value: true, type: "affirmative"}
 				]
