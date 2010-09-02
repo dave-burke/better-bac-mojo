@@ -1,4 +1,8 @@
-Version 0.10.13
+Version 0.10.14
+---------------
+One last documentation bug
+
+Version 0.10.13 (unreleased)
 ---------------
 Documentation updates
 Fixed some minor bugs
