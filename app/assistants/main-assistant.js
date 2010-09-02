@@ -280,7 +280,7 @@ MainAssistant.prototype.saveFavorite = function(newDrink){
 						abv: newDrink.abv,
 						vol: newDrink.vol,
 						count: 0,
-						updated: 0,
+						updated: new Date().getTime(),
 						lastTime: new Date().getTime()
 					}
 				favDrinks.push(newFav);

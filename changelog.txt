@@ -1,4 +1,8 @@
-Version 0.10.14
+Version 0.10.15
+---------------
+New "fav-drinks" now start with current time as "updated" value (fixes an import bug)
+
+Version 0.10.14 (unreleased)
 ---------------
 One last documentation bug
 
