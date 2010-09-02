@@ -1,6 +1,6 @@
 {
 	"id": "net.snew.betterbac-beta",
-	"version": "0.10.12",
+	"version": "0.10.13",
 	"vendor": "Snew Software",
 	"type": "web",
 	"main": "index.html",

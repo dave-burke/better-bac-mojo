@@ -26,12 +26,12 @@
         "source": "app/assistants/about-assistant.js"
     },
     {
-        "scenes": "help",
-        "source": "app/assistants/help-assistant.js"
-    },
-    {
         "scenes": "graph",
         "source": "app/assistants/graph-assistant.js"
+    },
+    {
+        "scenes": "help",
+        "source": "app/assistants/help-assistant.js"
     },
     {
         "scenes": "help-graph",
@@ -42,8 +42,8 @@
         "source": "app/assistants/help-prefs-assistant.js"
     },
     {
-        "scenes": "help-new-drink",
-        "source": "app/assistants/help-new-drink-assistant.js"
+        "scenes": "help-custom-drink",
+        "source": "app/assistants/help-custom-drink-assistant.js"
     },
     {"source": "app/assistants/dialogs/import-drinks-dialog.js"},
     {"source": "app/assistants/dialogs/import-custom-dialog.js"},

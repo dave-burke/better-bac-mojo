@@ -326,8 +326,8 @@ FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
 		message += "Dear Snew Software,<br>Please consider merging this data with the official feed.<br>";
 	}else{
 		subject = "Better BAC json export"
-		message += "Copy the following out to a file named " + fileName + " (Make sure the filename is all lowercase and Windows doesn't rename the file as " + fileName + ".txt).<br>" +
-			"To load these drinks into Better BAC, simply copy " + fileName + " to the root of the Pre's USB directory.<br>";
+		message += "Copy the following out to a file named " + this.fileName + " (Make sure the filename is all lowercase and Windows doesn't rename the file as " + this.fileName + ".txt).<br>" +
+			"To load these drinks into Better BAC, simply copy " + this.fileName + " to the root of the Pre's USB directory.<br>";
 	}
 	message += '<br>{version: "1.0", updated: ' + new Date().getTime() + ", data: [<br>";
 	for(var i = 0;i<this.favDrinks.length;i++){

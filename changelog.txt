@@ -1,4 +1,9 @@
-Version 0.10.12
+Version 0.10.13
+---------------
+Documentation updates
+Fixed some minor bugs
+
+Version 0.10.12 (unreleased)
 ---------------
 Fix 1st time load drinks instructions
 Show error when custom URL is valid, but has no JSON (e.g. http://www.google.com)
