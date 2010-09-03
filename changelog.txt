@@ -1,3 +1,7 @@
+Version 0.10.16
+---------------
+Moved icons to root folder to accomodate an app submission bug on the palm developer portal
+
 Version 0.10.15
 ---------------
 New "fav-drinks" now start with current time as "updated" value (fixes an import bug)
