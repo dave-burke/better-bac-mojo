@@ -315,11 +315,11 @@ FavDrinksAssistant.prototype.handleImports = function(imported){
 };
 
 FavDrinksAssistant.prototype.onImportDialogClose = function(message){
-	if(this.mojoUtils.isFirstTime('favDrinks-remindImport')){
+	if(message){
+		this.mojoUtils.simpleMessage(message);
+	}else if(this.mojoUtils.isFirstTime('favDrinks-remindImport')){
 		//If this is the first import (from the pop-up dialog) remind the user how to check back
 		this.mojoUtils.simpleMessage('Remember, you can always check for and download new A.B.V. data by selecting "Import"-->"From Web (Official)" from the app menu in the top left corner of this screen.');
-	}else if(message){
-		this.mojoUtils.simpleMessage(message);
 	}
 };
 
