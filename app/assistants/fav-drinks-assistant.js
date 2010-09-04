@@ -17,6 +17,7 @@
  */
 function FavDrinksAssistant(dbUtils, prefs) {
 	this.db = dbUtils;
+	this.mojoUtils = new MojoUtils(this);
 	this.prefs = prefs;
 	this.formatUtils = new FormatUtils();
 	
@@ -309,8 +310,17 @@ FavDrinksAssistant.prototype.ajaxSuccess = function(transport){
 FavDrinksAssistant.prototype.handleImports = function(imported){
 	this.controller.showDialog({
 	    template: 'dialogs/import-drinks-dialog',
-	    assistant: new ImportDrinksDialogAssistant(this,imported)
+	    assistant: new ImportDrinksDialogAssistant(this,imported, this.onImportDialogClose.bind(this))
 	});
+};
+
+FavDrinksAssistant.prototype.onImportDialogClose = function(message){
+	if(this.mojoUtils.isFirstTime('favDrinks-remindImport')){
+		//If this is the first import (from the pop-up dialog) remind the user how to check back
+		this.mojoUtils.simpleMessage('Remember, you can always check for and download new A.B.V. data by selecting "Import"-->"From Web (Official)" from the app menu in the top left corner of this screen.');
+	}else if(message){
+		this.mojoUtils.simpleMessage(message);
+	}
 };
 
 FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
@@ -327,7 +337,7 @@ FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
 	}else{
 		subject = "Better BAC json export"
 		message += "Copy the following out to a file named " + this.fileName + " (Make sure the filename is all lowercase and Windows doesn't rename the file as " + this.fileName + ".txt).<br>" +
-			"To load these drinks into Better BAC, simply copy " + this.fileName + " to the root of the Pre's USB directory.<br>";
+			"To load these drinks into Better BAC, simply copy " + this.fileName + " to the root of the Pre's USB directory and choose \"Import\"-->\"From USB Drive\" from the app menu in the top left corner of the add drink screen.<br>";
 	}
 	message += '<br>{version: "1.0", updated: ' + new Date().getTime() + ", data: [<br>";
 	for(var i = 0;i<this.favDrinks.length;i++){
@@ -371,23 +381,22 @@ FavDrinksAssistant.prototype.handleDrinkDelete = function(event){
 };
 
 FavDrinksAssistant.prototype.handleFirstTime = function(){
-	var cookie = new Mojo.Model.Cookie(Mojo.appInfo.id + '.firstTimes');
-	var firstTimes = cookie.get();
-	if (!firstTimes) {
-		firstTimes = {};
-	}
-	if(!firstTimes.favDrinks){
+	if(this.mojoUtils.isFirstTime('favDrinks-suggestImport')){
 		this.controller.showAlertDialog({
 			onChoose: function(choice){
-				}.bind(this),
-				message: 'Want more A.B.V. data? Choose "Import Drinks"->"From Web (Official)" from the app menu to download the A.B.V. for hundreds of drinks! Don\'t forget to check back later to see if there are updates!',
-				choices: [
-				    {label: "Okay", value: true, type: "affirmative"}
-				]
-			});
-		firstTimes.favDrinks = true;
-		Mojo.Log.info("Storing %j" + firstTimes);
-		cookie.put(firstTimes);
+				if(choice){
+					this.ajaxGet(this.urlPath + this.fileName);
+				}else{
+					this.mojoUtils.isFirstTime('favDrinks-remindImport'); //Don't remind them later
+					this.mojoUtils.simpleMessage('If you change your mind, you can download the A.B.V. data later by choosing "Import"-->"From Web (Official)" from the app menu in the top left corner of this screen.');
+				}
+			}.bind(this),
+			message: 'Do you want to download the A.B.V. values for hundreds of drinks from the internet?',
+			choices: [
+			    {label: "Yes!", value: true, type: "affirmative"},
+			    {label: "Not now", value: false, type: "dismiss"}
+			]
+		});
 	}
 };
 

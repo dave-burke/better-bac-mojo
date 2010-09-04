@@ -53,6 +53,7 @@
     {"source": "javascript/defaults.js"},
     {"source": "javascript/validator.js"},
     {"source": "javascript/format-utils.js"},
+    {"source": "javascript/mojo-utils.js"},
     {"source": "javascript/flot/jquery.js"},
     {"source": "javascript/flot/jquery.flot.js"}
 ]

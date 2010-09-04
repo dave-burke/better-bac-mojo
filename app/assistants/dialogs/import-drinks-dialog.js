@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function ImportDrinksDialogAssistant(sceneAssistant, imported) {
+function ImportDrinksDialogAssistant(sceneAssistant, imported, callback) {
 	this.sceneAssistant = sceneAssistant;
 	this.controller = sceneAssistant.controller;
+	this.callback = callback;
 	sceneAssistant.favDrinks = sceneAssistant.favDrinks;
 	
 	this.prefs = sceneAssistant.prefs;
@@ -82,50 +83,42 @@ ImportDrinksDialogAssistant.prototype.setup = function(widget){
 	this.widget = widget;
 	
 	if(this.updatedDrinks.length == 0 && this.newDrinks.length == 0){
-		this.controller.showAlertDialog({
-			onChoose: function(choice){
-					//Nothing to do
-				}.bind(this),
-			message: "No updates found. You have all the latest A.B.V. data.",
-			choices: [
-			    {label: "Okay", value: true, type: "dismiss"}
-			]
-		});
 		this.widget.mojo.close();
+		this.callback("No updates found. You have all the latest A.B.V. data.");
+	}else{
+		this.controller.setupWidget("newDrinksCheck",
+		    this.attributes = {},
+		    this.newDrinksCheckModel = {
+		        value: this.prefs.importNew
+		    }
+		);
+		
+		this.controller.setupWidget("updatedDrinksCheck",
+			this.attributes = {},
+		    this.updatedDrinksCheckModel = {
+		        value: this.prefs.importUpdated
+		    }
+		);
+		
+		this.controller.setupWidget("okButton",
+			this.attributes = {},
+			this.okButtonModel = {
+				buttonLabel: "Import selected"
+		    }
+		);
+		this.controller.get('okButton').addEventListener(Mojo.Event.tap, this.submit.bindAsEventListener(this));
+		
+		this.controller.setupWidget("cancelButton",
+			this.attributes = {},
+			this.okButtonModel = {
+				buttonLabel: "Cancel"
+			}
+		);
+		this.controller.get('cancelButton').addEventListener(Mojo.Event.tap, this.cancel.bindAsEventListener(this));
+		
+		this.controller.get("newDrinksText").update(this.newDrinks.length + " new drinks");
+		this.controller.get("updatedDrinksText").update(this.updatedDrinks.length + " updated drinks");
 	}
-	
-	this.controller.setupWidget("newDrinksCheck",
-	    this.attributes = {},
-	    this.newDrinksCheckModel = {
-	        value: this.prefs.importNew
-	    }
-	);
-	
-	this.controller.setupWidget("updatedDrinksCheck",
-		this.attributes = {},
-	    this.updatedDrinksCheckModel = {
-	        value: this.prefs.importUpdated
-	    }
-	);
-	
-	this.controller.setupWidget("okButton",
-		this.attributes = {},
-		this.okButtonModel = {
-			buttonLabel: "Import selected"
-	    }
-	);
-	this.controller.get('okButton').addEventListener(Mojo.Event.tap, this.submit.bindAsEventListener(this));
-	
-	this.controller.setupWidget("cancelButton",
-		this.attributes = {},
-		this.okButtonModel = {
-			buttonLabel: "Cancel"
-		}
-	);
-	this.controller.get('cancelButton').addEventListener(Mojo.Event.tap, this.cancel.bindAsEventListener(this));
-	
-	this.controller.get("newDrinksText").update(this.newDrinks.length + " new drinks");
-	this.controller.get("updatedDrinksText").update(this.updatedDrinks.length + " updated drinks");
 };
 
 ImportDrinksDialogAssistant.prototype.submit = function(){
@@ -176,4 +169,5 @@ ImportDrinksDialogAssistant.prototype.saveAndClose = function(doNew, doUpdated){
 	this.prefs.importUpdated = doUpdated;
 	this.sceneAssistant.db.savePrefs(this.prefs);
 	this.widget.mojo.close();
+	this.callback();
 };

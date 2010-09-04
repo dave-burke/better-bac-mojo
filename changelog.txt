@@ -1,3 +1,7 @@
+Version 0.10.17
+---------------
+Improved import "training" on first use
+
 Version 0.10.16
 ---------------
 Moved icons to root folder to accomodate an app submission bug on the palm developer portal
