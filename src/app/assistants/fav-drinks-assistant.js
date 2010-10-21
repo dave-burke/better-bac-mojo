@@ -43,7 +43,7 @@ FavDrinksAssistant.prototype.setup = function(){
 			this.attributes = {
 				itemTemplate: "fav-drinks/drink-list-entry",
 				listTemplate: "fav-drinks/drink-list-container",
-				//emptyTemplate: "fav-drinks/drink-list-empty",
+				emptyTemplate: "fav-drinks/drink-list-empty",
 				formatters:{
 					name:this.formatUtils.formatName.bind(this.formatUtils),
 					abv:this.formatUtils.formatAbv.bind(this.formatUtils)
@@ -60,7 +60,7 @@ FavDrinksAssistant.prototype.setup = function(){
 	
 	this.cmdMenuModel = {
 		items: [
-		    {},{label: "Custom drink", command: "do-custom"},{}
+		    {label: "Custom drink", command: "do-custom"},{label: "Update list", command: "import-web-official"}
 		]
 	};
 	this.controller.setupWidget(Mojo.Menu.commandMenu, this.handleCommand, this.cmdMenuModel);
@@ -388,7 +388,7 @@ FavDrinksAssistant.prototype.handleFirstTime = function(){
 					this.ajaxGet(this.urlPath + this.fileName);
 				}else{
 					this.mojoUtils.isFirstTime('favDrinks-remindImport'); //Don't remind them later
-					this.mojoUtils.simpleMessage('If you change your mind, you can download the A.B.V. data later by choosing "Import"-->"From Web (Official)" from the app menu in the top left corner of this screen.');
+					this.mojoUtils.simpleMessage('If you change your mind, you can download the A.B.V. data later by tapping the "Update" button on the lower right corner of this screen.');
 				}
 			}.bind(this),
 			message: 'Do you want to download the A.B.V. values for hundreds of drinks from the internet?',

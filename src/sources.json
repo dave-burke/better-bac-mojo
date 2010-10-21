@@ -48,6 +48,7 @@
     {"source": "app/assistants/dialogs/import-drinks-dialog.js"},
     {"source": "app/assistants/dialogs/import-custom-dialog.js"},
     {"source": "javascript/bac-utils.js"},
+    {"source": "javascript/conversion-utils.js"},
     {"source": "javascript/timeout-utils.js"},
     {"source": "javascript/db-utils.js"},
     {"source": "javascript/defaults.js"},

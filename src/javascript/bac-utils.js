@@ -16,37 +16,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function BacUtils() {
+	this.convUtils = new ConversionUtils();
 }
 
 BacUtils.prototype.calcBacIncrease = function(prefs,drink){
-	if(prefs.calc == "widmark"){
-		return this.calcBacIncreaseWidmark(prefs,drink);
-	}else if(prefs.calc == "watson"){
-		return this.calcBacIncreaseWatson(prefs, drink);
+	var abv = drink.abv / 100; //convert to percentage
+	if(drink.units && drink.units == 'ml'){
+		var drinkOz = this.convUtils.mlToOz(drink.vol) * abv;
 	}else{
-		return this.calcBacIncreaseWidmark(prefs,drink);
+		var drinkOz = drink.vol * abv; //the amount of pure alcohol in the drink (in fluid ounces)
+	}
+	
+	var gender = prefs.gender;
+
+	if(prefs.calc == "watson"){
+		if(prefs.units && prefs.units == 'metric'){
+			var heightCm = prefs.height;
+			var weightKg = prefs.weight;
+		}else{
+			var heightCm = this.convUtils.inToCm(prefs.height);
+			var weightKg = this.convUtils.lbsToKg(prefs.weight);
+		}
+		var age = prefs.age;
+		return this.calcBacIncreaseWatson(drinkOz, heightCm, weightKg, gender, age);
+	}else{
+		//widmark
+		if(prefs.units && prefs.units == 'metric'){
+			var weightLbs = this.convUtils.kgToLbs(prefs.weight);
+		}else{
+			var weightLbs = prefs.weight;
+		}
+		return this.calcBacIncreaseWidmark(drinkOz, gender, weightLbs);
 	}
 }
 
-BacUtils.prototype.calcBacIncreaseWidmark = function(prefs, drink){
-	var abv = drink.abv / 100; //convert to percentage
-	var a = drink.vol * abv; //the amount of pure alcohol in the drink (in fluid ounces)
-	if(prefs.gender == "m"){
+BacUtils.prototype.calcBacIncreaseWidmark = function(drinkOz, gender, weightLbs){
+	if(gender == "m"){
 		var r = 0.68; //0.58 low - 0.68 mid - 0.9 high
 	}else{
 		var r = 0.55; //0.45 low - 0.55 mid - 0.63 high
 	}
-	bacDelta = a /(prefs.weight*r);
+	bacDelta = drinkOz / (weightLbs * r);
 	bacDelta = bacDelta * 0.0514; //pounds per fluid ounce
 	bacDelta = bacDelta * 1.055; //specific gravity of blood (in grams per milliliter)
 	bacDelta = bacDelta * 100; //grams per 100ml--Widmark's preferred units
 	return bacDelta;
 }
 
-BacUtils.prototype.calcBacIncreaseWatson = function(prefs, drink){
-	var a = drink.vol * (drink.abv/100); //ounces of pure alcohol
-	a = a * 23.36;//(35/3); //conv to grams
-	var tbw = this.calcTbw(prefs);
+BacUtils.prototype.calcBacIncreaseWatson = function(drinkOz, heightCm, weightKg, gender, age){
+	g = drinkOz * 23.36;//(35/3); //conv to grams
+	var tbw = this.calcTbw(heightCm, weightKg, gender, age);
 
 	//tbw is in liters
 	bacDelta = (a * (0.80 / tbw)); //grams per liter
@@ -55,13 +74,11 @@ BacUtils.prototype.calcBacIncreaseWatson = function(prefs, drink){
 	return bacDelta;
 }
 
-BacUtils.prototype.calcTbw = function(prefs){
-	var cm = prefs.height * 2.54; //convert inches to cm
-	var kg = prefs.weight / 2.2046; //convert lbs to kg
-	if(prefs.gender == "m"){
-		return 2.447 - (0.09516 * prefs.age) + (0.1074 * cm) + (0.3362 * kg);
+BacUtils.prototype.calcTbw = function(heightCm, weightKg, gender, age){
+	if(gender == "m"){
+		return 2.447 - (0.09516 * age) + (0.1074 * heightCm) + (0.3362 * weightKg);
 	}else{
-		return -2.097 + (0.1069 * cm) + (0.2466 * kg);
+		return -2.097 + (0.1069 * heightCm) + (0.2466 * weightKg);
 	}
 }
 

@@ -16,45 +16,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function Validator() {
+	this.defaults = new Defaults();
 }
 
 Validator.prototype.validatePrefs = function(prefs){
+	var heightMin = 1.0;
+	var heightMax = 300.0;
+	var weightMin = 1.0;
+	var weightMax = 1000.0;
+	var ageMin = 1;
+	var ageMax = 120;
+	
 	if(isNaN(prefs.height)){
 		Mojo.Controller.errorDialog("Height must be a number");
-		prefs.height = 68;
+		prefs.height = this.defaults.prefs.height;
 	}
-	if(prefs.height < 1.0){
-		prefs.height = 1.0;
+	if(prefs.height < heightMin){
+		prefs.height = heightMin;
 	}
-	if(prefs.height > 120){
-		prefs.height = 120;
+	if(prefs.height > heightMax){
+		prefs.height = heightMax;
 	}
 	
 	if(isNaN(prefs.weight)){
 		Mojo.Controller.errorDialog("Weight must be a number");
-		prefs.weight = 180;
+		prefs.weight = this.defaults.prefs.weight;
 	}
-	if(prefs.weight < 1.0){
-		prefs.weight = 1.0;
+	if(prefs.weight < weightMin){
+		prefs.weight = weightMin;
 	}
-	if(prefs.weight > 1000){
-		prefs.weight = 1000;
+	if(prefs.weight > weightMax){
+		prefs.weight = weightMax;
 	}
-	if(prefs.age < 0){
-		prefs.age = 0;
+	if(prefs.age < ageMin){
+		prefs.age = ageMin;
 	}
-	if(prefs.age > 120){
-		prefs.age = 120;
+	if(prefs.age > ageMax){
+		prefs.age = ageMax;
 	}
 	
 	if(isNaN(prefs.limit)){
 		Mojo.Controller.errorDialog("Limit must be a number");
-		prefs.limit = 0.08;
+		prefs.limit = this.defaults.prefs.limit;
 	}
 	if(prefs.limit < 0){
-		prefs.limit = 0;
+		prefs.limit = 0.0;
 	}
 	if(prefs.limit > 1){
-		prefs.limit = 1;
+		prefs.limit = 1.0;
 	}
 }

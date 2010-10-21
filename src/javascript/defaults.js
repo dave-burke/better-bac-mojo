@@ -30,6 +30,7 @@ function Defaults() {
 		weight: 180,
 		age: 25,
 		limit: 0.08,
+		units: "imperial",
 		calc: "widmark",
 		historyMaxDays: 7,
 		historyMaxLength: 30,
@@ -44,6 +45,7 @@ function Defaults() {
 		name: "Beer (generic)",
 		abv: 5,
 		vol: 16,
+		units: "oz",
 		count: 0,
 		lastTime: 0
 	}
@@ -51,6 +53,7 @@ function Defaults() {
 		name: "Wine (generic)",
 		abv: 12,
 		vol: 4,
+		units: "oz",
 		count: 0,
 		updated: 0,
 		lastTime: 0
@@ -59,6 +62,7 @@ function Defaults() {
 		name: "Shot (generic)",
 		abv: 40,
 		vol: 1.5,
+		units: "oz",
 		count: 0,
 		updated: 0,
 		lastTime: 0
@@ -67,6 +71,7 @@ function Defaults() {
 		name: "Rum & Cola",
 		abv: 16,
 		vol: 5,
+		units: "oz",
 		count: 0,
 		updated: 0,
 		lastTime: 0
@@ -75,6 +80,7 @@ function Defaults() {
 		name: "Cocktail (generic)",
 		abv: 28,
 		vol: 3,
+		units: "oz",
 		count: 0,
 		updated: 0,
 		lastTime: 0

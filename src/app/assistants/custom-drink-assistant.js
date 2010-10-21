@@ -24,17 +24,21 @@ function CustomDrinkAssistant(prefs, templateDrink) {
 	}
 	
 	if (templateDrink) {
+		//TODO remove this block from catalog version
+		//if(!templateDrink.units){
+		//	templateDrink.units = "oz";
+		//}
 		this.newDrinkModel = {
 			"name": templateDrink.name,
 			"abv": templateDrink.abv,
 			"vol": templateDrink.vol,
+			"units": templateDrink.units,
 			"bac": 0,
 			"origBac": 0,
 			"time": new Date().getTime()
 		}
 		Mojo.Log.info("Got template: %j", this.newDrinkModel);
-	}
-	else {
+	}else {
 		this.newDrinkModel = {
 			"name": "",
 			"abv": 0,
@@ -44,6 +48,11 @@ function CustomDrinkAssistant(prefs, templateDrink) {
 			"bacWhenAdded": 0,
 			"time": new Date().getTime()
 		};
+		//if(this.prefs.units = "metric"){
+		//	this.newdrinkmodel.units = "ml";
+		//}else{
+		//	this.newdrinkmodel.units = "oz";
+		//}
 	}
 }
 
@@ -110,18 +119,17 @@ CustomDrinkAssistant.prototype.setup = function() {
 	    ]
 	};
 	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
+
+	this.updateDrinkInfo();
 }
 
 CustomDrinkAssistant.prototype.activate = function(templateDrink) {
 	Mojo.Log.info("Setting new drink listeners");
-	
-	this.submitButton = this.controller.get("submitButton");
-	this.submitHandler = this.submit.bind(this);
-	Mojo.Event.listen(this.submitButton, Mojo.Event.tap, this.submitHandler);
-	
-	this.drinkTimePicker = this.controller.get("drinkTimePicker");
-	this.timeChangeHandler = this.changeTime.bind(this);
-	Mojo.Event.listen(this.drinkTimePicker, Mojo.Event.propertyChange, this.timeChangeHandler);
+	//TODO keyPress
+	Mojo.Event.listen(this.controller.get("drinkAbvField"), Mojo.Event.propertyChange, this.updateDrinkInfo.bind(this));
+	Mojo.Event.listen(this.controller.get("drinkVolField"), Mojo.Event.propertyChange, this.updateDrinkInfo.bind(this));
+	Mojo.Event.listen(this.controller.get("drinkTimePicker"), Mojo.Event.propertyChange, this.changeTime.bind(this));
+	Mojo.Event.listen(this.controller.get("submitButton"), Mojo.Event.tap, this.submit.bind(this));
 	
 	if(this.newDrinkModel.name.length > 0){
 		Mojo.Log.info("Popped with template drink!");
@@ -129,6 +137,20 @@ CustomDrinkAssistant.prototype.activate = function(templateDrink) {
 	}else{
 		Mojo.Log.info("No template drink");
 		this.controller.get("drinkNameField").mojo.focus();
+	}
+}
+
+CustomDrinkAssistant.prototype.updateDrinkInfo = function(event){
+	if(!isNaN(this.newDrinkModel.abv) && this.newDrinkModel.abv > 0 &&
+			!isNaN(this.newDrinkModel.vol) && this.newDrinkModel.vol > 0){
+		var abvDelta = this.bacUtils.calcBacIncrease(this.prefs, this.newDrinkModel);
+		abvDelta = this.bacUtils.roundBac(abvDelta);
+		var timeDelta = this.bacUtils.calcTimeTo(abvDelta, 0);
+		var text = "This drink will add " + abvDelta + " to your BAC. ";
+		text += "It will add " + timeDelta + " to the time it takes your B.A.C. to reach zero.";
+		this.controller.get("drinkInfo").innerHTML = text;
+	}else{
+		this.controller.get("drinkInfo").innerHTML = "";
 	}
 }
 
@@ -154,8 +176,10 @@ CustomDrinkAssistant.prototype.submit = function(event){
 
 CustomDrinkAssistant.prototype.deactivate = function(event) {
 	Mojo.Log.info("Clearing new drink listeners");
-	Mojo.Event.stopListening(this.submitButton, Mojo.Event.tap, this.submitHandler);
-	Mojo.Event.stopListening(this.drinkTimePicker, Mojo.Event.propertyChange, this.timeChangeHandler);
+	Mojo.Event.stopListening(this.controller.get("drinkAbvField"), Mojo.Event.propertyChange, this.submitHandler);
+	Mojo.Event.stopListening(this.controller.get("drinkVolField"), Mojo.Event.propertyChange, this.submitHandler);
+	Mojo.Event.stopListening(this.controller.get("drinkTimePicker"), Mojo.Event.propertyChange, this.timeChangeHandler);
+	Mojo.Event.stopListening(this.controller.get("submitButton"), Mojo.Event.tap, this.submitHandler);
 }
 
 CustomDrinkAssistant.prototype.cleanup = function(event) {

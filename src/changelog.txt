@@ -1,3 +1,8 @@
+Version 0.10.19 (unreleased)
+---------------
+Added metric units for height/weight
+Added preview info to custom drink screen
+
 Version 0.10.18 (beta)
 ---------------
 Handle situation when updating user has already downloaded updates
