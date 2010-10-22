@@ -1,4 +1,12 @@
-Version 0.10.19 (unreleased)
+Version 0.11.2
+--------------
+Fixed several bugs related to metric conversion
+
+Version 0.11.1 (unreleased)
+--------------
+Added unit toggle to custom drink screen
+
+Version 0.11.0 (unreleased)
 ---------------
 Added metric units for height/weight
 Added preview info to custom drink screen

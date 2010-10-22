@@ -22,10 +22,10 @@ function ConversionUtils() {
  * Volume (Technically oz is weight)
  */
 ConversionUtils.prototype.ozToMl = function(oz){
-	return 29.5735296 * oz;
+	return this.round(29.5735296 * oz);
 }
 ConversionUtils.prototype.mlToOz = function(ml){
-	return 0.0338140227 * ml;
+	return this.round(0.0338140227 * ml);
 }
 
 /*

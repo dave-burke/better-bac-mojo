@@ -72,7 +72,7 @@ FormatUtils.prototype.formatAbv = function(abv, model) {
 }
 
 FormatUtils.prototype.formatVol = function(vol, model) {
-	return vol + " oz.";
+	return vol + model.units;
 }
 
 FormatUtils.prototype.formatBac = function(bac, model) {

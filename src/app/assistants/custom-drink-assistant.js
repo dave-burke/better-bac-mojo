@@ -30,6 +30,8 @@ function CustomDrinkAssistant(prefs, templateDrink) {
 		if(!templateDrink.units){
 			Mojo.Log.info("No units on template drink. Default to oz");
 			templateDrink.units = "oz";
+		}else{
+			Mojo.Log.info("Template drink already has units: " + templateDrink.units);
 		}
 		this.newDrinkModel = {
 			"name": templateDrink.name,
@@ -77,7 +79,7 @@ CustomDrinkAssistant.prototype.setup = function() {
 	this.controller.setupWidget("drinkAbvField",
 		this.attributes = {
 			modelProperty: 'abv',
-			hintText: $L('Alcohol By Volume'),
+			//hintText: $L('Alcohol By Volume'),
 			modifierState: Mojo.Widget.numLock
 		},
 		this.newDrinkModel
@@ -87,7 +89,7 @@ CustomDrinkAssistant.prototype.setup = function() {
 	this.controller.setupWidget("drinkVolField",
 		this.attributes = {
 			modelProperty: 'vol',
-			hintText: $L('Volume (in oz.)'),
+			//hintText: $L('Volume'),
 			focusMode: Mojo.Widget.focusSelectMode,
 			modifierState: Mojo.Widget.numLock
 		},
@@ -102,7 +104,7 @@ CustomDrinkAssistant.prototype.setup = function() {
 	            falseValue: "oz",
 	            falseLabel: "oz"
 	        },
-	        this.newDrinksModel
+	        this.newDrinkModel
 	    );
 	
 	this.controller.setupWidget("drinkTimePicker",
@@ -177,10 +179,18 @@ CustomDrinkAssistant.prototype.updateDrinkInfo = function(event){
 }
 
 CustomDrinkAssistant.prototype.changeUnits = function(event){
-	if(this.newDrinkModel.units == "metric"){
-		this.newDrinkModel.volume = this.convUtils.ozToMl(this.newDrinkModel.volume);
+	//This shouldn't really be necessary? units is always "oz" but event.value is always correct?
+	Mojo.Log.info("Units are " + this.newDrinkModel.units);
+	if(this.newDrinkModel.units == "ml"){
+		var oz = this.newDrinkModel.vol;
+		var ml = this.convUtils.ozToMl(oz);
+		Mojo.Log.info("Converting " + oz + "oz to " + ml + "ml");
+		this.newDrinkModel.vol = ml;
 	}else{
-		this.newDrinkModel.volume = this.convUtils.mlToOz(this.newDrinkModel.volume);
+		var ml = this.newDrinkModel.vol;
+		var oz = this.convUtils.mlToOz(ml);
+		Mojo.Log.info("Converting " + ml + "ml to " + oz + "oz");
+		this.newDrinkModel.vol = oz;
 	}
 	this.controller.modelChanged(this.newDrinkModel);
 }
@@ -207,8 +217,8 @@ CustomDrinkAssistant.prototype.submit = function(event){
 
 CustomDrinkAssistant.prototype.deactivate = function(event) {
 	Mojo.Log.info("Clearing new drink listeners");
-	Mojo.Event.stopListening(this.controller.get("drinkAbvField"), Mojo.Event.propertyChange, this.updateDrinkHandler);
-	Mojo.Event.stopListening(this.controller.get("drinkVolField"), Mojo.Event.propertyChange, this.updateDrinkHandler);
+	Mojo.Event.stopListening(this.controller.get("drinkAbvField"), Mojo.Event.propertyChange, this.updateDrinkInfoHandler);
+	Mojo.Event.stopListening(this.controller.get("drinkVolField"), Mojo.Event.propertyChange, this.updateDrinkInfoHandler);
 	Mojo.Event.stopListening(this.controller.get("drinkUnitToggle"), Mojo.Event.propertyChange, this.changeUnitsHandler);
 	Mojo.Event.stopListening(this.controller.get("drinkTimePicker"), Mojo.Event.propertyChange, this.changeTimeHandler);
 	Mojo.Event.stopListening(this.controller.get("submitButton"), Mojo.Event.tap, this.submitHandler);

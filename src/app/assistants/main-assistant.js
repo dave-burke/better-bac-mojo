@@ -267,6 +267,7 @@ MainAssistant.prototype.saveFavorite = function(newDrink){
 					}
 					drink.abv = newDrink.abv;
 					drink.vol = newDrink.vol;
+					drink.units = newDrink.units;
 					drink.count++;
 					drink.lastTime = new Date().getTime();
 					favDrinks[i] = drink;
@@ -279,6 +280,7 @@ MainAssistant.prototype.saveFavorite = function(newDrink){
 						name: newDrink.name,
 						abv: newDrink.abv,
 						vol: newDrink.vol,
+						units: newDrink.units,
 						count: 0,
 						updated: new Date().getTime(),
 						lastTime: new Date().getTime()
