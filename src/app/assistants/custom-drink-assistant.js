@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function CustomDrinkAssistant(prefs, templateDrink) {
+	this.convUtils = new ConversionUtils();
+	
 	if(prefs){
 		Mojo.Log.info("Received prefs %j",prefs);
 		this.prefs = prefs;
@@ -25,9 +27,10 @@ function CustomDrinkAssistant(prefs, templateDrink) {
 	
 	if (templateDrink) {
 		//TODO remove this block from catalog version
-		//if(!templateDrink.units){
-		//	templateDrink.units = "oz";
-		//}
+		if(!templateDrink.units){
+			Mojo.Log.info("No units on template drink. Default to oz");
+			templateDrink.units = "oz";
+		}
 		this.newDrinkModel = {
 			"name": templateDrink.name,
 			"abv": templateDrink.abv,
@@ -48,11 +51,11 @@ function CustomDrinkAssistant(prefs, templateDrink) {
 			"bacWhenAdded": 0,
 			"time": new Date().getTime()
 		};
-		//if(this.prefs.units = "metric"){
-		//	this.newdrinkmodel.units = "ml";
-		//}else{
-		//	this.newdrinkmodel.units = "oz";
-		//}
+		if(this.prefs.units == "metric"){
+			this.newDrinkModel.units = "ml";
+		}else{
+			this.newDrinkModel.units = "oz";
+		}
 	}
 }
 
@@ -61,62 +64,73 @@ CustomDrinkAssistant.prototype.setup = function() {
 	
 	// Set up drink name field
 	this.controller.setupWidget("drinkNameField",
-        this.attributes = {
+		this.attributes = {
 			modelProperty: 'name',
-            hintText: $L('Drink name'),
-            textCase: Mojo.Widget.steModeTitleCase,
-            focusMode: Mojo.Widget.focusSelectMode
-        },
-        this.newDrinkModel
+			hintText: $L('Drink name'),
+			textCase: Mojo.Widget.steModeTitleCase,
+			focusMode: Mojo.Widget.focusSelectMode
+		},
+		this.newDrinkModel
 	);
 	
 	// Set up drink ABV field
 	this.controller.setupWidget("drinkAbvField",
-        this.attributes = {
+		this.attributes = {
 			modelProperty: 'abv',
-            hintText: $L('Alcohol By Volume'),
+			hintText: $L('Alcohol By Volume'),
 			modifierState: Mojo.Widget.numLock
-        },
-        this.newDrinkModel
+		},
+		this.newDrinkModel
 	);
 	
 	// Set up drink vol field
 	this.controller.setupWidget("drinkVolField",
-        this.attributes = {
+		this.attributes = {
 			modelProperty: 'vol',
-            hintText: $L('Volume (in oz.)'),
-            focusMode: Mojo.Widget.focusSelectMode,
+			hintText: $L('Volume (in oz.)'),
+			focusMode: Mojo.Widget.focusSelectMode,
 			modifierState: Mojo.Widget.numLock
-        },
+		},
 		this.newDrinkModel
 	);
 	
-    this.controller.setupWidget("drinkTimePicker",
-        this.attributes = {
-            label: 'Time'
-        },
-        this.model = {
-    		time: new Date()
-    	}
+	this.controller.setupWidget("drinkUnitToggle",
+	        this.attributes = {
+				modelProperty: "units",
+	            trueValue: "ml",
+	            trueLabel: "ml",
+	            falseValue: "oz",
+	            falseLabel: "oz"
+	        },
+	        this.newDrinksModel
+	    );
+	
+	this.controller.setupWidget("drinkTimePicker",
+		this.attributes = {
+			label: 'Time'
+		},
+		this.model = {
+			time: new Date()
+		}
 	);
-    
+	
 	// Set up submit button
 	this.controller.setupWidget("submitButton",
-        this.attributes = {},
-        this.model = {
-            label : "Add Drink"
-        }
+		this.attributes = {},
+		this.model = {
+			label : "Add Drink"
+		}
 	);
 	
 	this.appMenuAttr = {
-	    omitDefaultItems: true
+		omitDefaultItems: true
 	};
 	this.appMenuModel = {
 		visible: true,
 		items: [ 
-		    { label: "About", command: 'do-myAbout'},
-		    { label: "Help for this scene", command: 'do-help-custom-drink'},
-	    ]
+			{ label: "About", command: 'do-myAbout'},
+			{ label: "Help for this scene", command: 'do-help-custom-drink'},
+		]
 	};
 	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
 
@@ -126,10 +140,18 @@ CustomDrinkAssistant.prototype.setup = function() {
 CustomDrinkAssistant.prototype.activate = function(templateDrink) {
 	Mojo.Log.info("Setting new drink listeners");
 	//TODO keyPress
-	Mojo.Event.listen(this.controller.get("drinkAbvField"), Mojo.Event.propertyChange, this.updateDrinkInfo.bind(this));
-	Mojo.Event.listen(this.controller.get("drinkVolField"), Mojo.Event.propertyChange, this.updateDrinkInfo.bind(this));
-	Mojo.Event.listen(this.controller.get("drinkTimePicker"), Mojo.Event.propertyChange, this.changeTime.bind(this));
-	Mojo.Event.listen(this.controller.get("submitButton"), Mojo.Event.tap, this.submit.bind(this));
+	this.updateDrinkInfoHandler = this.updateDrinkInfo.bind(this);
+	Mojo.Event.listen(this.controller.get("drinkAbvField"), Mojo.Event.propertyChange, this.updateDrinkInfoHandler);
+	Mojo.Event.listen(this.controller.get("drinkVolField"), Mojo.Event.propertyChange, this.updateDrinkInfoHandler);
+	
+	this.changeUnitsHandler = this.changeUnits.bind(this);
+	Mojo.Event.listen(this.controller.get("drinkUnitToggle"), Mojo.Event.propertyChange, this.changeUnitsHandler);
+	
+	this.changeTimeHandler = this.changeTime.bind(this);
+	Mojo.Event.listen(this.controller.get("drinkTimePicker"), Mojo.Event.propertyChange, this.changeTimeHandler);
+	
+	this.submitHandler = this.submit.bind(this);
+	Mojo.Event.listen(this.controller.get("submitButton"), Mojo.Event.tap, this.submitHandler);
 	
 	if(this.newDrinkModel.name.length > 0){
 		Mojo.Log.info("Popped with template drink!");
@@ -154,6 +176,15 @@ CustomDrinkAssistant.prototype.updateDrinkInfo = function(event){
 	}
 }
 
+CustomDrinkAssistant.prototype.changeUnits = function(event){
+	if(this.newDrinkModel.units == "metric"){
+		this.newDrinkModel.volume = this.convUtils.ozToMl(this.newDrinkModel.volume);
+	}else{
+		this.newDrinkModel.volume = this.convUtils.mlToOz(this.newDrinkModel.volume);
+	}
+	this.controller.modelChanged(this.newDrinkModel);
+}
+
 CustomDrinkAssistant.prototype.changeTime = function(event){
 	var currentTime = new Date().getTime();
 	var selectedTime = event.value.getTime();
@@ -176,9 +207,10 @@ CustomDrinkAssistant.prototype.submit = function(event){
 
 CustomDrinkAssistant.prototype.deactivate = function(event) {
 	Mojo.Log.info("Clearing new drink listeners");
-	Mojo.Event.stopListening(this.controller.get("drinkAbvField"), Mojo.Event.propertyChange, this.submitHandler);
-	Mojo.Event.stopListening(this.controller.get("drinkVolField"), Mojo.Event.propertyChange, this.submitHandler);
-	Mojo.Event.stopListening(this.controller.get("drinkTimePicker"), Mojo.Event.propertyChange, this.timeChangeHandler);
+	Mojo.Event.stopListening(this.controller.get("drinkAbvField"), Mojo.Event.propertyChange, this.updateDrinkHandler);
+	Mojo.Event.stopListening(this.controller.get("drinkVolField"), Mojo.Event.propertyChange, this.updateDrinkHandler);
+	Mojo.Event.stopListening(this.controller.get("drinkUnitToggle"), Mojo.Event.propertyChange, this.changeUnitsHandler);
+	Mojo.Event.stopListening(this.controller.get("drinkTimePicker"), Mojo.Event.propertyChange, this.changeTimeHandler);
 	Mojo.Event.stopListening(this.controller.get("submitButton"), Mojo.Event.tap, this.submitHandler);
 }
 
