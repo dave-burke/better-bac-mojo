@@ -30,7 +30,7 @@ BacUtils.prototype.calcBacIncrease = function(prefs,drink){
 	var gender = prefs.gender;
 
 	if(prefs.calc == "watson"){
-		if(prefs.units && prefs.units == 'metric'){
+		if(prefs.units == 'metric'){
 			var heightCm = prefs.height;
 			var weightKg = prefs.weight;
 		}else{
@@ -68,7 +68,7 @@ BacUtils.prototype.calcBacIncreaseWatson = function(drinkOz, heightCm, weightKg,
 	var tbw = this.calcTbw(heightCm, weightKg, gender, age);
 
 	//tbw is in liters
-	bacDelta = (a * (0.80 / tbw)); //grams per liter
+	bacDelta = (g * (0.80 / tbw)); //grams per liter
 	bacDelta = bacDelta * 100; //grams per 100 milliliter
 	bacDelta = bacDelta / 1000; // convert grams to kilograms?
 	return bacDelta;
