@@ -257,6 +257,7 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 
 FavDrinksAssistant.prototype.ajaxGet = function(source){
 	Mojo.Log.info("Loading drinks from " + source);
+	this.startSpinner();
 	var req = new Ajax.Request(source, {
 		method: 'get',
 		onFailure: this.ajaxFailure.bind(this),
@@ -266,14 +267,17 @@ FavDrinksAssistant.prototype.ajaxGet = function(source){
 };
 
 FavDrinksAssistant.prototype.ajaxFailure = function(){
+	this.stopSpinner();
 	Mojo.Log.info("JSON get failed");
 };
 
 FavDrinksAssistant.prototype.ajax404 = function(){
+	this.stopSpinner();
 	Mojo.Log.info("JSON not found");
 };
 
 FavDrinksAssistant.prototype.ajaxSuccess = function(transport){
+	this.stopSpinner();
 	Mojo.Log.info("Ajax success!");
 	var response = transport.responseText;
 	if(response){

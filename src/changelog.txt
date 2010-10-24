@@ -1,4 +1,12 @@
-Version 0.11.2
+Version 0.11.4
+--------------
+Testing spinner for update on actual device
+
+Version 0.11.3
+--------------
+Fixed bug with Watson calculations
+
+Version 0.11.2 (unreleased)
 --------------
 Fixed several bugs related to metric conversion
 
