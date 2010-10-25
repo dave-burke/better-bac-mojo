@@ -2,7 +2,25 @@
   background: url(../icon48.png);
 }
 .all-centered{
-	margin-top: 116px;
-	margin-left: auto;
-	margin-right: auto;
+	margin-top:116px;
+	margin-left:auto;
+	margin-right:auto;
+}
+.drink-row-wrapper{
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+.drink-info{
+	font-size: 75%;
+}
+.drink-title{
+	font-weight:bold;
+}
+.drink-info-left{
+	margin-left: 5px;
+}
+.drink-info-right{
+	float:right;
+	margin-right:5px;
+	text-align:right;
 }

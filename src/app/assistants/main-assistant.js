@@ -76,7 +76,8 @@ MainAssistant.prototype.setup = function() {
 				time:this.formatUtils.formatDateTime.bind(this.formatUtils),
 				abv:this.formatUtils.formatAbv.bind(this.formatUtils),
 				vol:this.formatUtils.formatVol.bind(this.formatUtils),
-				bac: this.formatUtils.formatBac.bind(this.formatUtils)
+				bacWhenAdded: this.formatUtils.formatBac.bind(this.formatUtils),
+				bac: this.formatTimeUntilProcessed.bind(this)
 			},
 			swipeToDelete: true,
 			reorderable: false
@@ -148,12 +149,35 @@ MainAssistant.prototype.activate = function(newDrink) {
 	this.activateRefresh();
 };
 
+MainAssistant.prototype.formatTimeUntilProcessed = function(bac, model){
+	var bacAhead = 0;
+	for(var i=this.state.drinks.length - 1;i>=0;i--){
+		var drink = this.state.drinks[i];
+		bacAhead += drink.bac;
+		if(model.time == drink.time){
+			if(bacAhead == 0){
+				return "";
+			}else{
+				var message = "Time left in your system: "
+				message += this.bacUtils.calcTimeTo(bacAhead,0);
+				return message;
+			}
+		}
+	}
+	return "N/A";
+}
+
+
 MainAssistant.prototype.divideHistory = function(item){
 	if(item){
 		if(item.bac == 0){
-			return "History";
+			return "Out of your system";
 		}else{
-			return "Current";
+			if(item.bac < item.origBac){
+				return "Being processed";
+			}else{
+				return "In your system";
+			}
 		}
 	}
 };

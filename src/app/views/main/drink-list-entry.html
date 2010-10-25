@@ -1,10 +1,19 @@
-<div class="palm-row"><div class="palm-row-wrapper">
-	<div class="label left truncating-text">
-		#{nameFormatted}<br>
-		#{volFormatted} / #{abvFormatted}
+<div class="palm-row"><div class="palm-row-wrapper"><div class="drink-row-wrapper">
+	<div class="drink-info">
+		<div class="drink-info-left drink-title truncating-text">
+			#{nameFormatted}
+		</div>
 	</div>
-	<div class="title right">
-		#{timeFormatted}<br>
+	<div class="drink-info">
+		<div class="drink-info-right">
+			#{timeFormatted}
+		</div>
+		<div class="drink-info-left">
+			#{volFormatted} / #{abvFormatted}
+		</div>
+	</div>
+	<div class="drink-info drink-info-left">
+		BAC when added: #{bacWhenAddedFormatted}<br>
 		#{bacFormatted}
 	</div>
-</div></div>
+</div></div></div>

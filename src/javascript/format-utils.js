@@ -76,11 +76,5 @@ FormatUtils.prototype.formatVol = function(vol, model) {
 }
 
 FormatUtils.prototype.formatBac = function(bac, model) {
-	var roundedBac = String(this.bacUtils.roundBac(bac));
-	var roundedOrigBac = String(this.bacUtils.roundBac(model.origBac));
-	if(roundedBac == 0){
-		return roundedOrigBac;
-	}else{
-		return roundedBac + " / " + roundedOrigBac;
-	}
+	return String(this.bacUtils.roundBac(bac));
 }
