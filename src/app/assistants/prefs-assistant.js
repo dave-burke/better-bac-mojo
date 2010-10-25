@@ -152,11 +152,11 @@ PrefsAssistant.prototype.savePrefs = function(event){
 PrefsAssistant.prototype.setLabels = function(){
 	if(this.prefs.units == "metric"){
 		this.controller.get("heightLabel").innerHTML = "Height (in cm)";
-		this.controller.get("weightLabel").innerHTML = "Height (in kg)";
+		this.controller.get("weightLabel").innerHTML = "Weight (in kg)";
 	}else{
 		this.prefs.units == "imperial";
 		this.controller.get("heightLabel").innerHTML = "Height (in inches)";
-		this.controller.get("weightLabel").innerHTML = "Height (in lbs)";
+		this.controller.get("weightLabel").innerHTML = "Weight (in lbs)";
 	}
 }
 
