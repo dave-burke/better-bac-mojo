@@ -2,6 +2,7 @@ Version 0.11.5
 --------------
 Fixed loading scrim and show on "ajax-get" action
 Fix initial label for height/weight in prefs
+Updated drink list formating
 
 Version 0.11.4
 --------------
