@@ -143,6 +143,7 @@ CustomDrinkAssistant.prototype.activate = function(templateDrink) {
 	Mojo.Log.info("Setting new drink listeners");
 	//TODO keyPress
 	this.updateDrinkInfoHandler = this.updateDrinkInfo.bind(this);
+	//this.controller.listen(this.controller.sceneElement, Mojo.Event.keypress, this.updateDrinkInfoHandler);
 	Mojo.Event.listen(this.controller.get("drinkAbvField"), Mojo.Event.propertyChange, this.updateDrinkInfoHandler);
 	Mojo.Event.listen(this.controller.get("drinkVolField"), Mojo.Event.propertyChange, this.updateDrinkInfoHandler);
 	
@@ -165,11 +166,13 @@ CustomDrinkAssistant.prototype.activate = function(templateDrink) {
 }
 
 CustomDrinkAssistant.prototype.updateDrinkInfo = function(event){
+	Mojo.Log.info("Drink info updated");
 	if(!isNaN(this.newDrinkModel.abv) && this.newDrinkModel.abv > 0 &&
 			!isNaN(this.newDrinkModel.vol) && this.newDrinkModel.vol > 0){
 		var abvDelta = this.bacUtils.calcBacIncrease(this.prefs, this.newDrinkModel);
 		abvDelta = this.bacUtils.roundBac(abvDelta);
-		var timeDelta = this.bacUtils.calcTimeTo(abvDelta, 0);
+		var timeDelta = this.bacUtils.calcTimeTo(abvDelta, 0, true);
+		//var selectedTime = this.newDrinkModel.time;
 		var text = "This drink will add " + abvDelta + " to your BAC. ";
 		text += "It will add " + timeDelta + " to the time it takes your B.A.C. to reach zero.";
 		this.controller.get("drinkInfo").innerHTML = text;
@@ -217,6 +220,7 @@ CustomDrinkAssistant.prototype.submit = function(event){
 
 CustomDrinkAssistant.prototype.deactivate = function(event) {
 	Mojo.Log.info("Clearing new drink listeners");
+	//this.controller.stopListening(this.controller.sceneElement, Mojo.Event.keypress, this.updateDrinkInfoHandler);
 	Mojo.Event.stopListening(this.controller.get("drinkAbvField"), Mojo.Event.propertyChange, this.updateDrinkInfoHandler);
 	Mojo.Event.stopListening(this.controller.get("drinkVolField"), Mojo.Event.propertyChange, this.updateDrinkInfoHandler);
 	Mojo.Event.stopListening(this.controller.get("drinkUnitToggle"), Mojo.Event.propertyChange, this.changeUnitsHandler);

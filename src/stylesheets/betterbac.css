@@ -1,25 +1,25 @@
 .dashboard-icon-betterbac {
   background: url(../icon48.png);
 }
-.all-centered{
+.snew-all-centered{
 	margin-top:116px;
 	margin-left:auto;
 	margin-right:auto;
 }
-.drink-row-wrapper{
+.snew-row-wrapper{
 	padding-top: 5px;
 	padding-bottom: 5px;
 }
-.drink-info{
+.snew-detail-text{
 	font-size: 75%;
 }
-.drink-title{
+.snew-detail-title{
 	font-weight:bold;
 }
-.drink-info-left{
+.snew-left{
 	margin-left: 5px;
 }
-.drink-info-right{
+.snew-right{
 	float:right;
 	margin-right:5px;
 	text-align:right;
