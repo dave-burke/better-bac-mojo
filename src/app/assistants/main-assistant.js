@@ -74,10 +74,11 @@ MainAssistant.prototype.setup = function() {
 			formatters:{
 				name:this.formatUtils.formatName.bind(this.formatUtils),
 				time:this.formatUtils.formatDateTime.bind(this.formatUtils),
-				abv:this.formatUtils.formatAbv.bind(this.formatUtils),
 				vol:this.formatUtils.formatVol.bind(this.formatUtils),
-				bacWhenAdded: this.formatUtils.formatBac.bind(this.formatUtils),
-				bac: this.formatTimeUntilProcessed.bind(this)
+				abv:this.formatUtils.formatAbv.bind(this.formatUtils),
+				bac: this.formatUtils.formatBac.bind(this.formatUtils),
+				bacDelta: this.formatBacDelta.bind(this),
+				timeToProcess: this.formatTimeToProcess.bind(this)
 			},
 			swipeToDelete: true,
 			reorderable: false
@@ -149,7 +150,16 @@ MainAssistant.prototype.activate = function(newDrink) {
 	this.activateRefresh();
 };
 
-MainAssistant.prototype.formatTimeUntilProcessed = function(bac, model){
+MainAssistant.prototype.formatBacDelta = function(na, model){
+	var roundedBacWhenAdded = this.bacUtils.roundBac(model.bacWhenAdded);
+	var roundedOrigBac = this.bacUtils.roundBac(model.origBac);
+	var text = String(roundedBacWhenAdded);
+	text += "->";
+	text += roundedOrigBac;
+	return text;
+};
+
+MainAssistant.prototype.formatTimeToProcess = function(na, model){
 	var bacAhead = 0;
 	for(var i=this.state.drinks.length - 1;i>=0;i--){
 		var drink = this.state.drinks[i];
@@ -158,15 +168,14 @@ MainAssistant.prototype.formatTimeUntilProcessed = function(bac, model){
 			if(bacAhead == 0){
 				return "";
 			}else{
-				var message = "Time left in your system: "
+				var message = "<br>Time left in your system: "
 				message += this.bacUtils.calcTimeTo(bacAhead,0);
 				return message;
 			}
 		}
 	}
 	return "N/A";
-}
-
+};
 
 MainAssistant.prototype.divideHistory = function(item){
 	if(item){
