@@ -1,3 +1,8 @@
+Version 0.11.5
+--------------
+Fixed loading scrim and show on "ajax-get" action
+Fix initial label for height/weight in prefs
+
 Version 0.11.4
 --------------
 Testing spinner for update on actual device

@@ -150,6 +150,7 @@ FavDrinksAssistant.prototype.filterDrinks = function(filterString, listWidget, o
 
 FavDrinksAssistant.prototype.startSpinner = function(){
 	Mojo.Log.info("Start spinning");
+	this.controller.get("spinnerScrim").show();
 	var spinner = this.controller.get("loadingSpinner").mojo;
 	if(spinner){
 		spinner.start();
@@ -160,6 +161,7 @@ FavDrinksAssistant.prototype.startSpinner = function(){
 
 FavDrinksAssistant.prototype.stopSpinner = function(){
 	Mojo.Log.info("Stop spinning");
+	this.controller.get("spinnerScrim").hide();
 	var spinner = this.controller.get("loadingSpinner").mojo;
 	if(spinner){
 		spinner.stop();
