@@ -76,7 +76,7 @@ MainAssistant.prototype.setup = function() {
 				time:this.formatUtils.formatDateTime.bind(this.formatUtils),
 				vol:this.formatUtils.formatVol.bind(this.formatUtils),
 				abv:this.formatUtils.formatAbv.bind(this.formatUtils),
-				bac: this.formatUtils.formatBac.bind(this.formatUtils),
+				origBac: this.formatUtils.formatBac.bind(this.formatUtils),
 				bacDelta: this.formatBacDelta.bind(this),
 				timeToProcess: this.formatTimeToProcess.bind(this)
 			},
