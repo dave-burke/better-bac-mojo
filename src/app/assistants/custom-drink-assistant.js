@@ -171,10 +171,9 @@ CustomDrinkAssistant.prototype.updateDrinkInfo = function(event){
 			!isNaN(this.newDrinkModel.vol) && this.newDrinkModel.vol > 0){
 		var abvDelta = this.bacUtils.calcBacIncrease(this.prefs, this.newDrinkModel);
 		abvDelta = this.bacUtils.roundBac(abvDelta);
-		var timeDelta = this.bacUtils.calcTimeTo(abvDelta, 0, true);
-		//var selectedTime = this.newDrinkModel.time;
-		var text = "This drink will add " + abvDelta + " to your BAC. ";
-		text += "It will add " + timeDelta + " to the time it takes your B.A.C. to reach zero.";
+		var timeDelta = this.bacUtils.calcTimeTo(abvDelta, 0);
+		var text = "As of the time selected above, this drink will add " + abvDelta + " to your BAC, ";
+		text += "and " + timeDelta + " to the time it takes your B.A.C. to reach zero.";
 		this.controller.get("drinkInfo").innerHTML = text;
 	}else{
 		this.controller.get("drinkInfo").innerHTML = "";

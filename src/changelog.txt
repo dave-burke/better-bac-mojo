@@ -1,7 +1,12 @@
+Version 0.11.7
+--------------
+Fix bacDelta calculation
+
 Version 0.11.6
 --------------
 Updated css class names
 Shrank drink info text on custom drink screen
+Updated drink entry display on main scene
 
 Version 0.11.5
 --------------

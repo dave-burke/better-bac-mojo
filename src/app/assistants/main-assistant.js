@@ -152,10 +152,10 @@ MainAssistant.prototype.activate = function(newDrink) {
 
 MainAssistant.prototype.formatBacDelta = function(na, model){
 	var roundedBacWhenAdded = this.bacUtils.roundBac(model.bacWhenAdded);
-	var roundedOrigBac = this.bacUtils.roundBac(model.origBac);
+	var roundedNewBac = this.bacUtils.roundBac(model.bacWhenAdded + model.origBac);
 	var text = String(roundedBacWhenAdded);
 	text += "->";
-	text += roundedOrigBac;
+	text += roundedNewBac;
 	return text;
 };
 
@@ -168,7 +168,7 @@ MainAssistant.prototype.formatTimeToProcess = function(na, model){
 			if(bacAhead == 0){
 				return "";
 			}else{
-				var message = "<br>Time left in your system: "
+				var message = "Time left in your system: "
 				message += this.bacUtils.calcTimeTo(bacAhead,0);
 				return message;
 			}
