@@ -1,24 +1,28 @@
-Version 0.11.7
+Version 0.11.8
+--------------
+Fixed problem with missing units after updating from 0.10.x
+
+Version 0.11.7 (unreleased)
 --------------
 Fix bacDelta calculation
 
-Version 0.11.6
+Version 0.11.6 (unreleased)
 --------------
 Updated css class names
 Shrank drink info text on custom drink screen
 Updated drink entry display on main scene
 
-Version 0.11.5
+Version 0.11.5 (unreleased)
 --------------
 Fixed loading scrim and show on "ajax-get" action
 Fix initial label for height/weight in prefs
 Updated drink list formating
 
-Version 0.11.4
+Version 0.11.4 (unreleased)
 --------------
 Testing spinner for update on actual device
 
-Version 0.11.3
+Version 0.11.3 (unreleased)
 --------------
 Fixed bug with Watson calculations
 
