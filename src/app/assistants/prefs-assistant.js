@@ -19,6 +19,11 @@ function PrefsAssistant(dbUtils, prefs) {
 	this.dbUtils = dbUtils;
 	this.prefs = prefs;
 	this.convUtils = new ConversionUtils();
+	
+	//TODO remove from final version
+	if(!this.prefs.units){
+		this.prefs.units = "imperial";
+	}
 }
 
 PrefsAssistant.prototype.setup = function() {
