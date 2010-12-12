@@ -22,28 +22,28 @@
         "source": "app/assistants/prefs-assistant.js"
     },
     {
-        "scenes": "about",
-        "source": "app/assistants/about-assistant.js"
-    },
-    {
         "scenes": "graph",
         "source": "app/assistants/graph-assistant.js"
+    },
+    {
+        "scenes": "about",
+        "source": "app/assistants/about-assistant.js"
     },
     {
         "scenes": "help",
         "source": "app/assistants/help-assistant.js"
     },
     {
-        "scenes": "help-graph",
-        "source": "app/assistants/help-graph-assistant.js"
+    	"scenes": "help-topics",
+    	"source": "app/assistants/help-topics-assistant.js"
     },
     {
-        "scenes": "help-prefs",
-        "source": "app/assistants/help-prefs-assistant.js"
+    	"scenes": "help-faq",
+    	"source": "app/assistants/help-faq-assistant.js"
     },
     {
-        "scenes": "help-custom-drink",
-        "source": "app/assistants/help-custom-drink-assistant.js"
+    	"scenes": "help-changelog",
+    	"source": "app/assistants/help-changelog-assistant.js"
     },
     {"source": "app/assistants/dialogs/import-drinks-dialog.js"},
     {"source": "app/assistants/dialogs/import-custom-dialog.js"},

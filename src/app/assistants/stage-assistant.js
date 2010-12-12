@@ -83,20 +83,8 @@ StageAssistant.prototype.handleCommand = function(event){
 				Mojo.Log.info("Prefs menu item");
 				break;
 			case 'do-help':
-				Mojo.Controller.stageController.pushScene("help");
 				Mojo.Log.info("main help menu item");
-				break;
-			case 'do-help-prefs':
-				Mojo.Controller.stageController.pushScene("help-prefs");
-				Mojo.Log.info("prefs help menu item");
-				break;
-			case 'do-help-custom-drink':
-				Mojo.Controller.stageController.pushScene("help-custom-drink");
-				Mojo.Log.info("custom-drink help menu item");
-				break;
-			case 'do-help-graph':
-				Mojo.Controller.stageController.pushScene("help-graph");
-				Mojo.Log.info("graph help menu item");
+				Mojo.Controller.stageController.pushScene("help");
 				break;
 			case 'do-myAbout':
 				Mojo.Controller.stageController.pushScene("about");
