@@ -43,3 +43,34 @@ MojoUtils.prototype.isFirstTime = function(key){
 		return true;
 	}
 };
+
+//From WebOS101 Snippets: http://webos101.com/Code_Snippets#Checking_data_connectivity
+MojoUtils.prototype.checkConnectivity = function (callbackConnected, callbackNotConnected) {
+	this.caller.controller.serviceRequest('palm://com.palm.connectionmanager', {
+		method: 'getstatus',
+		parameters: {},
+		onSuccess: function (response) {
+			var wifi = response.wifi;
+			var wan = response.wan;
+			var hasInternet = response.isInternetConnectionAvailable;
+ 
+			if(hasInternet && wifi.state === "connected"){
+				Mojo.Log.info("Wifi internet connection detected");
+				callbackConnected();
+			}else if (hasInternet && wan.state === "connected") {
+				Mojo.Log.info("Wan internet connection detected");
+				callbackConnected();
+			} else {
+				if(callbackNotConnected){
+					callbackNotConnected();
+				}else{
+					this.simpleMessage($L("You do not have an Internet connection."));
+				}
+			}
+		},
+		onFailure: function(response) {
+			Mojo.Log.info("Could not determine internet connection status. errorCode=%s, errorText=%s",response.errorCode,response.errorText);
+			this.simpleMessage($L("Could not determine internet connection status: ") + response.errorText);
+		}
+	});
+}

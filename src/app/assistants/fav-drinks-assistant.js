@@ -258,14 +258,16 @@ FavDrinksAssistant.prototype.handleCommand = function(event){
 };
 
 FavDrinksAssistant.prototype.ajaxGet = function(source){
-	Mojo.Log.info("Loading drinks from " + source);
-	this.startSpinner();
-	var req = new Ajax.Request(source, {
-		method: 'get',
-		onFailure: this.ajaxFailure.bind(this),
-		on404: this.ajax404.bind(this),
-		onSuccess: this.ajaxSuccess.bind(this)
-	});
+	this.mojoUtils.checkConnectivity(function(){
+		Mojo.Log.info("Loading drinks from " + source);
+		this.startSpinner();
+		var req = new Ajax.Request(source, {
+			method: 'get',
+			onFailure: this.ajaxFailure.bind(this),
+			on404: this.ajax404.bind(this),
+			onSuccess: this.ajaxSuccess.bind(this)
+		});
+	}.bind(this));//mojoUtils will pop up an error if there is no connectivity
 };
 
 FavDrinksAssistant.prototype.ajaxFailure = function(){
