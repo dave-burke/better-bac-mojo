@@ -16,6 +16,15 @@ function HelpManAssistant() {
 	    },{
 	    	title: 'Graphing your drinks',
 	    	scene: 'graph-scene'
+	    },{
+	    	title: 'How is my BAC Calculated?',
+	    	scene: 'calculations'
+	    },{
+	    	title: 'How accurate is this?',
+	    	scene: 'accuracy'
+	    },{
+	    	title: 'When should I add a drink?',
+	    	scene: 'when-to-add'
 	    }
 	];
 };
