@@ -105,8 +105,8 @@ MainAssistant.prototype.setup = function() {
 	this.appMenuModel = {
 		visible: true,
 		items: [ 
-			{ label: "About", command: "do-myAbout"},
-			{ label: "Preferences", command: "do-myPrefs"},
+			{ label: "About", command: "do-about"},
+			{ label: "Preferences", command: "do-prefs"},
 			{ label: "Review this app", command: "do-appCatalog"},
 			{ label: "Clear all drinks", command: "do-clearState"},
 			{ label: "Help", command: "do-help"}

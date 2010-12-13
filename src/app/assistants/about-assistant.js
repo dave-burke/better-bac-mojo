@@ -29,8 +29,8 @@ AboutAssistant.prototype.setup = function() {
 	this.appMenuModel = {
 		visible: true,
 		items: [ 
-		    { label: "Preferences", command: 'do-myPrefs'},
-		    { label: "Help", command: 'do-myHelp'}
+		    { label: "Preferences", command: 'do-prefs'},
+		    { label: "Help", command: 'do-help'}
 	    ]
 	};
 	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);

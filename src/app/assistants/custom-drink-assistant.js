@@ -130,8 +130,8 @@ CustomDrinkAssistant.prototype.setup = function() {
 	this.appMenuModel = {
 		visible: true,
 		items: [ 
-			{ label: "About", command: 'do-myAbout'},
-			{ label: "Help for this scene", command: 'do-help-custom-drink'},
+			{ label: "About", command: 'do-about'},
+			{ label: "Help", command: 'do-help'}
 		]
 	};
 	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);

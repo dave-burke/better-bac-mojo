@@ -84,7 +84,8 @@ FavDrinksAssistant.prototype.setup = function(){
 			    	    { label: 'To someone else', command: "do-fav-drinks-export"}
 			    	]
 			    },
-				{ label: "Clear saved drinks", command: "do-fav-drinks-clear"}
+				{ label: "Clear saved drinks", command: "do-fav-drinks-clear"},
+			    { label: "Help", command: 'do-help'}
 			]
 		};
 		this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);

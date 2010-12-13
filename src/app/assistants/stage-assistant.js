@@ -78,7 +78,7 @@ StageAssistant.prototype.cleanHistoryAt = function(cleanPoint){
 StageAssistant.prototype.handleCommand = function(event){
 	if (event.type == Mojo.Event.command) {
 		switch (event.command) {
-			case 'do-myPrefs':
+			case 'do-prefs':
 				Mojo.Controller.stageController.pushScene("prefs", this.db, this.prefs);
 				Mojo.Log.info("Prefs menu item");
 				break;
@@ -86,7 +86,7 @@ StageAssistant.prototype.handleCommand = function(event){
 				Mojo.Log.info("main help menu item");
 				Mojo.Controller.stageController.pushScene("help");
 				break;
-			case 'do-myAbout':
+			case 'do-about':
 				Mojo.Controller.stageController.pushScene("about");
 				Mojo.Log.info("About menu item");
 				break;
