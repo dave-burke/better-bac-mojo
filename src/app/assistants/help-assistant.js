@@ -22,8 +22,8 @@ HelpAssistant.prototype.setup = function()
 	};
 	
 	this.supportModel.items.push({
-		text: $L("Help Topics"),
-		target: 'help-topics'
+		text: $L("How to"),
+		target: 'help-howto'
 	});
 	this.supportModel.items.push({
 		text: $L("FAQ"),

@@ -34,8 +34,8 @@
         "source": "app/assistants/help-assistant.js"
     },
     {
-    	"scenes": "help-topics",
-    	"source": "app/assistants/help-topics-assistant.js"
+    	"scenes": "help-howto",
+    	"source": "app/assistants/help-howto-assistant.js"
     },
     {
     	"scenes": "help-faq",

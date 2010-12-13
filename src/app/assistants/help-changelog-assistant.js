@@ -4,14 +4,15 @@
 	that needs the scene controller should be done in the setup function below. */
 function HelpChangelogAssistant() {
 	this.changelog = [
+		{version: '0.12.x (beta)',
+		log: [
+			'Consolidated and updated help pages',
+			'Now checks for an internet connection and notifies the user if none is found before trying to update the saved drinks list'
+		]},
 	    {version: '0.11.9 (beta)',
 		log: [
 			'Updated drink entry display on main scene',
-			'Fixed loading scrim and show on "ajax-get" action',
-			'Fix initial label for height/weight in prefs',
-			'Fixed bug with Watson calculations',
-			'Added unit toggle to custom drink screen',
-			'Added metric units for height/weight',
+			'Added metric units for prefs and drinks',
 			'Added preview info to custom drink screen'
 		]},
 		{version: '0.10.18 (beta)',
