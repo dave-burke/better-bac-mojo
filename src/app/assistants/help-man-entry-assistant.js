@@ -2,7 +2,7 @@
 	additional parameters (after the scene name) that were passed to pushScene. The reference
 	to the scene controller (this.controller) has not be established yet, so any initialization
 	that needs the scene controller should be done in the setup function below. */
-function HelpFaqAssistant(title, scene) {
+function HelpManEntryAssistant(title, scene) {
 	this.title = title;
 	this.scene = scene;
 };
@@ -10,9 +10,10 @@ function HelpFaqAssistant(title, scene) {
 /* this function is for setup tasks that have to happen when the scene is first created use
  * Mojo.View.render to render view templates and add them to the scene, if needed setup widgets here
  * add event handlers to listen to events from widgets */
-HelpFaqAssistant.prototype.setup = function() {
-	this.scene = "help-man-entry/entries/" + this.scene + ".html";
+HelpManEntryAssistant.prototype.setup = function() {
+	this.scene = 'help-man-entry/entries/' + this.scene;
 	
+	Mojo.Log.info('Loading scene ' + this.scene);
 	this.controller.setupWidget('entry',
 		{
 			itemTemplate: this.scene,
@@ -20,9 +21,9 @@ HelpFaqAssistant.prototype.setup = function() {
 			reorderable: false
 		},
 		{
-			items: {"foo"}
+			items: [{'foo':'bar'}]
 		}
 	);
 
-	this.controller.get("title").innerHTML = this.title;
+	this.controller.get('title').innerHTML = this.title;
 };

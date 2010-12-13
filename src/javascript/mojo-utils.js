@@ -27,6 +27,27 @@ MojoUtils.prototype.simpleMessage = function(message){
 	});
 };
 
+MojoUtils.prototype.simpleEmail = function(subject, message, recipientEmail, recipientName){
+	recipientName = recipientName ? recipientName : recipientEmail;
+	var recipients = [];
+	recipients.push({type: 'email',
+        role: 1,
+        value: recipientEmail,
+        contactDisplay: recipientName});
+	Mojo.Log.info("Sending message: " + message);
+	var obj = new Mojo.Service.Request("palm://com.palm.applicationManager/", {
+		method: "open",
+		parameters: {
+			id: "com.palm.app.email",
+			params: {
+				"summary": subject,
+				"text": message,
+				"recipients": recipients
+			}
+		}
+	});
+}
+
 MojoUtils.prototype.isFirstTime = function(key){
 	var cookie = new Mojo.Model.Cookie(Mojo.appInfo.id + '.firstTimes');
 	var firstTimes = cookie.get();

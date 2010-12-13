@@ -5,8 +5,17 @@
 function HelpManAssistant() {
 	this.topics = [
 	    {
-	    	title: 'Main Scene',
-	    	scene: 'main'
+	    	title: 'Main scene',
+	    	scene: 'main-scene'
+	    },{
+	    	title: 'Preferences scene',
+	    	scene: 'prefs-scene'
+	    },{
+	    	title: 'Adding a drink',
+	    	scene: 'add-a-drink'
+	    },{
+	    	title: 'Graphing your drinks',
+	    	scene: 'graph-scene'
 	    }
 	];
 };
