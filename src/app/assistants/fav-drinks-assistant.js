@@ -333,14 +333,13 @@ FavDrinksAssistant.prototype.onImportDialogClose = function(message){
 
 FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
 	var message = "";
-	var recipients = [];
+	var recipientEmail = "";
+	var recipientName = "";
 	var subject = "";
 	if(submitToAuthor){
 		subject = "Better BAC json submission"
-		recipients.push({type: 'email',
-            role: 1,
-            value: 'snewsoftware@gmail.com',
-            contactDisplay: 'Snew Software'});
+		recipientEmail = 'snewsoftware@gmail.com',
+        recipientName = 'Snew Software';
 		message += "Dear Snew Software,<br>Please consider merging this data with the official feed.<br>";
 	}else{
 		subject = "Better BAC json export"
@@ -356,18 +355,7 @@ FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
 		message += '{name: "' + drink.name + '", abv: ' + drink.abv + ', vol: ' + drink.vol + ', updated: ' + drink.updated + '}'; 
 	}
 	message += '<br>]}';
-	Mojo.Log.info("Sending message: " + message);
-	var obj = new Mojo.Service.Request("palm://com.palm.applicationManager/", {
-		method: "open",
-		parameters: {
-			id: "com.palm.app.email",
-			params: {
-				"summary": subject,
-				"text": message,
-				"recipients": recipients
-			}
-		}
-	});
+	this.mojoUtils.simpleEmail(subject, message, recipientEmail, recipientName);
 };
 
 FavDrinksAssistant.prototype.handleDrinkTap = function(event){
