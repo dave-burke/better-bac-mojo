@@ -34,12 +34,12 @@
         "source": "app/assistants/help-assistant.js"
     },
     {
-    	"scenes": "help-howto",
-    	"source": "app/assistants/help-howto-assistant.js"
+    	"scenes": "help-man",
+    	"source": "app/assistants/help-man-assistant.js"
     },
     {
-    	"scenes": "help-faq",
-    	"source": "app/assistants/help-faq-assistant.js"
+    	"scenes": "help-man-entry",
+    	"source": "app/assistants/help-man-entry-assistant.js"
     },
     {
     	"scenes": "help-changelog",

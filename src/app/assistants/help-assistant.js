@@ -22,23 +22,23 @@ HelpAssistant.prototype.setup = function()
 	};
 	
 	this.supportModel.items.push({
-		text: $L("How to"),
-		target: 'help-howto'
-	});
-	this.supportModel.items.push({
-		text: $L("FAQ"),
-		target: 'help-faq'
+		text: $L("User manual"),
+		target: 'help-man'
 	});
 	this.supportModel.items.push({
 		text: $L("Changelog"),
 		target: 'help-changelog'
+	});
+	this.supportModel.items.push({
+		text: $L("Generate support email"),
+		target: 'email'
 	});
 	
 	this.controller.setupWidget
 	(
 		'supportList', 
 		{
-			itemTemplate: "help/rowTemplate",
+			itemTemplate: "help/help-row-template",
 			swipeToDelete: false,
 			reorderable: false
 		},
@@ -51,7 +51,11 @@ HelpAssistant.prototype.setup = function()
 HelpAssistant.prototype.listTapHandler = function(event)
 {
 	var target = event.item.target;
-	this.controller.stageController.pushScene(target);
+	if(target === "email"){
+		//TODO
+	}else{
+		this.controller.stageController.pushScene(target);
+	}
 };
 
 HelpAssistant.prototype.activate = function(event) {};
