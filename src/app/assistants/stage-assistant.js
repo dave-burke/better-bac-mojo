@@ -17,6 +17,7 @@
  */
 function StageAssistant(){
 	this.db = new DbUtils();
+	this.mojoUtils = new MojoUtils(this);
 }
 
 StageAssistant.prototype.setup = function(){
@@ -36,6 +37,9 @@ StageAssistant.prototype.setup = function(){
 							this.controller.pushScene("prefs", this.db, this.prefs);
 						}else{
 							Mojo.Log.info("Prefs were loaded. Don't push prefs scene");
+						}
+						if(this.mojoUtils.isFirstTime("welcome-message")){
+							this.controller.pushScene("first-time");
 						}
 					}
 				}.bind(this));

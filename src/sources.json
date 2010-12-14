@@ -2,6 +2,9 @@
     {"source": "app/assistants/app-assistant.js"},
     {"source": "app/assistants/stage-assistant.js"},
     {
+        "scenes": "first-time",
+        "source": "app/assistants/first-time-assistant.js"
+    },{
         "scenes": "main",
         "source": "app/assistants/main-assistant.js"
     },
@@ -34,16 +37,16 @@
         "source": "app/assistants/help-assistant.js"
     },
     {
-    	"scenes": "help-man",
-    	"source": "app/assistants/help-man-assistant.js"
+        "scenes": "help-man",
+        "source": "app/assistants/help-man-assistant.js"
     },
     {
-    	"scenes": "help-man-entry",
-    	"source": "app/assistants/help-man-entry-assistant.js"
+        "scenes": "help-man-entry",
+        "source": "app/assistants/help-man-entry-assistant.js"
     },
     {
-    	"scenes": "help-changelog",
-    	"source": "app/assistants/help-changelog-assistant.js"
+        "scenes": "help-changelog",
+        "source": "app/assistants/help-changelog-assistant.js"
     },
     {"source": "app/assistants/dialogs/import-drinks-dialog.js"},
     {"source": "app/assistants/dialogs/import-custom-dialog.js"},
@@ -56,5 +59,9 @@
     {"source": "javascript/format-utils.js"},
     {"source": "javascript/mojo-utils.js"},
     {"source": "javascript/flot/jquery.js"},
-    {"source": "javascript/flot/jquery.flot.js"}
+    {"source": "javascript/flot/jquery.flot.js"},
+    {
+        "scenes": "first-time",
+        "source": "app/assistants/first-time-assistant.js"
+    }
 ]
