@@ -10,12 +10,29 @@
 	padding-top: 5px;
 	padding-bottom: 5px;
 }
+
 .snew-detail-text{
 	font-size: 75%;
 }
 .snew-detail-title{
 	font-weight:bold;
 }
+
+.snew-user-manual{
+	font-size: 90%;
+}
+.snew-user-manual h1{
+	font-size: 130%;
+	padding: 0px;
+	margin: 10px 4px 5px 0px;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+}
+.snew-user-manual p{
+	padding: 0px;
+	margin: 5px 0px 15px 0px;	
+}
+
 .snew-left{
 	margin-left: 5px;
 	margin-right:5px;

@@ -17,6 +17,9 @@ function HelpManAssistant() {
 	    	title: 'Graphing your drinks',
 	    	scene: 'graph-scene'
 	    },{
+	    	title: 'How do I know the ABV of my drink?',
+	    	scene: 'abv-howto'
+	    },{
 	    	title: 'How is my BAC Calculated?',
 	    	scene: 'calculations'
 	    },{
@@ -25,6 +28,9 @@ function HelpManAssistant() {
 	    },{
 	    	title: 'When should I add a drink?',
 	    	scene: 'when-to-add'
+	    },{
+	    	title: 'Where can I find the source code?',
+	    	scene: 'source'
 	    }
 	];
 };

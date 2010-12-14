@@ -31,7 +31,7 @@ HelpAssistant.prototype.setup = function() {
 		target : 'help-changelog'
 	});
 	this.supportModel.items.push({
-		text : $L("Generate support email"),
+		text : $L("Get support via email"),
 		target : 'support-email'
 	});
 
