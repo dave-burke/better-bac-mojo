@@ -69,6 +69,7 @@ MojoUtils.prototype.isFirstTime = function(key){
 
 //From WebOS101 Snippets: http://webos101.com/Code_Snippets#Checking_data_connectivity
 MojoUtils.prototype.checkConnectivity = function (callbackConnected, callbackNotConnected) {
+	var self = this;
 	this.caller.controller.serviceRequest('palm://com.palm.connectionmanager', {
 		method: 'getstatus',
 		parameters: {},
@@ -84,10 +85,9 @@ MojoUtils.prototype.checkConnectivity = function (callbackConnected, callbackNot
 				Mojo.Log.info("Wan internet connection detected");
 				callbackConnected();
 			} else {
+				self.simpleMessage($L("You do not have an Internet connection."));
 				if(callbackNotConnected){
 					callbackNotConnected();
-				}else{
-					this.simpleMessage($L("You do not have an Internet connection."));
 				}
 			}
 		},
