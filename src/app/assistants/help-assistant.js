@@ -31,7 +31,7 @@ HelpAssistant.prototype.setup = function() {
 		target : 'help-changelog'
 	});
 	this.supportModel.items.push({
-		text : $L("Get support via email"),
+		text : $L("Get help via email"),
 		target : 'support-email'
 	});
 
@@ -53,7 +53,7 @@ HelpAssistant.prototype.listTapHandler = function(event) {
 		
 		var subject = "Better BAC support request";
 		var message = "Dear Snew Software,<br><br>";
-		message += "Please describe your problem here:<br><br>";
+		message += "Please describe your problem here:<br><br><br>";
 		message += "Please do not change the text below this.<br>";
 		message += "Device name: " + deviceModel + "<br>";
 		message += "WebOS version: " + webosVersion + "<br>";
