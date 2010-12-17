@@ -25,18 +25,8 @@ function HelpManEntryAssistant(title, scene) {
  * add event handlers to listen to events from widgets */
 HelpManEntryAssistant.prototype.setup = function() {
 	this.scene = 'help-man-entry/entries/' + this.scene;
-	
-	Mojo.Log.info('Loading scene ' + this.scene);
-	this.controller.setupWidget('entry',
-		{
-			itemTemplate: this.scene,
-			swipeToDelete: false,
-			reorderable: false
-		},
-		{
-			items: [{'foo':'bar'}]
-		}
-	);
 
+	Mojo.Log.info('Loading scene ' + this.scene);
+    this.controller.get('content').innerHTML = Mojo.View.render({template: this.scene});
 	this.controller.get('title').innerHTML = this.title;
 };
