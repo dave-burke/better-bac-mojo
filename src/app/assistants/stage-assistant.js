@@ -94,6 +94,17 @@ StageAssistant.prototype.handleCommand = function(event){
 				Mojo.Controller.stageController.pushScene("about");
 				Mojo.Log.info("About menu item");
 				break;
+			case 'do-appCatalog':
+				Mojo.Log.info("Loading app catalog");
+				var appUrl = 'http://developer.palm.com/appredirect/?packageid=' + Mojo.appInfo.id;
+				new Mojo.Service.Request('palm://com.palm.applicationManager', {
+					method: "open",
+					parameters: {
+				     	target: appUrl
+				   	}
+				});
+				event.stopPropagation();
+				break;
 			default:
 				Mojo.Log.info("Unknown command: " + event.command);
 				break;

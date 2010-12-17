@@ -42,6 +42,15 @@ HelpAssistant.prototype.setup = function() {
 	}, this.supportModel);
 
 	this.controller.listen('supportList', Mojo.Event.listTap, this.listTapHandler.bindAsEventListener(this));
+	
+	this.appMenuAttr = {
+	    omitDefaultItems: true
+	};
+	this.appMenuModel = {
+		visible: true,
+		items: [{ label: "Review this app", command: "do-appCatalog"}]
+	};
+	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
 
 };
 HelpAssistant.prototype.listTapHandler = function(event) {

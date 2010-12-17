@@ -17,7 +17,7 @@
  */
 function HelpChangelogAssistant() {
 	this.changelog = [
-		{version: '0.12.5 (beta)',
+		{version: '0.12.6 (beta)',
 		log: [
 			'Consolidated and updated help pages',
 			'Now checks for an internet connection and notifies the user if none is found before trying to update the saved drinks list',
@@ -138,6 +138,15 @@ HelpChangelogAssistant.prototype.setup = function() {
 			items: this.changelog
 		}
 	);
+	
+	this.appMenuAttr = {
+	    omitDefaultItems: true
+	};
+	this.appMenuModel = {
+		visible: true,
+		items: [{ label: "Review this app", command: "do-appCatalog"}]
+	};
+	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
 };
 
 HelpChangelogAssistant.prototype.formatLog = function(log){

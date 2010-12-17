@@ -194,17 +194,6 @@ MainAssistant.prototype.divideHistory = function(item){
 MainAssistant.prototype.handleCommand = function(event){
 	if (event.type === Mojo.Event.command) {
 		switch (event.command) {
-			case 'do-appCatalog':
-				Mojo.Log.info("Loading app catalog");
-				var appUrl = 'http://developer.palm.com/appredirect/?packageid=' + Mojo.appInfo.id;
-				new Mojo.Service.Request('palm://com.palm.applicationManager', {
-					method: "open",
-					parameters: {
-				     	target: appUrl
-				   	}
-				});
-				event.stopPropagation();
-				break;
 			case "add-cmd":
 				//Mojo.Controller.stageController.pushScene("custom-drink", this.state, this.prefs);
 				Mojo.Controller.stageController.pushScene("fav-drinks", this.db, this.prefs);

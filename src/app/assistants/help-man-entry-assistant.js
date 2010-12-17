@@ -29,4 +29,13 @@ HelpManEntryAssistant.prototype.setup = function() {
 	Mojo.Log.info('Loading scene ' + this.scene);
     this.controller.get('content').innerHTML = Mojo.View.render({template: this.scene});
 	this.controller.get('title').innerHTML = this.title;
+	
+	this.appMenuAttr = {
+	    omitDefaultItems: true
+	};
+	this.appMenuModel = {
+		visible: true,
+		items: [{ label: "Review this app", command: "do-appCatalog"}]
+	};
+	this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
 };
