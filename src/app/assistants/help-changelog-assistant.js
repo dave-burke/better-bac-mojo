@@ -17,10 +17,12 @@
  */
 function HelpChangelogAssistant() {
 	this.changelog = [
-		{version: '0.12.x (beta)',
+		{version: '0.12.5 (beta)',
 		log: [
 			'Consolidated and updated help pages',
-			'Now checks for an internet connection and notifies the user if none is found before trying to update the saved drinks list'
+			'Now checks for an internet connection and notifies the user if none is found before trying to update the saved drinks list',
+			'Added a "first launch" message that will only be displayed once the first time the app is opened',
+			'Some minor formatting changes'
 		]},
 	    {version: '0.11.9 (beta)',
 		log: [
