@@ -65,8 +65,9 @@ HelpAssistant.prototype.listTapHandler = function(event) {
 		message += "Please describe your problem here:<br><br><br>";
 		message += "Please do not change the text below this.<br>";
 		message += "Device name: " + deviceModel + "<br>";
-		message += "WebOS version: " + webosVersion + "<br>";
+		message += "webOS version: " + webosVersion + "<br>";
 		message += "Carrier: " + carrierName + "<br>";
+		message += "App version: " + Mojo.appInfo.version + "<br>";
 		new MojoUtils(this).simpleEmail(subject, message, 'snewsoftware@gmail.com', 'Snew Software');
 		this.generateEmail();
 	} else {

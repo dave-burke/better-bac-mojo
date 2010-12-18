@@ -71,7 +71,6 @@ FavDrinksAssistant.prototype.setup = function(){
 		this.appMenuModel = {
 			visible: true,
 			items: [ 
-			    {label: "About", command: 'do-about'},
 			    {label: 'Import drinks',
 			    	items: [
 			    	    {label: $L("From web (official)"), command: "import-web-official"},

@@ -140,7 +140,6 @@ PrefsAssistant.prototype.setup = function() {
 	this.appMenuModel = {
 		visible: true,
 		items: [ 
-		    { label: "About", command: 'do-about'},
 		    { label: "Help", command: 'do-help'}
 	    ]
 	};

@@ -17,7 +17,7 @@
  */
 function HelpChangelogAssistant() {
 	this.changelog = [
-		{version: '0.12.6 (beta)',
+		{version: '0.12.7 (beta)',
 		log: [
 			'Consolidated and updated help pages',
 			'Now checks for an internet connection and notifies the user if none is found before trying to update the saved drinks list',

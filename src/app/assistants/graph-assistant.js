@@ -49,8 +49,7 @@ GraphAssistant.prototype.setup = function() {
 	this.appMenuModel = {
 		visible: true,
 		items: [ 
-		    { label: "About", command: 'do-about'},
-			{ label: "Review this app", command: "do-appCatalog"},
+		    { label: "Review this app", command: "do-appCatalog"},
 		    { label: "Help", command: 'do-help'}
 	    ]
 	};
