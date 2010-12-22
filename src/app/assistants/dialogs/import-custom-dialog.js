@@ -21,10 +21,6 @@ function ImportCustomDialogAssistant(sceneAssistant, callback) {
 	this.callback = callback;
 	
 	this.prefs = sceneAssistant.prefs;
-	//TODO remove this defaulting in official release since everyone will have a freshly defaulted install then
-	if(this.prefs.customDrinkUrl === undefined){
-		this.prefs.customDrinkUrl = "";
-	}
 }
 
 ImportCustomDialogAssistant.prototype.setup = function(widget){

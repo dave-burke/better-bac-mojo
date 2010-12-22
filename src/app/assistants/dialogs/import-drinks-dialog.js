@@ -22,13 +22,6 @@ function ImportDrinksDialogAssistant(sceneAssistant, imported, callback) {
 	sceneAssistant.favDrinks = sceneAssistant.favDrinks;
 	
 	this.prefs = sceneAssistant.prefs;
-	//TODO remove this defaulting in official release since everyone will have a freshly defaulted install then
-	if(this.prefs.importNew === undefined){
-		this.prefs.importNew = true;
-	}
-	if(this.prefs.importUpdated === undefined){
-		this.prefs.importUpdated = true;
-	}
 	
 	this.drinkMap = {};
 	this.newDrinks = [];
