@@ -17,6 +17,12 @@
  */
 function HelpChangelogAssistant() {
 	this.changelog = [
+		{version: '1.0.0',
+		log: [
+		    'Released in App Catalog',
+			'Minor code cleanup',
+			'Added some error dialogs for drink import issues'
+		]},
 		{version: '0.12.7 (beta)',
 		log: [
 			'Consolidated and updated help pages',

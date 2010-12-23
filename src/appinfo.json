@@ -4,7 +4,7 @@
 	"vendor": "Snew Software",
 	"type": "web",
 	"main": "index.html",
-	"title": "Better BAC",
+	"title": "Better BAC Beta",
 	"icon": "icon.png",
 	"miniicon": "icon32.png",
 	"noWindow":true,

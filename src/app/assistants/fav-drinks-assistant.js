@@ -272,18 +272,19 @@ FavDrinksAssistant.prototype.ajaxGet = function(source){
 			}.bind(this),
 			function(){
 				this.stopSpinner();
+				Mojo.Controller.errorDialog("Could not determine internet connectivity.");
 			}.bind(this)
 	);
 };
 
 FavDrinksAssistant.prototype.ajaxFailure = function(){
 	this.stopSpinner();
-	Mojo.Log.info("JSON get failed");
+	Mojo.Controller.errorDialog("Update failed");
 };
 
 FavDrinksAssistant.prototype.ajax404 = function(){
 	this.stopSpinner();
-	Mojo.Log.info("JSON not found");
+	Mojo.Controller.errorDialog("Nothing found at this location (404)");
 };
 
 FavDrinksAssistant.prototype.ajaxSuccess = function(transport){
