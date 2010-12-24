@@ -164,7 +164,7 @@ CustomDrinkAssistant.prototype.updateDrinkInfo = function(event){
 		abvDelta = this.bacUtils.roundBac(abvDelta);
 		var timeDelta = this.bacUtils.calcTimeTo(abvDelta, 0);
 		var text = "As of the time selected above, this drink will add " + abvDelta + " to your BAC, ";
-		text += "and " + timeDelta + " to the time it takes your B.A.C. to reach zero.";
+		text += "and " + timeDelta + " to the time it takes your BAC to reach zero.";
 		this.controller.get("drinkInfo").innerHTML = text;
 	}else{
 		this.controller.get("drinkInfo").innerHTML = "";
