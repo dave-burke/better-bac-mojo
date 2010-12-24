@@ -1,10 +1,10 @@
 {
-	"id": "net.snew.betterbac",
-	"version": "1.0.0",
+	"id": "net.snew.betterbac-beta",
+	"version": "1.0.1",
 	"vendor": "Snew Software",
 	"type": "web",
 	"main": "index.html",
-	"title": "Better BAC",
+	"title": "Better BAC Beta",
 	"icon": "icon.png",
 	"miniicon": "icon32.png",
 	"noWindow":true,

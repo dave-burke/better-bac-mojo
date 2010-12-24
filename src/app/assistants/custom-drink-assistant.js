@@ -26,13 +26,6 @@ function CustomDrinkAssistant(prefs, templateDrink) {
 	}
 	
 	if (templateDrink) {
-		//TODO remove this block from catalog version
-		if(!templateDrink.units){
-			Mojo.Log.info("No units on template drink. Default to oz");
-			templateDrink.units = "oz";
-		}else{
-			Mojo.Log.info("Template drink already has units: " + templateDrink.units);
-		}
 		this.newDrinkModel = {
 			"name": templateDrink.name,
 			"abv": templateDrink.abv,
