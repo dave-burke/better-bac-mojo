@@ -17,6 +17,10 @@
  */
 function HelpChangelogAssistant() {
 	this.changelog = [
+		{version: '1.0.1',
+		log: [
+			'Drink export now produces webOS 2.0 compatible JSON.'
+		]},
 		{version: '1.0.0',
 		log: [
 		    'Released in App Catalog',

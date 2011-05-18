@@ -353,13 +353,13 @@ FavDrinksAssistant.prototype.handleExport = function(submitToAuthor){
 		message += "Copy the following out to a file named " + this.fileName + " (Make sure the filename is all lowercase and Windows doesn't rename the file as " + this.fileName + ".txt).<br>" +
 			"To load these drinks into Better BAC, simply copy " + this.fileName + " to the root of the Pre's USB directory and choose \"Import\"-->\"From USB Drive\" from the app menu in the top left corner of the add drink screen.<br>";
 	}
-	message += '<br>{version: "1.0", updated: ' + new Date().getTime() + ", data: [<br>";
+	message += '<br>{"version": "1.0", "updated": ' + new Date().getTime() + ', "data": [<br>';
 	for(var i = 0;i<this.favDrinks.length;i++){
 		var drink = this.favDrinks[i];
 		if(i!=0){
 			message +=",<br>";
 		}
-		message += '{name: "' + drink.name + '", abv: ' + drink.abv + ', vol: ' + drink.vol + ', updated: ' + drink.updated + '}'; 
+		message += '{"name": "' + drink.name + '", "abv": ' + drink.abv + ', "vol": ' + drink.vol + ', "updated": ' + drink.updated + '}'; 
 	}
 	message += '<br>]}';
 	this.mojoUtils.simpleEmail(subject, message, recipientEmail, recipientName);
